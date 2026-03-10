@@ -216,17 +216,17 @@ export default function Header() {
                   }}
                   autoFocus
                   maxLength={30}
-                  placeholder="Nome personalizado..."
+                  placeholder="Digite seu nome gamer..."
                 />
               ) : (
                 <button
                   onClick={handleCustomNameClick}
-                  className="text-logo-gradient-start font-paragraph text-sm md:text-base font-medium tracking-wider hover:brightness-150 transition-all duration-300"
+                  className="px-3 py-1 rounded border-2 border-logo-gradient-start text-logo-gradient-start font-paragraph text-sm md:text-base font-medium tracking-wider hover:bg-logo-gradient-start/10 hover:brightness-150 transition-all duration-300"
                   style={{
                     textShadow: '0 0 8px rgba(255,69,0,0.6)'
                   }}
                 >
-                  {customPlayerName || '+ Nome personalizado'}
+                  {customPlayerName || '+ Nome Gamer'}
                 </button>
               )}
             </div>
