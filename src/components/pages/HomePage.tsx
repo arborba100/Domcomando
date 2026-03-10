@@ -107,7 +107,6 @@ const GameHeader: React.FC = () => {
         <div className="absolute top-0 left-0 w-32 h-[2px] bg-gradient-to-r from-[#FF4500] to-transparent" />
         <div className="absolute bottom-0 right-0 w-48 h-[2px] bg-gradient-to-l from-[#00eaff] to-transparent" />
       </div>
-
       {/* Main Content Container */}
       <div className="relative h-full w-full max-w-[120rem] mx-auto px-4 md:px-8 flex items-center justify-between">
         
@@ -180,9 +179,9 @@ const GameHeader: React.FC = () => {
           />
           
           {/* Small decorative bracket below avatar */}
-          <div className="mt-2 w-12 h-[2px] bg-[#00eaff]/50 relative">
-            <div className="absolute -left-1 -top-1 w-[2px] h-2 bg-[#00eaff]/50" />
-            <div className="absolute -right-1 -top-1 w-[2px] h-2 bg-[#00eaff]/50" />
+          <div className="mt-4 w-24 h-1 bg-gradient-to-r from-[#00eaff] to-transparent relative overflow-hidden rounded-full shadow-[0_0_10px_rgba(0,234,255,0.6)]">
+            <div className="absolute inset-y-0 left-0 w-1/3 bg-[#00eaff] animate-pulse rounded-full" />
+            <div className="absolute inset-y-0 right-0 w-1/3 bg-[#00eaff] animate-pulse rounded-full" />
           </div>
         </div>
 
