@@ -178,23 +178,35 @@ export default function SlotMachine() {
           </div>
         </div>
       </div>
-
       {/* Controls Container */}
-      <div className="w-full max-w-2xl bg-gradient-to-b from-gray-900/50 to-black/50 border-2 border-secondary rounded-lg p-6 shadow-2xl">
-        {/* Multiplier Selection */}
-        <div className="mb-6">
-          <div className="text-center text-secondary font-heading text-sm mb-3">ESCOLHA O MULTIPLICADOR</div>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+      <div className="w-full max-w-2xl pt-24 px-6 md:px-12 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900/70 to-black/70 border-secondary rounded-3xl shadow-2xl overflow-hidden relative group transition-all duration-500 hover:scale-[1.01] hover:shadow-secondary/50 border border-none">
+        <div className="absolute inset-0 bg-secondary opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none rounded-3xl"></div>
+        <div className="relative z-10 w-full text-center">
+          <button
+            onClick={() => spinSlots(selectedMultiplier)}
+            disabled={isSpinning || spins <= 0}
+            className="w-full max-w-xs md:max-w-md px-8 py-4 bg-gradient-to-r from-logo-gradient-start to-logo-gradient-end text-white font-heading text-xl md:text-2xl font-bold rounded-full hover:brightness-125 transition-all duration-500 ease-out disabled:opacity-40 disabled:cursor-not-allowed shadow-xl shadow-logo-gradient-start/40 transform hover:-translate-y-1 active:translate-y-0"
+            style={{
+              filter: 'drop-shadow(0 0 20px rgba(255,69,0,0.8))'
+            }}
+          >
+            {isSpinning ? 'GIRANDO...' : 'GIRAR'}
+          </button>
+        </div>
+
+        <div className="relative z-10 w-full mb-8">
+
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4 p-2 bg-black/30 rounded-xl border border-secondary/30 backdrop-blur-sm">
             {MULTIPLIERS.map((mult) => (
               <button
                 key={mult}
                 onClick={() => setSelectedMultiplier(mult)}
                 disabled={isSpinning || spins <= 0}
-                className={`py-2 px-3 rounded font-heading text-sm font-bold transition-all duration-300 ${
-                  selectedMultiplier === mult
-                    ? 'bg-secondary text-black border-2 border-secondary'
-                    : 'bg-transparent border-2 border-secondary text-secondary hover:bg-secondary/20'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`py-3 px-2 md:px-4 rounded-lg font-heading text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 active:scale-95
+                  ${selectedMultiplier === mult
+                    ? 'bg-secondary text-black border-2 border-secondary shadow-lg shadow-secondary/40' 
+                    : 'bg-transparent border-2 border-secondary text-secondary hover:bg-secondary/20 hover:text-white'}
+                  disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none`}
               >
                 {mult}x
               </button>
@@ -202,27 +214,12 @@ export default function SlotMachine() {
           </div>
         </div>
 
-        {/* Spin Button */}
-        <div className="text-center">
-          <button
-            onClick={() => spinSlots(selectedMultiplier)}
-            disabled={isSpinning || spins <= 0}
-            className="px-8 py-3 bg-gradient-to-r from-logo-gradient-start to-logo-gradient-end text-white font-heading text-lg font-bold rounded-lg hover:brightness-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-            style={{
-              filter: 'drop-shadow(0 0 15px rgba(255,69,0,0.6))'
-            }}
-          >
-            {isSpinning ? 'GIRANDO...' : 'GIRAR'}
-          </button>
-        </div>
-
         {spins <= 0 && (
-          <div className="text-center mt-4 text-red-500 font-heading font-bold">
+          <div className="relative z-10 text-center mt-6 text-red-500 font-heading font-bold text-lg md:text-xl animate-pulse">
             SEM GIROS DISPONÍVEIS
           </div>
         )}
       </div>
-
       {/* Prison Modal */}
       {showPrisonModal && (
         <motion.div
