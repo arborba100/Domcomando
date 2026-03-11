@@ -1,16 +1,21 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CharacterDialog from '@/components/CharacterDialog';
 import { motion } from 'framer-motion';
 import { Image } from '@/components/ui/image';
+import { useGameStore } from '@/store/gameStore';
 
 export default function LuxuryShowroomPage() {
+  const { playerLevel } = useGameStore();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      <CharacterDialog />
 
       {/* Hero Section with Background Image */}
       <section 
-        className="relative flex-1 w-full flex items-center justify-center overflow-hidden"
+        className="relative flex-1 w-full flex items-center justify-center overflow-hidden pt-[60px]"
         style={{
           backgroundColor: '#0f141e',
           minHeight: 'calc(100vh - 80px)'
@@ -35,7 +40,7 @@ export default function LuxuryShowroomPage() {
           className="relative z-10 text-center px-4 md:px-8 max-w-3xl"
         >
           <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl text-amber-100 mb-6 drop-shadow-lg">
-            Loja de Luxo
+            Luxo {playerLevel}
           </h1>
           <p className="font-paragraph text-lg md:text-2xl text-amber-200/90 drop-shadow-md">
             Bem-vindo à nossa vitrine exclusiva de experiências premium
