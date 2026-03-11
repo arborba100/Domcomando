@@ -50,6 +50,10 @@ export default function CasaPage() {
           setLevel(10);
           setBackgroundImage('https://static.wixstatic.com/media/50f4bf_d78defb80b9247beb0e9c91a333507bc~mv2.png');
           alert(`Parabéns! Você atingiu o nível 10! R$ ${moneyToRemove.toLocaleString('pt-BR')} retirado do cofre!`);
+        } else if (level === 19) {
+          setLevel(20);
+          setBackgroundImage('https://static.wixstatic.com/media/50f4bf_2feb9c93a34a4b849f52b5461ea4f2cb~mv2.png');
+          alert(`Parabéns! Você atingiu o nível 20! R$ ${moneyToRemove.toLocaleString('pt-BR')} retirado do cofre!`);
         } else {
           alert(`Nível ${level}: R$ ${moneyToRemove.toLocaleString('pt-BR')} retirado do cofre!`);
         }
