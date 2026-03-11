@@ -14,6 +14,7 @@ export default function GiroNoAsfaltoPage() {
   const { containers, removeContainer, toggleContainer, resetPositions } = useDraggableContainers([
     { id: 'header', title: 'Header', isVisible: true },
     { id: 'slot-machine', title: 'Slot Machine', isVisible: true },
+    { id: 'gallery-section', title: 'Gallery Section', isVisible: true },
     { id: 'footer', title: 'Footer', isVisible: true },
   ]);
 
@@ -106,6 +107,68 @@ export default function GiroNoAsfaltoPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {containers.find(c => c.id === 'gallery-section')?.isVisible && (
+          <DraggableContainer
+            id="gallery-section"
+            title="Gallery Section"
+            onRemove={removeContainer}
+            onEdit={handleEdit}
+            className="w-full"
+          >
+            <div className="w-full bg-gradient-to-b from-[#0f1419] to-[#0a0d14] py-16 px-6">
+              <div className="max-w-7xl mx-auto">
+                {/* Gallery Container */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                  {/* Image 1 */}
+                  <div className="flex justify-center">
+                    <Image
+                      src="https://static.wixstatic.com/media/50f4bf_39c163c41c504c6a8903be986987ed35~mv2.png?originWidth=256&originHeight=256"
+                      alt="Gallery Image 1"
+                      width={300}
+                      height={300}
+                      className="rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 object-cover w-full h-auto"
+                    />
+                  </div>
+
+                  {/* Image 2 */}
+                  <div className="flex justify-center">
+                    <Image
+                      src="https://static.wixstatic.com/media/50f4bf_1b05ee749d0045a1b12419907452332a~mv2.png?originWidth=256&originHeight=256"
+                      alt="Gallery Image 2"
+                      width={300}
+                      height={300}
+                      className="rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 object-cover w-full h-auto"
+                    />
+                  </div>
+
+                  {/* Image 3 */}
+                  <div className="flex justify-center">
+                    <Image
+                      src="https://static.wixstatic.com/media/50f4bf_a77a3c78afaa46cba94c613c74a83843~mv2.png?originWidth=256&originHeight=256"
+                      alt="Gallery Image 3"
+                      width={300}
+                      height={300}
+                      className="rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 object-cover w-full h-auto"
+                    />
+                  </div>
+                </div>
+
+                {/* Action Button */}
+                <div className="flex justify-center">
+                  <button
+                    className="px-12 py-4 bg-gradient-to-r from-logo-gradient-start to-logo-gradient-end text-white font-heading text-xl font-bold rounded-full hover:brightness-125 transition-all duration-500 ease-out shadow-xl shadow-logo-gradient-start/40 transform hover:-translate-y-1 active:translate-y-0"
+                    style={{
+                      filter: 'drop-shadow(0 0 20px rgba(255,69,0,0.8))'
+                    }}
+                  >
+                    EXPLORAR MAIS
+                  </button>
+                </div>
+              </div>
+            </div>
+          </DraggableContainer>
         )}
 
         {containers.find(c => c.id === 'footer')?.isVisible && (
