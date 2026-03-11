@@ -184,7 +184,7 @@ export default function Header() {
                   onChange={(e) => setTempName(e.target.value)}
                   onBlur={handleNameSave}
                   onKeyDown={handleNameKeyPress}
-                  className="bg-transparent border-b-2 border-subtitle-neon-blue text-subtitle-neon-blue font-paragraph text-sm md:text-base font-medium tracking-wider outline-none px-2\""
+                  className="bg-subtitle-neon-blue/10 border-2 border-subtitle-neon-blue text-subtitle-neon-blue font-paragraph text-sm md:text-base font-medium tracking-wider outline-none px-3 py-1 rounded transition-all duration-300"
                   style={{
                     textShadow: '0 0 8px rgba(0,234,255,0.6)'
                   }}
@@ -195,13 +195,14 @@ export default function Header() {
               ) : (
                 <button
                   onClick={handleNameClick}
-                  className="px-3 py-1 rounded border-2 border-subtitle-neon-blue text-subtitle-neon-blue font-paragraph text-sm md:text-base font-medium tracking-wider hover:bg-subtitle-neon-blue/10 hover:brightness-150 transition-all duration-300 group flex items-center gap-2"
+                  className="px-3 py-1 rounded border-2 border-subtitle-neon-blue text-subtitle-neon-blue font-paragraph text-sm md:text-base font-medium tracking-wider hover:bg-subtitle-neon-blue/20 hover:brightness-150 transition-all duration-300 group flex items-center gap-2 cursor-pointer active:bg-subtitle-neon-blue/30"
                   style={{
                     textShadow: '0 0 8px rgba(0,234,255,0.6)'
                   }}
+                  title="Clique para editar o nome"
                 >
                   {playerName}
-                  <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">✎</span>
+                  <span className="text-xs opacity-60 group-hover:opacity-100 transition-opacity">✎</span>
                 </button>
               )}
             </div>
