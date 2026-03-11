@@ -5,39 +5,38 @@ import { Image } from '@/components/ui/image';
 
 export default function LuxuryShowroomPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black">
+    <div className="min-h-screen flex flex-col">
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative w-full max-w-[120rem] mx-auto px-4 md:px-8 py-16 md:py-24">
+      {/* Hero Section with Background Image */}
+      <section 
+        className="relative flex-1 w-full flex items-center justify-center overflow-hidden"
+        style={{
+          backgroundImage: 'url(https://static.wixstatic.com/media/50f4bf_def07b5c61e349e690e31dcd9acd4861~mv2.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+          minHeight: 'calc(100vh - 80px)'
+        }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/20"></div>
+
+        {/* Content centered on image */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
-          className="text-center"
+          className="relative z-10 text-center px-4 md:px-8 max-w-3xl"
         >
-          <h1 className="font-heading text-5xl md:text-7xl text-amber-100 mb-4">
+          <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl text-amber-100 mb-6 drop-shadow-lg">
             Loja de Luxo
           </h1>
-          <p className="font-paragraph text-lg md:text-xl text-amber-200/70 max-w-2xl mx-auto">
+          <p className="font-paragraph text-lg md:text-2xl text-amber-200/90 drop-shadow-md">
             Bem-vindo à nossa vitrine exclusiva de experiências premium
           </p>
         </motion.div>
       </section>
-
-      {/* Content Area */}
-      <main className="relative w-full max-w-[120rem] mx-auto px-4 md:px-8 py-12 md:py-20">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-center"
-        >
-          <p className="font-paragraph text-base md:text-lg text-gray-300">
-            Esta página está pronta para ser personalizada com seus produtos e serviços de luxo.
-          </p>
-        </motion.div>
-      </main>
 
       <Footer />
     </div>
