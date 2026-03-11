@@ -107,7 +107,7 @@ export default function GamePage() {
           ref={containerRef}
           className="relative w-full bg-cover bg-center rounded-lg overflow-hidden shadow-2xl"
           style={{
-            backgroundImage: 'url(https://static.wixstatic.com/media/50f4bf_0ba17fa3fdab48b1bc1b16a2ee3a6310~mv2.png?originWidth=832&originHeight=448)',
+            backgroundImage: 'url(https://static.wixstatic.com/media/50f4bf_9bfebb56113d4108b67a172447ef9e47~mv2.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             aspectRatio: '16 / 9',
