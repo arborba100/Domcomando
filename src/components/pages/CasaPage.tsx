@@ -22,7 +22,16 @@ const LEVEL_TO_MONEY: Record<number, number> = {
 export default function CasaPage() {
   const { level, setLevel } = usePlayerStore();
   const { removeDirtyMoney, dirtyMoney } = useDirtyMoneyStore();
-  const [backgroundImage, setBackgroundImage] = useState('https://static.wixstatic.com/media/50f4bf_33be6b8d7dcf42169f78328d168a8ec4~mv2.png');
+  
+  // Set initial background based on player level
+  const getInitialBackground = () => {
+    if (level >= 1 && level <= 9) {
+      return 'https://static.wixstatic.com/media/50f4bf_6da46d12a2a843b19809b3d11c7477c0~mv2.png';
+    }
+    return 'https://static.wixstatic.com/media/50f4bf_33be6b8d7dcf42169f78328d168a8ec4~mv2.png';
+  };
+  
+  const [backgroundImage, setBackgroundImage] = useState(getInitialBackground());
   const [inputLevel, setInputLevel] = useState(level.toString());
 
   const getMoneyForLevel = (playerLevel: number): number => {
