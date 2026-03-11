@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Image } from '@/components/ui/image';
 import { useGameStore } from '@/store/gameStore';
+import { useDirtyMoneyStore } from '@/store/dirtyMoneyStore';
 import { motion } from 'framer-motion';
 
 export const SLOT_ITEMS = [
@@ -81,6 +82,7 @@ function SpinButton() {
 // Slots Display Component - Independent
 function SlotsDisplay() {
   const { dirtMoney, multiplier, setDirtMoney, setMultiplier, addDirtMoney } = useGameStore();
+  const { addDirtyMoney } = useDirtyMoneyStore();
   const [slots, setSlots] = useState<number[]>([0, 1, 2]);
   const [spinningIndices, setSpinningIndices] = useState<boolean[]>([false, false, false]);
   const [resultMessage, setResultMessage] = useState('');
@@ -134,10 +136,12 @@ function SlotsDisplay() {
           } else if (slotIds[0] === 'pistol') {
             const bonus = 1000 * multiplierValue;
             addDirtMoney(bonus);
+            addDirtyMoney(bonus);
             setResultMessage(`🔫 BÔNUS! +R$ ${bonus}`);
           } else if (slotIds[0] === 'bank') {
             const bonus = 500;
             addDirtMoney(bonus);
+            addDirtyMoney(bonus);
             setResultMessage(`🏢 BÔNUS! +R$ ${bonus}`);
           }
         } else {
@@ -146,6 +150,7 @@ function SlotsDisplay() {
           if (moneyCount > 0) {
             const earned = 100 * multiplierValue * moneyCount;
             addDirtMoney(earned);
+            addDirtyMoney(earned);
             setResultMessage(`💰 Ganhou R$ ${earned}`);
           } else {
             setResultMessage('Nenhum prêmio');
