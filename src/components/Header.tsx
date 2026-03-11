@@ -116,25 +116,10 @@ export default function Header() {
         {/* Left Area - Logo */}
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Crown className="w-8 h-8 text-logo-gradient-start" style={{
-              filter: 'drop-shadow(0 0 10px rgba(255,69,0,0.6))'
-            }} />
+
           </div>
           <div className="flex flex-col">
-            <h1 className="font-heading text-2xl md:text-3xl font-black tracking-[2px] uppercase" style={{
-              background: 'linear-gradient(to right, #FF4500, #FF0000)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 0 15px rgba(255,69,0,0.7))',
-              textShadow: '0 0 20px rgba(255,69,0,0.5)'
-            }}>
-              DOMÍNIO DO COMANDO
-            </h1>
-            <p className="font-heading text-sm md:text-base font-bold tracking-[2px] uppercase text-subtitle-neon-blue" style={{
-              filter: 'drop-shadow(0 0 10px rgba(0,234,255,0.7))'
-            }}>
-              GIRO NO ASFALTO
-            </p>
+
           </div>
         </div>
 
@@ -177,34 +162,7 @@ export default function Header() {
           <div className="flex flex-col items-start gap-1">
             {/* Main Player Name */}
             <div className="flex items-center gap-2">
-              {isEditingName ? (
-                <input
-                  type="text"
-                  value={tempName}
-                  onChange={(e) => setTempName(e.target.value)}
-                  onBlur={handleNameSave}
-                  onKeyDown={handleNameKeyPress}
-                  className="bg-subtitle-neon-blue/10 border-2 border-subtitle-neon-blue text-subtitle-neon-blue font-paragraph text-sm md:text-base font-medium tracking-wider outline-none px-3 py-1 rounded transition-all duration-300"
-                  style={{
-                    textShadow: '0 0 8px rgba(0,234,255,0.6)'
-                  }}
-                  autoFocus
-                  maxLength={30}
-                  placeholder="Digite o nome..."
-                />
-              ) : (
-                <button
-                  onClick={handleNameClick}
-                  className="px-3 py-1 rounded border-2 border-subtitle-neon-blue text-subtitle-neon-blue font-paragraph text-sm md:text-base font-medium tracking-wider hover:bg-subtitle-neon-blue/20 hover:brightness-150 transition-all duration-300 group flex items-center gap-2 cursor-pointer active:bg-subtitle-neon-blue/30"
-                  style={{
-                    textShadow: '0 0 8px rgba(0,234,255,0.6)'
-                  }}
-                  title="Clique para editar o nome"
-                >
-                  {playerName}
-                  <span className="text-xs opacity-60 group-hover:opacity-100 transition-opacity">✎</span>
-                </button>
-              )}
+
             </div>
 
             {/* Custom Player Name */}
@@ -237,21 +195,7 @@ export default function Header() {
               )}
             </div>
           </div>
-
           {/* Clean Money Vault */}
-          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-subtitle-neon-blue/20 to-subtitle-neon-blue/10 rounded-lg border-2 border-subtitle-neon-blue" style={{
-            filter: 'drop-shadow(0 0 10px rgba(0,234,255,0.5))'
-          }}>
-            <Vault className="w-6 h-6 text-subtitle-neon-blue" style={{
-              filter: 'drop-shadow(0 0 8px rgba(0,234,255,0.8))'
-            }} />
-            <div className="flex flex-col">
-              <span className="text-xs text-subtitle-neon-blue font-heading">COFRE LIMPO</span>
-              <span className="text-lg font-bold text-white font-heading">R$ {(100000000).toLocaleString('pt-BR')}</span>
-            </div>
-          </div>
-
-          {/* Dirty Money Vault - Updated from Giro no Asfalto */}
           <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-logo-gradient-start/20 to-logo-gradient-end/20 rounded-lg border-2 border-logo-gradient-start" style={{
             filter: 'drop-shadow(0 0 10px rgba(255,69,0,0.5))'
           }}>
@@ -263,8 +207,20 @@ export default function Header() {
               <span className="text-lg font-bold text-white font-heading">R$ {dirtyMoney.toLocaleString('pt-BR')}</span>
             </div>
           </div>
-
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-subtitle-neon-blue/20 to-subtitle-neon-blue/10 rounded-lg border-2 border-subtitle-neon-blue" style={{
+            filter: 'drop-shadow(0 0 10px rgba(0,234,255,0.5))'
+          }}>
+            <Vault className="w-6 h-6 text-subtitle-neon-blue" style={{
+              filter: 'drop-shadow(0 0 8px rgba(0,234,255,0.8))'
+            }} />
+            <div className="flex flex-col">
+              <span className="text-xs text-subtitle-neon-blue font-heading">COFRE LIMPO</span>
+              <span className="text-lg font-bold text-white font-heading">R$ {(100000000).toLocaleString('pt-BR')}</span>
+            </div>
+          </div>
+          {/* Dirty Money Vault - Updated from Giro no Asfalto */}
           {/* Level Display */}
+
           <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-logo-gradient-start/20 to-logo-gradient-end/20 rounded-lg border-2 border-logo-gradient-start" style={{
             filter: 'drop-shadow(0 0 10px rgba(255,69,0,0.5))'
           }}>
@@ -276,18 +232,7 @@ export default function Header() {
               <span className="text-lg font-bold text-white font-heading">{level}/100</span>
             </div>
           </div>
-
           {/* Dirty Money Display */}
-          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-logo-gradient-start/20 to-logo-gradient-end/20 rounded-lg border-2 border-logo-gradient-start" style={{
-            filter: 'drop-shadow(0 0 10px rgba(255,69,0,0.5))'
-          }}>
-            <span className="text-2xl">💰</span>
-            <div className="flex flex-col">
-              <span className="text-xs text-logo-gradient-start font-heading">DINHEIRO SUJO</span>
-              <span className="text-lg font-bold text-white font-heading">R$ {dirtMoney.toLocaleString('pt-BR')}</span>
-            </div>
-          </div>
-
           {/* Icons */}
           <div className="flex items-center gap-4">
             <button
