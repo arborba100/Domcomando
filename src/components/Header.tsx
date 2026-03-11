@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Settings, Crown, Vault } from 'lucide-react';
+import { Bell, Settings, Crown, Vault, Zap } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { useGameStore } from '@/store/gameStore';
+import { usePlayerStore } from '@/store/playerStore';
 
 export default function Header() {
   const { dirtMoney } = useGameStore();
-  const [playerName, setPlayerName] = useState('');
+  const { playerName, level, setPlayerName, setLevel } = usePlayerStore();
   const [customPlayerName, setCustomPlayerName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('https://static.wixstatic.com/media/50f4bf_a888df3d639f415b853110e459edba8c~mv2.png?originWidth=128&originHeight=128');
   const [isEditingName, setIsEditingName] = useState(false);
@@ -22,8 +23,6 @@ export default function Header() {
     
     if (savedName) {
       setPlayerName(savedName);
-    } else {
-      setPlayerName('COMANDANTE');
     }
     
     if (savedCustomName) {
@@ -33,7 +32,7 @@ export default function Header() {
     if (savedAvatar) {
       setAvatarUrl(savedAvatar);
     }
-  }, []);
+  }, [setPlayerName]);
 
   // Handle avatar click to open file picker
   const handleAvatarClick = () => {
@@ -62,8 +61,9 @@ export default function Header() {
 
   const handleNameSave = () => {
     if (tempName.trim()) {
-      setPlayerName(tempName.trim().toUpperCase());
-      localStorage.setItem('playerName', tempName.trim().toUpperCase());
+      const newName = tempName.trim().toUpperCase();
+      setPlayerName(newName);
+      localStorage.setItem('playerName', newName);
     }
     setIsEditingName(false);
   };
@@ -219,6 +219,19 @@ export default function Header() {
             <div className="flex flex-col">
               <span className="text-xs text-subtitle-neon-blue font-heading">COFRE LIMPO</span>
               <span className="text-lg font-bold text-white font-heading">R$ {(100000000).toLocaleString('pt-BR')}</span>
+            </div>
+          </div>
+
+          {/* Level Display */}
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-logo-gradient-start/20 to-logo-gradient-end/20 rounded-lg border-2 border-logo-gradient-start" style={{
+            filter: 'drop-shadow(0 0 10px rgba(255,69,0,0.5))'
+          }}>
+            <Zap className="w-6 h-6 text-logo-gradient-start" style={{
+              filter: 'drop-shadow(0 0 8px rgba(255,69,0,0.8))'
+            }} />
+            <div className="flex flex-col">
+              <span className="text-xs text-logo-gradient-start font-heading">NÍVEL</span>
+              <span className="text-lg font-bold text-white font-heading">{level}/100</span>
             </div>
           </div>
 

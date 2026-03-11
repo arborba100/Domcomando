@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Crown, Bell, Settings, Edit2, Check, ShieldAlert, X } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import PositioningCanvas from '@/components/PositioningCanvas';
+import LoginModal from '@/components/LoginModal';
+import { usePlayerStore } from '@/store/playerStore';
 
 // --- Types & Interfaces ---
 interface PlayerData {
@@ -32,12 +34,13 @@ interface ContainerElement {
 
 const GameHeader: React.FC = () => {
   // State
+  const { playerId, playerName, level } = usePlayerStore();
   const [avatarUrl, setAvatarUrl] = useState<string>(DEFAULT_AVATAR);
-  const [playerName, setPlayerName] = useState<string>(DEFAULT_NAME);
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const [showInspector, setShowInspector] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [containers, setContainers] = useState<Record<string, ContainerElement>>({
     left: { id: 'left', position: { x: 0, y: 0 }, isDragging: false },
     center: { id: 'center', position: { x: 0, y: 0 }, isDragging: false },
@@ -55,11 +58,15 @@ const GameHeader: React.FC = () => {
   useEffect(() => {
     setIsMounted(true);
     const savedAvatar = localStorage.getItem(STORAGE_KEY_AVATAR);
-    const savedName = localStorage.getItem(STORAGE_KEY_NAME);
+    const savedPlayerId = localStorage.getItem('playerId');
 
     if (savedAvatar) setAvatarUrl(savedAvatar);
-    if (savedName) setPlayerName(savedName);
-  }, []);
+    
+    // Show login modal if no player ID exists
+    if (!savedPlayerId && !playerId) {
+      setShowLoginModal(true);
+    }
+  }, [playerId]);
 
   // Focus input when editing starts
   useEffect(() => {
@@ -99,8 +106,7 @@ const GameHeader: React.FC = () => {
 
   const saveName = () => {
     const finalName = tempName.trim() || DEFAULT_NAME;
-    setPlayerName(finalName);
-    localStorage.setItem(STORAGE_KEY_NAME, finalName);
+    // Update store through playerStore if needed
     setIsEditingName(false);
   };
 
@@ -175,6 +181,15 @@ const GameHeader: React.FC = () => {
 
   // Prevent hydration mismatch rendering
   if (!isMounted) return null;
+
+  // Show login modal if not authenticated
+  if (!playerId) {
+    return (
+      <div className="min-h-screen bg-[#0a0d14] text-white overflow-x-hidden font-paragraph selection:bg-[#00eaff] selection:text-black flex items-center justify-center">
+        <LoginModal isOpen={true} onClose={() => {}} />
+      </div>
+    );
+  }
 
   return (
     <header 
