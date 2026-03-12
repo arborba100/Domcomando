@@ -47,6 +47,12 @@ export default function Footer() {
               <Link to="/" className="font-paragraph text-sm text-slate-400 hover:text-secondary transition-colors duration-300">
                 Início
               </Link>
+              <Link to="/about" className="font-paragraph text-sm text-slate-400 hover:text-secondary transition-colors duration-300">
+                Sobre
+              </Link>
+              <Link to="/contact" className="font-paragraph text-sm text-slate-400 hover:text-secondary transition-colors duration-300">
+                Contato
+              </Link>
               <Link to="/giro-no-asfalto" className="font-paragraph text-sm text-slate-400 hover:text-secondary transition-colors duration-300">
                 Giro no Asfalto
               </Link>

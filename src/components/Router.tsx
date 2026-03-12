@@ -14,6 +14,8 @@ const Luxo1Page = lazy(() => import('@/components/pages/Luxo1Page'));
 const GamePage = lazy(() => import('@/components/pages/GamePage'));
 const CasaPage = lazy(() => import('@/components/pages/CasaPage'));
 const BarracoPage = lazy(() => import('@/components/pages/BarracoPage'));
+const AboutPage = lazy(() => import('@/components/pages/AboutPage'));
+const ContactPage = lazy(() => import('@/components/pages/ContactPage'));
 
 // Fallback component for lazy loading
 function PageLoader() {
@@ -116,6 +118,28 @@ const router = createBrowserRouter([
         ),
         routeMetadata: {
           pageIdentifier: 'barraco',
+        },
+      },
+      {
+        path: "about",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AboutPage />
+          </Suspense>
+        ),
+        routeMetadata: {
+          pageIdentifier: 'about',
+        },
+      },
+      {
+        path: "contact",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ContactPage />
+          </Suspense>
+        ),
+        routeMetadata: {
+          pageIdentifier: 'contact',
         },
       },
       {
