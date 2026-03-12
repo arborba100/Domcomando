@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
 import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
 import { usePlayerStore } from '@/store/playerStore';
+import RoyalGreeting from '@/components/RoyalGreeting';
 
 const BARRACO_LEVELS = [
   { level: 10, milestone: 'Casa de Alvenaria' },
@@ -29,6 +30,7 @@ export default function BarracoPage() {
   const [evolving, setEvolving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [allItemsAtLevel, setAllItemsAtLevel] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(false);
   const { cleanMoney, removeCleanMoney } = useCleanMoneyStore();
   const { setLevel } = usePlayerStore();
 
@@ -212,6 +214,12 @@ export default function BarracoPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
+      {showGreeting && (
+        <RoyalGreeting
+          playerName={player?.playerName || 'Rei do Comando'}
+          onComplete={() => setShowGreeting(false)}
+        />
+      )}
       <Header />
       
       <main className="max-w-[100rem] mx-auto px-4 py-12">
@@ -347,9 +355,14 @@ export default function BarracoPage() {
               </motion.button>
 
               {currentLevel === 100 && (
-                <div className="bg-green-500/20 border border-green-500 rounded-lg p-4 text-green-200 text-center">
-                  🎉 Parabéns! Seu Barraco atingiu o nível máximo!
-                </div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowGreeting(true)}
+                  className="w-full py-4 px-6 rounded-lg font-heading text-xl font-bold bg-gradient-to-r from-primary to-logo-gradient-end text-white hover:shadow-lg hover:shadow-primary/50 cursor-pointer transition-all"
+                >
+                  👑 HOMENAGEM REAL
+                </motion.button>
               )}
             </motion.div>
           </div>
