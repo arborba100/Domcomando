@@ -108,7 +108,7 @@ export default function BarracoPage() {
   const getBarracoImage = (level: number): string => {
     // Return the Mansão Blindada com Heliporto image for level 90 and above
     if (level >= 90) {
-      return 'https://static.wixstatic.com/media/50f4bf_9a18bd1b13464df3a7e0856c3dfd1503~mv2.png?originWidth=448&originHeight=448';
+      return 'https://static.wixstatic.com/media/50f4bf_dacc94520dfa449384a529f15de074f6~mv2.png';
     }
     // Return the Mansão Luxuosa Blindada image for level 80 and above
     if (level >= 80) {
