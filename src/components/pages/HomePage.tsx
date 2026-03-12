@@ -456,15 +456,23 @@ const GameHeader: React.FC = () => {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#0a0d14] text-white overflow-x-hidden font-paragraph selection:bg-[#00eaff] selection:text-black">
+    <div className="min-h-screen text-white overflow-x-hidden font-paragraph selection:bg-[#00eaff] selection:text-black" style={{
+      backgroundImage: 'url(https://static.wixstatic.com/media/50f4bf_1e5ca7c3774d48e6b010a1a723fd4c9f~mv2.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed'
+    }}>
 
       <GameHeader />
 
       {/* Main content area - Kept minimal as requested, acting as a canvas to showcase the header */}
       <main className="pt-[110px] relative min-h-screen flex flex-col items-center justify-center">
 
-        {/* Atmospheric Background Elements */}
+        {/* Atmospheric Background Elements with Dark Overlay */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* Dark overlay to enhance readability over background image */}
+          <div className="absolute inset-0 bg-black/40" />
+          
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#FF4500]/5 rounded-full blur-[120px]" />
           <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#00eaff]/5 rounded-full blur-[150px]" />
 
