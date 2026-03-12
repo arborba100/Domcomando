@@ -58,15 +58,14 @@ export default function HomePage() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-[#0a0d14] relative" style={{
-      aspectRatio: '9/16',
+    <div className="w-full min-h-screen overflow-hidden bg-[#0a0d14] relative flex flex-col" style={{
       backgroundImage: 'url(https://static.wixstatic.com/media/50f4bf_1e5ca7c3774d48e6b010a1a723fd4c9f~mv2.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed'
     }}>
-      {/* Logo Section - First 1/4 of screen */}
-      <div className="w-full h-1/4 flex items-center justify-center bg-gradient-to-b from-black/40 to-transparent">
+      {/* Logo Section */}
+      <div className="w-full flex-shrink-0 py-8 flex items-center justify-center bg-gradient-to-b from-black/40 to-transparent">
         <button
           onClick={handleAnonymousLogin}
           className="hover:scale-110 transition-transform duration-300 cursor-pointer"
@@ -81,8 +80,8 @@ export default function HomePage() {
           />
         </button>
       </div>
-      {/* Login Section - Center of screen */}
-      <div className="w-full flex-1 flex flex-col items-center justify-center gap-8 px-6">
+      {/* Login Section */}
+      <div className="w-full flex-1 flex flex-col items-center justify-center gap-8 px-6 pb-8">
         <div className="text-center mb-4">
           <button
             onClick={handleAnonymousLogin}
