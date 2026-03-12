@@ -116,7 +116,7 @@ export default function BarracoPage() {
     }
     // Return the Mansão do Complexo image for level 70 and above
     if (level >= 70) {
-      return 'https://static.wixstatic.com/media/50f4bf_8797a0e1e94d4b7181666592a4878ce4~mv2.png?originWidth=448&originHeight=448';
+      return 'https://static.wixstatic.com/media/50f4bf_9b7bbc6679924b529acd7428f28e817d~mv2.png';
     }
     // Return the Triplex com piscina borda infinita no rooftop image for level 60 and above
     if (level >= 60) {
