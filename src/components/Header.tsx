@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Settings, Crown, Vault, Zap } from 'lucide-react';
+import { Bell, Settings, Crown, Vault, Zap, User } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { useGameStore } from '@/store/gameStore';
 import { useDirtyMoneyStore } from '@/store/dirtyMoneyStore';
@@ -26,6 +26,7 @@ export default function Header() {
   const [tempCustomName, setTempCustomName] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load saved data from localStorage on mount
@@ -273,6 +274,42 @@ export default function Header() {
           {/* Dirty Money Display */}
           {/* Icons */}
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="text-white hover:text-subtitle-neon-blue transition-all duration-300 hover:brightness-150 relative"
+              style={{
+                filter: 'drop-shadow(0 0 8px rgba(0,234,255,0.6))'
+              }}
+              aria-label="Menu do Perfil"
+            >
+              <User className="w-5 h-5" />
+              {showProfileMenu && (
+                <div className="absolute top-full right-0 mt-2 w-64 bg-black/95 border border-subtitle-neon-blue/50 rounded-lg p-4 shadow-lg z-50">
+                  <h3 className="text-subtitle-neon-blue font-heading text-sm mb-3">Perfil</h3>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        setIsEditingName(true);
+                        setTempName(playerName);
+                        setShowProfileMenu(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-white/70 hover:text-white hover:bg-subtitle-neon-blue/10 rounded font-paragraph text-sm transition-all"
+                    >
+                      Editar Nome
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleAvatarClick();
+                        setShowProfileMenu(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-white/70 hover:text-white hover:bg-subtitle-neon-blue/10 rounded font-paragraph text-sm transition-all"
+                    >
+                      Alterar Avatar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </button>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
               className="text-white hover:text-subtitle-neon-blue transition-all duration-300 hover:brightness-150 relative"
