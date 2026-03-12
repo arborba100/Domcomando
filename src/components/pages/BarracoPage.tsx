@@ -112,7 +112,7 @@ export default function BarracoPage() {
     }
     // Return the Mansão Luxuosa Blindada image for level 80 and above
     if (level >= 80) {
-      return 'https://static.wixstatic.com/media/50f4bf_9b749cd978d74f76ad6764633089158b~mv2.png?originWidth=448&originHeight=448';
+      return 'https://static.wixstatic.com/media/50f4bf_b57bffd9299941ae84ea8d7589a9eda8~mv2.png';
     }
     // Return the Mansão do Complexo image for level 70 and above
     if (level >= 70) {
