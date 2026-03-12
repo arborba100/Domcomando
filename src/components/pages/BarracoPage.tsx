@@ -108,15 +108,15 @@ export default function BarracoPage() {
   const getBarracoImage = (level: number): string => {
     // Return the Mansão Blindada com Heliporto image for level 90 and above
     if (level >= 90) {
-      return 'https://static.wixstatic.com/media/50f4bf_da783ae93ec64132b05ae2a62020e090~mv2.png';
+      return 'https://static.wixstatic.com/media/50f4bf_9a18bd1b13464df3a7e0856c3dfd1503~mv2.png?originWidth=448&originHeight=448';
     }
     // Return the Mansão Luxuosa Blindada image for level 80 and above
     if (level >= 80) {
-      return 'https://static.wixstatic.com/media/50f4bf_8a605af9fc4646fd84c89e99c6acc4eb~mv2.png';
+      return 'https://static.wixstatic.com/media/50f4bf_9b749cd978d74f76ad6764633089158b~mv2.png?originWidth=448&originHeight=448';
     }
     // Return the Mansão do Complexo image for level 70 and above
     if (level >= 70) {
-      return 'https://static.wixstatic.com/media/50f4bf_60326f5e19084778be4c62694502ce72~mv2.png';
+      return 'https://static.wixstatic.com/media/50f4bf_8797a0e1e94d4b7181666592a4878ce4~mv2.png?originWidth=448&originHeight=448';
     }
     // Return the Triplex com piscina borda infinita no rooftop image for level 60 and above
     if (level >= 60) {
