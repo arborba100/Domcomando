@@ -157,6 +157,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[60%] max-w-4xl"
+            onClick={(e) => e.stopPropagation()}
           >
             <div
               className="relative bg-transparent p-8"
@@ -166,8 +167,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             >
               {/* Close Button */}
               <button
-                onClick={onClose}
-                className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+                className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors z-50 p-2 rounded hover:bg-white/10 cursor-pointer"
+                type="button"
+                aria-label="Fechar modal"
               >
                 <X className="w-6 h-6" />
               </button>
