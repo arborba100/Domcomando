@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
 import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
+import { usePlayerStore } from '@/store/playerStore';
 
 const BARRACO_LEVELS = [
   { level: 10, milestone: 'Casa de Alvenaria' },
@@ -29,6 +30,7 @@ export default function BarracoPage() {
   const [error, setError] = useState<string | null>(null);
   const [allItemsAtLevel, setAllItemsAtLevel] = useState(false);
   const { cleanMoney, removeCleanMoney } = useCleanMoneyStore();
+  const { setLevel } = usePlayerStore();
 
   // Get player ID from localStorage or URL
   const getPlayerId = () => {
@@ -61,6 +63,11 @@ export default function BarracoPage() {
 
       const playerData = await BaseCrudService.getById<Players>('players', playerId);
       setPlayer(playerData);
+      
+      // Update the player store with the level from database
+      if (playerData?.level) {
+        setLevel(playerData.level);
+      }
       
       // Check if all items are at the same level
       checkAllItemsAtLevel(playerData?.level || 1);
