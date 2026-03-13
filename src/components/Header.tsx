@@ -21,6 +21,8 @@ export default function Header() {
 
   // Load saved data from localStorage
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const savedName = localStorage.getItem('playerName');
     const savedCustomName = localStorage.getItem('customPlayerName');
     const savedAvatar = localStorage.getItem('playerAvatar');
@@ -36,7 +38,7 @@ export default function Header() {
     if (savedAvatar) {
       setAvatarUrl(savedAvatar);
     }
-  }, []);
+  }, [setPlayerName]);
 
   // Handle avatar click to open file picker
   const handleAvatarClick = () => {

@@ -8,15 +8,22 @@ export default function OnlinePlayersList() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchOnlinePlayers = async () => {
       try {
+        if (!isMounted) return;
         setIsLoading(true);
         const players = await playerService.getOnlinePlayers();
-        setOnlinePlayers(players);
+        if (isMounted) {
+          setOnlinePlayers(players);
+        }
       } catch (error) {
         console.error('Error fetching online players:', error);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -24,7 +31,10 @@ export default function OnlinePlayersList() {
 
     // Refresh every 10 seconds
     const interval = setInterval(fetchOnlinePlayers, 10000);
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   if (isLoading) {

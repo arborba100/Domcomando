@@ -41,17 +41,22 @@ export default function GamePage() {
 
   // Update player status when component mounts
   useEffect(() => {
+    let isMounted = true;
+
     if (isAuthenticated && member?.loginEmail) {
       const playerName = member.contact?.firstName || member.profile?.nickname || 'Player';
       const nickname = member.profile?.nickname || member.contact?.firstName || 'Anonymous';
       
       playerService.registerPlayer(member.loginEmail, playerName, nickname).catch(error => {
-        console.error('Error registering player:', error);
+        if (isMounted) {
+          console.error('Error registering player:', error);
+        }
       });
     }
 
     // Cleanup: mark player as offline when leaving
     return () => {
+      isMounted = false;
       if (isAuthenticated && member?.loginEmail) {
         playerService.setPlayerOffline(member.loginEmail).catch(error => {
           console.error('Error setting player offline:', error);
