@@ -7,6 +7,7 @@ import GiroNoAsfaltoPage from '@/components/pages/GiroNoAsfaltoPage';
 import LuxuryShowroomPage from '@/components/pages/LuxuryShowroomPage';
 import Luxo1Page from '@/components/pages/Luxo1Page';
 import Luxo2Page from '@/components/pages/Luxo2Page';
+import Luxo3Page from '@/components/pages/Luxo3Page';
 import GamePage from '@/components/pages/GamePage';
 import CasaPage from '@/components/pages/CasaPage';
 import BarracoPage from '@/components/pages/BarracoPage';
@@ -62,6 +63,13 @@ const router = createBrowserRouter([
         element: <Luxo2Page />,
         routeMetadata: {
           pageIdentifier: 'luxo-2',
+        },
+      },
+      {
+        path: "luxo-3",
+        element: <Luxo3Page />,
+        routeMetadata: {
+          pageIdentifier: 'luxo-3',
         },
       },
       {
