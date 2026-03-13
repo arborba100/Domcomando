@@ -1,31 +1,20 @@
 import { MemberProvider } from '@/integrations';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
 import { ScrollToTop } from '@/lib/scroll-to-top';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Toaster } from '@/components/ui/toaster';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
 
-// Lazy load all page components to avoid circular dependencies
-const HomePage = lazy(() => import('@/components/pages/HomePage'));
-const GiroNoAsfaltoPage = lazy(() => import('@/components/pages/GiroNoAsfaltoPage'));
-const LuxuryShowroomPage = lazy(() => import('@/components/pages/LuxuryShowroomPage'));
-const Luxo1Page = lazy(() => import('@/components/pages/Luxo1Page'));
-const GamePage = lazy(() => import('@/components/pages/GamePage'));
-const CasaPage = lazy(() => import('@/components/pages/CasaPage'));
-const BarracoPage = lazy(() => import('@/components/pages/BarracoPage'));
-const AboutPage = lazy(() => import('@/components/pages/AboutPage'));
-const ContactPage = lazy(() => import('@/components/pages/ContactPage'));
-const BriberyPage = lazy(() => import('@/components/pages/BriberyPage'));
-
-// Fallback component for lazy loading
-function PageLoader() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <LoadingSpinner />
-    </div>
-  );
-}
+// Static imports for all page components
+import HomePage from '@/components/pages/HomePage';
+import GiroNoAsfaltoPage from '@/components/pages/GiroNoAsfaltoPage';
+import LuxuryShowroomPage from '@/components/pages/LuxuryShowroomPage';
+import Luxo1Page from '@/components/pages/Luxo1Page';
+import GamePage from '@/components/pages/GamePage';
+import CasaPage from '@/components/pages/CasaPage';
+import BarracoPage from '@/components/pages/BarracoPage';
+import AboutPage from '@/components/pages/AboutPage';
+import ContactPage from '@/components/pages/ContactPage';
+import BriberyPage from '@/components/pages/BriberyPage';
 
 // Layout component that includes ScrollToTop and Toaster
 function Layout() {
@@ -46,110 +35,70 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <HomePage />
-          </Suspense>
-        ),
+        element: <HomePage />,
         routeMetadata: {
           pageIdentifier: 'home',
         },
       },
       {
         path: "giro-no-asfalto",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <GiroNoAsfaltoPage />
-          </Suspense>
-        ),
+        element: <GiroNoAsfaltoPage />,
         routeMetadata: {
           pageIdentifier: 'giro-no-asfalto',
         },
       },
       {
         path: "luxury-showroom",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <LuxuryShowroomPage />
-          </Suspense>
-        ),
+        element: <LuxuryShowroomPage />,
         routeMetadata: {
           pageIdentifier: 'luxury-showroom',
         },
       },
       {
         path: "luxo-1",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Luxo1Page />
-          </Suspense>
-        ),
+        element: <Luxo1Page />,
         routeMetadata: {
           pageIdentifier: 'luxo-1',
         },
       },
       {
         path: "game",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <GamePage />
-          </Suspense>
-        ),
+        element: <GamePage />,
         routeMetadata: {
           pageIdentifier: 'game',
         },
       },
       {
         path: "casa",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <CasaPage />
-          </Suspense>
-        ),
+        element: <CasaPage />,
         routeMetadata: {
           pageIdentifier: 'casa',
         },
       },
       {
         path: "barraco",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <BarracoPage />
-          </Suspense>
-        ),
+        element: <BarracoPage />,
         routeMetadata: {
           pageIdentifier: 'barraco',
         },
       },
       {
         path: "about",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <AboutPage />
-          </Suspense>
-        ),
+        element: <AboutPage />,
         routeMetadata: {
           pageIdentifier: 'about',
         },
       },
       {
         path: "contact",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ContactPage />
-          </Suspense>
-        ),
+        element: <ContactPage />,
         routeMetadata: {
           pageIdentifier: 'contact',
         },
       },
       {
         path: "bribery",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <BriberyPage />
-          </Suspense>
-        ),
+        element: <BriberyPage />,
         routeMetadata: {
           pageIdentifier: 'bribery',
         },
