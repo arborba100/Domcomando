@@ -59,7 +59,7 @@ export default function Luxo4Page() {
       <div className="relative w-full flex-1 overflow-hidden">
         {/* Background Image */}
         <Image
-          src="https://static.wixstatic.com/media/50f4bf_7d8907b7077048ed9ad8fe121f50dd93~mv2.png"
+          src="https://static.wixstatic.com/media/50f4bf_21d74b3f92084570b4639f2e1ce6f394~mv2.png"
           alt="Luxo 4 Background"
           className="absolute inset-0 w-full h-full object-cover"
           width={1920}
