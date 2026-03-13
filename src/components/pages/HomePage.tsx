@@ -6,7 +6,6 @@ import { Image } from '@/components/ui/image';
 import { useMember } from '@/integrations';
 import { useGameStore } from '@/store/gameStore';
 import { usePlayerStore } from '@/store/playerStore';
-import { useBackgroundImage } from '@/config/backgroundImages';
 import { motion } from 'framer-motion';
 import { Chrome, Crosshair, Facebook, RotateCcw, ShieldAlert, Terminal, UserCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -20,7 +19,6 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { playerLevel, setPlayerLevel } = useGameStore();
   const { setLevel } = usePlayerStore();
-  const { backgroundImage } = useBackgroundImage('home');
 
   useEffect(() => {
     const updateTime = () => {
@@ -55,15 +53,7 @@ export default function HomePage() {
   };
 
   return (
-    <div 
-      className="min-h-screen relative overflow-clip selection:bg-primary selection:text-primary-foreground"
-      style={{
-        backgroundImage: `url('${backgroundImage}')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div className="min-h-screen relative bg-background overflow-clip selection:bg-primary selection:text-primary-foreground">
       <style>
         {`
           .crt-scanlines {

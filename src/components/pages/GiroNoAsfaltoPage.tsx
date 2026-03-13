@@ -5,13 +5,11 @@ import { Image } from '@/components/ui/image';
 import SlotMachine from '@/components/SlotMachine';
 import DraggableContainer from '@/components/DraggableContainer';
 import { useDraggableContainers } from '@/hooks/useDraggableContainers';
-import { useBackgroundImage } from '@/config/backgroundImages';
 import { RotateCcw } from 'lucide-react';
 
 export default function GiroNoAsfaltoPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
-  const { backgroundImage } = useBackgroundImage('giroNoAsfalto');
 
   const { containers, removeContainer, toggleContainer, resetPositions } = useDraggableContainers([
     { id: 'header', title: 'Header', isVisible: true },
@@ -35,15 +33,7 @@ export default function GiroNoAsfaltoPage() {
   };
 
   return (
-    <div 
-      className="min-h-screen flex flex-col relative"
-      style={{
-        backgroundImage: `url('${backgroundImage}')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div className="min-h-screen bg-[#0a0d14] flex flex-col relative">
 
 
       {/* Edit Title Modal */}

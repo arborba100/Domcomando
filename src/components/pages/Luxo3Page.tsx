@@ -2,20 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import { useGameStore } from '@/store/gameStore';
-import { usePlayerStore } from '@/store/playerStore';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useBackgroundImage } from '@/config/backgroundImages';
 
 export default function Luxo3Page() {
   const [showPaymentAnimation, setShowPaymentAnimation] = useState(false);
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [isEditingLevel, setIsEditingLevel] = useState(false);
   const [editLevelValue, setEditLevelValue] = useState('');
-  const playerName = usePlayerStore((state) => state.playerName);
+  const playerName = useGameStore((state) => state.playerName);
   const playerLevel = useGameStore((state) => state.playerLevel);
   const setPlayerLevel = useGameStore((state) => state.setPlayerLevel);
-  const { backgroundImage } = useBackgroundImage('luxo3');
 
   // Calculate price: (167.00 * 1.1) + 2 = 185.70
   const luxo3Price = 185.70;
@@ -58,22 +55,23 @@ export default function Luxo3Page() {
   };
 
   return (
-    <div 
-      className="flex flex-col min-h-screen"
-      style={{
-        backgroundImage: `url('${backgroundImage}')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div className="flex flex-col min-h-screen">
       <Header />
       <div className="relative w-full flex-1 overflow-hidden">
+        {/* Background Image */}
+        <Image
+          src="https://static.wixstatic.com/media/50f4bf_6076c7c6b44b48e3b734df2f4d9cbaf2~mv2.png?originWidth=1920&originHeight=1024"
+          alt="Luxo 3 Background"
+          className="absolute inset-0 w-full h-full object-cover"
+          width={1920}
+          height={1080}
+        />
+
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/30" />
 
         {/* Content */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center px-4 py-8">
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

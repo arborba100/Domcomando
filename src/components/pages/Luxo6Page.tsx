@@ -2,20 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import { useGameStore } from '@/store/gameStore';
-import { usePlayerStore } from '@/store/playerStore';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useBackgroundImage } from '@/config/backgroundImages';
 
 export default function Luxo6Page() {
   const [showPaymentAnimation, setShowPaymentAnimation] = useState(false);
   const [paymentComplete, setPaymentComplete] = useState(false);
   const [isEditingLevel, setIsEditingLevel] = useState(false);
   const [editLevelValue, setEditLevelValue] = useState('');
-  const playerName = usePlayerStore((state) => state.playerName);
+  const playerName = useGameStore((state) => state.playerName);
   const playerLevel = useGameStore((state) => state.playerLevel);
   const setPlayerLevel = useGameStore((state) => state.setPlayerLevel);
-  const { backgroundImage } = useBackgroundImage('luxo6');
 
   const luxo6Price = 1535.86;
 
@@ -57,17 +54,18 @@ export default function Luxo6Page() {
   };
 
   return (
-    <div 
-      className="flex flex-col min-h-screen"
-      style={{
-        backgroundImage: `url('${backgroundImage}')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div className="flex flex-col min-h-screen">
       <Header />
       <div className="relative w-full flex-1 overflow-hidden">
+        {/* Background Image */}
+        <Image
+          src="https://static.wixstatic.com/media/50f4bf_7d8907b7077048ed9ad8fe121f50dd93~mv2.png"
+          alt="Luxo 6 Background"
+          className="absolute inset-0 w-full h-full object-cover"
+          width={1920}
+          height={1080}
+        />
+
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/30" />
 
