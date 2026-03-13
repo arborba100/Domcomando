@@ -53,8 +53,23 @@ export default function HomePage() {
         isGuest = false;
       }
 
-      // Create player in database
-      await BaseCrudService.create('players', {
+      // Update store immediately for instant UI feedback
+      setPlayerId(playerId);
+      setPlayerName(displayName);
+      setLevel(1);
+      setProgress(0);
+      setIsGuest(isGuest);
+
+      // Save to localStorage immediately
+      localStorage.setItem('playerId', playerId);
+      localStorage.setItem('playerName', displayName);
+      localStorage.setItem('isGuest', isGuest.toString());
+
+      // Navigate immediately - don't wait for database
+      navigate('/game');
+
+      // Create player in database in background
+      BaseCrudService.create('players', {
         _id: playerId,
         playerName: displayName,
         level: 1,
@@ -63,26 +78,12 @@ export default function HomePage() {
         externalPlayerId: loginType !== 'guest' ? playerId : null,
         lastUpdated: new Date().toISOString(),
         profilePicture: null,
+      }).catch((err) => {
+        console.error('Error saving player to database:', err);
       });
-
-      // Update store
-      setPlayerId(playerId);
-      setPlayerName(displayName);
-      setLevel(1);
-      setProgress(0);
-      setIsGuest(isGuest);
-
-      // Save to localStorage
-      localStorage.setItem('playerId', playerId);
-      localStorage.setItem('playerName', displayName);
-      localStorage.setItem('isGuest', isGuest.toString());
-
-      // Navigate to game
-      navigate('/game');
     } catch (err) {
       setError('Erro ao fazer login. Tente novamente.');
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
