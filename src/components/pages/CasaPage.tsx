@@ -104,16 +104,16 @@ export default function CasaPage() {
       }}
     >
       <Header />
-      <div className="w-full flex justify-center items-center gap-4 pt-32">
+      <div className="w-full flex flex-col md:flex-row justify-center items-center gap-3 md:gap-4 pt-24 md:pt-32 px-3 md:px-4">
         <Input
           type="number"
           value={inputLevel}
           onChange={handleLevelChange}
           placeholder="Nível"
-          className="w-24 px-4 py-2 text-lg text-center"
+          className="w-20 md:w-24 px-3 md:px-4 py-2 text-base md:text-lg text-center"
           min="0"
         />
-        <Button onClick={handleButtonClick} className="px-8 py-3 text-lg">
+        <Button onClick={handleButtonClick} className="px-6 md:px-8 py-2 md:py-3 text-base md:text-lg">
           Clique aqui
         </Button>
       </div>

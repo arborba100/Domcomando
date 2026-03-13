@@ -38,26 +38,26 @@ export default function GiroNoAsfaltoPage() {
 
       {/* Edit Title Modal */}
       {editingId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[101] backdrop-blur-sm">
-          <div className="bg-black border border-[#00eaff]/50 rounded p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-heading text-white mb-4">Edit Container Title</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[101] backdrop-blur-sm px-3 md:px-4">
+          <div className="bg-black border border-[#00eaff]/50 rounded p-4 md:p-6 max-w-sm w-full">
+            <h3 className="text-base md:text-lg font-heading text-white mb-3 md:mb-4">Edit Container Title</h3>
             <input
               type="text"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
-              className="w-full bg-black/40 border border-[#00eaff]/50 rounded px-3 py-2 text-white font-paragraph mb-4 focus:outline-none focus:border-[#00eaff]"
+              className="w-full bg-black/40 border border-[#00eaff]/50 rounded px-3 py-2 text-white font-paragraph mb-3 md:mb-4 focus:outline-none focus:border-[#00eaff] text-sm md:text-base"
               autoFocus
             />
             <div className="flex gap-2">
               <button
                 onClick={handleSaveEdit}
-                className="flex-1 px-4 py-2 bg-[#00eaff]/20 hover:bg-[#00eaff]/40 border border-[#00eaff]/50 rounded text-white transition-all font-paragraph"
+                className="flex-1 px-4 py-2 bg-[#00eaff]/20 hover:bg-[#00eaff]/40 border border-[#00eaff]/50 rounded text-white transition-all font-paragraph text-sm md:text-base"
               >
                 Save
               </button>
               <button
                 onClick={() => setEditingId(null)}
-                className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded text-white transition-all font-paragraph"
+                className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded text-white transition-all font-paragraph text-sm md:text-base"
               >
                 Cancel
               </button>
@@ -91,7 +91,7 @@ export default function GiroNoAsfaltoPage() {
               className="w-full h-full object-cover fixed top-0 left-0 brightness-125 contrast-110"
             />
             {/* Slot Machine Component positioned inside the slot machine screen - TV display area */}
-            <div className="absolute inset-0 flex flex-col items-center justify-end pb-20 relative z-10">
+            <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 md:pb-20 relative z-10 px-3 md:px-4">
               <div className="bg-transparent flex items-center justify-center">
                 <SlotMachine />
               </div>
@@ -107,10 +107,10 @@ export default function GiroNoAsfaltoPage() {
             onEdit={handleEdit}
             className="w-full"
           >
-            <div className="w-full bg-gradient-to-b from-[#0f1419] to-[#0a0d14] py-16 px-6">
+            <div className="w-full bg-gradient-to-b from-[#0f1419] to-[#0a0d14] py-8 md:py-16 px-3 md:px-6">
               <div className="max-w-7xl mx-auto">
                 {/* Gallery Container */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-8 md:mb-12">
                   {/* Image 1 */}
                   <div className="flex justify-center">
                     <Image

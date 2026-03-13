@@ -68,18 +68,18 @@ export default function Luxo1Page() {
         <div className="absolute inset-0 bg-black/30" />
 
         {/* Content */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center px-4">
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-center px-3 md:px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <p className="font-paragraph text-xl md:text-2xl text-secondary mb-12">
+            <p className="font-paragraph text-base md:text-2xl text-secondary mb-6 md:mb-12">
               Adquira este item exclusivo
             </p>
 
-            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6">
               {/* Buy Button */}
               {/* Player Level Box */}
               <motion.button
@@ -87,7 +87,7 @@ export default function Luxo1Page() {
                 whileTap={{ scale: 0.95 }}
                 onClick={handleBuyClick}
                 disabled={showPaymentAnimation}
-                className="px-8 py-4 bg-primary hover:bg-orange-600 text-white font-heading text-xl md:text-2xl rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 md:px-8 py-3 md:py-4 bg-primary hover:bg-orange-600 text-white font-heading text-base md:text-2xl rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Comprar por R$150,00
               </motion.button>
@@ -96,14 +96,14 @@ export default function Luxo1Page() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="px-6 py-4 bg-gradient-to-br from-secondary/20 to-secondary/10 border-2 border-secondary rounded-lg backdrop-blur-sm cursor-pointer hover:border-secondary/80 transition-colors"
+                className="px-4 md:px-6 py-3 md:py-4 bg-gradient-to-br from-secondary/20 to-secondary/10 border-2 border-secondary rounded-lg backdrop-blur-sm cursor-pointer hover:border-secondary/80 transition-colors"
                 onClick={handleEditLevel}
               >
                 <div className="flex flex-col items-center">
-                  <span className="font-paragraph text-sm text-secondary/80 uppercase tracking-wide mb-1">
+                  <span className="font-paragraph text-xs md:text-sm text-secondary/80 uppercase tracking-wide mb-1">
                     Nível do Jogador
                   </span>
-                  <span className="font-heading text-4xl text-secondary font-bold">
+                  <span className="font-heading text-3xl md:text-4xl text-secondary font-bold">
                     {playerLevel}
                   </span>
                   <span className="font-paragraph text-xs text-secondary/60 mt-2">
@@ -246,7 +246,7 @@ export default function Luxo1Page() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
+              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-3 md:px-4"
               onClick={handleCancelEdit}
             >
               <motion.div
@@ -254,30 +254,30 @@ export default function Luxo1Page() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-secondary rounded-lg p-8 max-w-sm w-full mx-4"
+                className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-secondary rounded-lg p-6 md:p-8 max-w-sm w-full"
               >
-                <h2 className="font-heading text-2xl text-secondary mb-6 text-center">
+                <h2 className="font-heading text-xl md:text-2xl text-secondary mb-4 md:mb-6 text-center">
                   Editar Nível
                 </h2>
                 <input
                   type="number"
                   value={editLevelValue}
                   onChange={(e) => setEditLevelValue(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-700 border-2 border-secondary rounded-lg text-white font-heading text-xl text-center mb-6 focus:outline-none focus:border-secondary/80"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 bg-slate-700 border-2 border-secondary rounded-lg text-white font-heading text-lg md:text-xl text-center mb-4 md:mb-6 focus:outline-none focus:border-secondary/80"
                   placeholder="Digite o novo nível"
                   autoFocus
                   min="1"
                 />
-                <div className="flex gap-4">
+                <div className="flex gap-3 md:gap-4">
                   <button
                     onClick={handleSaveLevel}
-                    className="flex-1 px-4 py-3 bg-primary hover:bg-orange-600 text-white font-heading rounded-lg transition-all"
+                    className="flex-1 px-4 py-2 md:py-3 bg-primary hover:bg-orange-600 text-white font-heading rounded-lg transition-all text-sm md:text-base"
                   >
                     Salvar
                   </button>
                   <button
                     onClick={handleCancelEdit}
-                    className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white font-heading rounded-lg transition-all border border-secondary/30"
+                    className="flex-1 px-4 py-2 md:py-3 bg-slate-700 hover:bg-slate-600 text-white font-heading rounded-lg transition-all border border-secondary/30 text-sm md:text-base"
                   >
                     Cancelar
                   </button>
