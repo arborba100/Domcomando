@@ -5,6 +5,7 @@ import { useGameStore } from '@/store/gameStore';
 import { useDirtyMoneyStore } from '@/store/dirtyMoneyStore';
 import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
 import { usePlayerStore } from '@/store/playerStore';
+import { Link } from 'react-router-dom';
 
 export default function Header() {
   const { dirtMoney } = useGameStore();
@@ -115,14 +116,19 @@ export default function Header() {
         <div className="absolute bottom-[30px] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-hud-line-blue/20 to-transparent" />
       </div>
       <div className="h-full max-w-[120rem] mx-auto px-6 flex items-center justify-between">
-        {/* Left Area - Logo */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-
-          </div>
-          <div className="flex flex-col">
-
-          </div>
+        {/* Left Area - Logo & Navigation */}
+        <div className="flex items-center gap-8">
+          <Link to="/" className="text-white hover:text-secondary transition-colors duration-300 font-heading text-lg font-bold uppercase tracking-wider">
+            DOMÍNIO
+          </Link>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link to="/projects" className="text-foreground/70 hover:text-secondary transition-colors duration-300 font-paragraph text-sm uppercase tracking-wider">
+              Projetos
+            </Link>
+            <Link to="/game" className="text-foreground/70 hover:text-secondary transition-colors duration-300 font-paragraph text-sm uppercase tracking-wider">
+              Jogar
+            </Link>
+          </nav>
         </div>
 
         {/* Center Area - Avatar */}
