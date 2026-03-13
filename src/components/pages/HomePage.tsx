@@ -1,4 +1,4 @@
-desde// HPI 1.7-V
+// HPI 1.7-V
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
