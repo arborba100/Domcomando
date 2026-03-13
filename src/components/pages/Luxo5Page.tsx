@@ -14,7 +14,7 @@ export default function Luxo5Page() {
   const playerName = useGameStore((state) => state.playerName);
   const playerLevel = useGameStore((state) => state.playerLevel);
   const setPlayerLevel = useGameStore((state) => state.setPlayerLevel);
-  const { backgroundImage } = useBackgroundImage('luxo5');
+  const { backgroundImage } = useBackgroundImage('luxo 5');
 
   const luxo5Price = 1203.51;
 
@@ -56,7 +56,7 @@ export default function Luxo5Page() {
   };
 
   return (
-    <div 
+    <div
       className="flex flex-col min-h-screen"
       style={{
         backgroundImage: `url('${backgroundImage}')`,
