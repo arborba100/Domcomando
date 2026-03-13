@@ -4,16 +4,21 @@ import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Image } from '@/components/ui/image';
 import { useMember } from '@/integrations';
+import { useGameStore } from '@/store/gameStore';
+import { usePlayerStore } from '@/store/playerStore';
 import { motion } from 'framer-motion';
-import { Chrome, Crosshair, Facebook, ShieldAlert, Terminal, UserCircle } from 'lucide-react';
+import { Chrome, Crosshair, Facebook, RotateCcw, ShieldAlert, Terminal, UserCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [systemTime, setSystemTime] = useState<string>('');
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const { actions } = useMember();
   const navigate = useNavigate();
+  const { playerLevel, setPlayerLevel } = useGameStore();
+  const { setLevel } = usePlayerStore();
 
   useEffect(() => {
     const updateTime = () => {
@@ -39,6 +44,12 @@ export default function HomePage() {
       console.error(`Login failed for ${provider}:`, error);
       setIsLoading(null);
     }
+  };
+
+  const handleResetBribery = () => {
+    setPlayerLevel(1);
+    setLevel(1);
+    setShowResetConfirm(false);
   };
 
   return (
@@ -258,6 +269,22 @@ export default function HomePage() {
                       </span>
                     )}
                   </Button>
+
+                  {/* Reset Bribery Level Button */}
+                  {playerLevel > 1 && (
+                    <div className="relative group">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-destructive to-orange-600 rounded opacity-0 group-hover:opacity-100 transition duration-300 blur" />
+                      <Button
+                        onClick={() => setShowResetConfirm(true)}
+                        className="relative w-full h-14 bg-destructive/20 hover:bg-destructive/30 text-destructive border border-destructive/50 hover:border-destructive font-heading text-base uppercase tracking-widest rounded-none transition-all duration-300"
+                      >
+                        <span className="flex items-center justify-center gap-3">
+                          <RotateCcw className="w-5 h-5" />
+                          Reiniciar Suborno (Nível {playerLevel})
+                        </span>
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Warning message */}
@@ -271,6 +298,46 @@ export default function HomePage() {
 
               </div>
             </motion.div>
+
+            {/* Reset Confirmation Modal */}
+            {showResetConfirm && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                onClick={() => setShowResetConfirm(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-gradient-to-b from-[#1a1f2e] to-[#0f1419] border-2 border-destructive rounded-lg p-8 max-w-md w-full shadow-[0_0_40px_rgba(255,0,0,0.5)]"
+                >
+                  <h2 className="font-heading text-2xl text-destructive mb-4 text-center uppercase">
+                    Confirmar Reset
+                  </h2>
+                  <p className="font-paragraph text-white/90 mb-6 text-center">
+                    Tem certeza que deseja reiniciar o sistema de suborno para o nível 1? Esta ação não pode ser desfeita.
+                  </p>
+                  <div className="flex gap-4">
+                    <Button
+                      onClick={() => setShowResetConfirm(false)}
+                      className="flex-1 bg-secondary/20 hover:bg-secondary/30 text-secondary border border-secondary/50 font-heading uppercase"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      onClick={handleResetBribery}
+                      className="flex-1 bg-destructive hover:bg-destructive/90 text-white font-heading uppercase"
+                    >
+                      Confirmar Reset
+                    </Button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
 
             {/* Footer Links */}
             <motion.div
