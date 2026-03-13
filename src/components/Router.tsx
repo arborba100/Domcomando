@@ -1,12 +1,7 @@
-import { Suspense } from 'react';
 import { MemberProvider } from '@/integrations';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import { ScrollToTop } from '@/lib/scroll-to-top';
-import { Toaster } from '@/components/ui/toaster';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
-
-// Import page components directly (not lazy loaded)
 import HomePage from '@/components/pages/HomePage';
 import GiroNoAsfaltoPage from '@/components/pages/GiroNoAsfaltoPage';
 import LuxuryShowroomPage from '@/components/pages/LuxuryShowroomPage';
@@ -14,19 +9,13 @@ import Luxo1Page from '@/components/pages/Luxo1Page';
 import GamePage from '@/components/pages/GamePage';
 import CasaPage from '@/components/pages/CasaPage';
 import BarracoPage from '@/components/pages/BarracoPage';
-import AboutPage from '@/components/pages/AboutPage';
-import ContactPage from '@/components/pages/ContactPage';
-import BriberyPage from '@/components/pages/BriberyPage';
 
-// Layout component that includes ScrollToTop and Toaster
+// Layout component that includes ScrollToTop
 function Layout() {
   return (
     <>
       <ScrollToTop />
-      <Toaster />
-      <Suspense fallback={<LoadingSpinner />}>
-        <Outlet />
-      </Suspense>
+      <Outlet />
     </>
   );
 }
@@ -84,27 +73,6 @@ const router = createBrowserRouter([
         element: <BarracoPage />,
         routeMetadata: {
           pageIdentifier: 'barraco',
-        },
-      },
-      {
-        path: "about",
-        element: <AboutPage />,
-        routeMetadata: {
-          pageIdentifier: 'about',
-        },
-      },
-      {
-        path: "contact",
-        element: <ContactPage />,
-        routeMetadata: {
-          pageIdentifier: 'contact',
-        },
-      },
-      {
-        path: "bribery",
-        element: <BriberyPage />,
-        routeMetadata: {
-          pageIdentifier: 'bribery',
         },
       },
       {

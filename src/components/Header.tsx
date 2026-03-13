@@ -1,35 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Settings, Crown, Vault, Zap, User } from 'lucide-react';
+import { Bell, Settings, Crown, Vault, Zap } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { useGameStore } from '@/store/gameStore';
 import { useDirtyMoneyStore } from '@/store/dirtyMoneyStore';
 import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
 import { usePlayerStore } from '@/store/playerStore';
-import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
-  const navigate = useNavigate();
   const { dirtMoney } = useGameStore();
   const { dirtyMoney } = useDirtyMoneyStore();
   const { cleanMoney } = useCleanMoneyStore();
-  const playerName = usePlayerStore((state) => state.playerName);
-  const level = usePlayerStore((state) => state.level);
-  const setPlayerName = usePlayerStore((state) => state.setPlayerName);
-  const setLevel = usePlayerStore((state) => state.setLevel);
-  const { toast } = useToast();
+  const { playerName, level, setPlayerName, setLevel } = usePlayerStore();
   const [customPlayerName, setCustomPlayerName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('https://static.wixstatic.com/media/50f4bf_a888df3d639f415b853110e459edba8c~mv2.png?originWidth=128&originHeight=128');
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingCustomName, setIsEditingCustomName] = useState(false);
   const [tempName, setTempName] = useState('');
   const [tempCustomName, setTempCustomName] = useState('');
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load saved data from localStorage on mount
+  // Load saved data from localStorage
   useEffect(() => {
     const savedName = localStorage.getItem('playerName');
     const savedCustomName = localStorage.getItem('customPlayerName');
@@ -46,17 +36,6 @@ export default function Header() {
     if (savedAvatar) {
       setAvatarUrl(savedAvatar);
     }
-  }, [setPlayerName]);
-
-  // Subscribe to playerName changes from the store
-  useEffect(() => {
-    const unsubscribe = usePlayerStore.subscribe(
-      (state) => state.playerName,
-      (playerName) => {
-        // This ensures the component re-renders when playerName changes in the store
-      }
-    );
-    return unsubscribe;
   }, []);
 
   // Handle avatar click to open file picker
@@ -89,10 +68,6 @@ export default function Header() {
       const newName = tempName.trim().toUpperCase();
       setPlayerName(newName);
       localStorage.setItem('playerName', newName);
-      toast({
-        title: 'Nome salvo!',
-        description: `Seu nome foi atualizado para ${newName}`,
-      });
     }
     setIsEditingName(false);
   };
@@ -115,10 +90,6 @@ export default function Header() {
     if (tempCustomName.trim()) {
       setCustomPlayerName(tempCustomName.trim());
       localStorage.setItem('customPlayerName', tempCustomName.trim());
-      toast({
-        title: 'Nome gamer salvo!',
-        description: `Seu nome gamer foi atualizado para ${tempCustomName.trim()}`,
-      });
     }
     setIsEditingCustomName(false);
   };
@@ -147,13 +118,10 @@ export default function Header() {
         {/* Left Area - Logo */}
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="text-2xl font-bold font-heading bg-gradient-to-r from-logo-gradient-start to-logo-gradient-end bg-clip-text text-transparent">
-              DC
-            </div>
+
           </div>
           <div className="flex flex-col">
-            <span className="text-xs text-logo-gradient-start font-heading tracking-widest">DOMÍNIO</span>
-            <span className="text-xs text-subtitle-neon-blue font-heading tracking-widest">DO COMANDO</span>
+
           </div>
         </div>
 
@@ -196,12 +164,7 @@ export default function Header() {
           <div className="flex flex-col items-start gap-1">
             {/* Main Player Name */}
             <div className="flex items-center gap-2">
-              <Crown className="w-5 h-5 text-logo-gradient-start" style={{
-                filter: 'drop-shadow(0 0 8px rgba(255,69,0,0.8))'
-              }} />
-              <span className="text-white font-heading text-sm md:text-base font-bold tracking-wider">
-                {playerName}
-              </span>
+
             </div>
 
             {/* Custom Player Name */}
@@ -275,87 +238,22 @@ export default function Header() {
           {/* Icons */}
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="text-white hover:text-subtitle-neon-blue transition-all duration-300 hover:brightness-150 relative"
-              style={{
-                filter: 'drop-shadow(0 0 8px rgba(0,234,255,0.6))'
-              }}
-              aria-label="Menu do Perfil"
-            >
-              <User className="w-5 h-5" />
-              {showProfileMenu && (
-                <div className="absolute top-full right-0 mt-2 w-64 bg-black/95 border border-subtitle-neon-blue/50 rounded-lg p-4 shadow-lg z-50">
-                  <h3 className="text-subtitle-neon-blue font-heading text-sm mb-3">Perfil</h3>
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        setIsEditingName(true);
-                        setTempName(playerName);
-                        setShowProfileMenu(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-white/70 hover:text-white hover:bg-subtitle-neon-blue/10 rounded font-paragraph text-sm transition-all"
-                    >
-                      Editar Nome
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleAvatarClick();
-                        setShowProfileMenu(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-white/70 hover:text-white hover:bg-subtitle-neon-blue/10 rounded font-paragraph text-sm transition-all"
-                    >
-                      Alterar Avatar
-                    </button>
-                  </div>
-                </div>
-              )}
-            </button>
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="text-white hover:text-subtitle-neon-blue transition-all duration-300 hover:brightness-150 relative"
+              className="text-white hover:text-subtitle-neon-blue transition-all duration-300 hover:brightness-150"
               style={{
                 filter: 'drop-shadow(0 0 8px rgba(0,234,255,0.6))'
               }}
               aria-label="Notificações"
             >
-              <Bell className="w-5 h-5" />
-              {showNotifications && (
-                <div className="absolute top-full right-0 mt-2 w-64 bg-black/95 border border-subtitle-neon-blue/50 rounded-lg p-4 shadow-lg z-50">
-                  <h3 className="text-subtitle-neon-blue font-heading text-sm mb-3">Notificações</h3>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    <p className="text-white/70 font-paragraph text-xs">Nenhuma notificação no momento</p>
-                  </div>
-                </div>
-              )}
+
             </button>
             <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="text-white hover:text-subtitle-neon-blue transition-all duration-300 hover:brightness-150 relative"
+              className="text-white hover:text-subtitle-neon-blue transition-all duration-300 hover:brightness-150"
               style={{
                 filter: 'drop-shadow(0 0 8px rgba(0,234,255,0.6))'
               }}
               aria-label="Configurações"
             >
-              <Settings className="w-5 h-5" />
-              {showSettings && (
-                <div className="absolute top-full right-0 mt-2 w-64 bg-black/95 border border-subtitle-neon-blue/50 rounded-lg p-4 shadow-lg z-50">
-                  <h3 className="text-subtitle-neon-blue font-heading text-sm mb-3">Configurações</h3>
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => navigate('/game')}
-                      className="w-full text-left px-3 py-2 text-white/70 hover:text-white hover:bg-subtitle-neon-blue/10 rounded font-paragraph text-sm transition-all"
-                    >
-                      Voltar ao Mapa
-                    </button>
-                    <button
-                      onClick={() => navigate('/')}
-                      className="w-full text-left px-3 py-2 text-white/70 hover:text-white hover:bg-subtitle-neon-blue/10 rounded font-paragraph text-sm transition-all"
-                    >
-                      Sair do Jogo
-                    </button>
-                  </div>
-                </div>
-              )}
+
             </button>
           </div>
         </div>
