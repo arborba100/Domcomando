@@ -9,8 +9,6 @@ import Luxo1Page from '@/components/pages/Luxo1Page';
 import GamePage from '@/components/pages/GamePage';
 import CasaPage from '@/components/pages/CasaPage';
 import BarracoPage from '@/components/pages/BarracoPage';
-import LoginPage from '@/components/pages/LoginPage';
-import ProfilePage from '@/components/pages/ProfilePage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -75,20 +73,6 @@ const router = createBrowserRouter([
         element: <BarracoPage />,
         routeMetadata: {
           pageIdentifier: 'barraco',
-        },
-      },
-      {
-        path: "login",
-        element: <LoginPage />,
-        routeMetadata: {
-          pageIdentifier: 'login',
-        },
-      },
-      {
-        path: "profile",
-        element: <ProfilePage />,
-        routeMetadata: {
-          pageIdentifier: 'profile',
         },
       },
       {

@@ -2,10 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import OnlinePlayersList from '@/components/OnlinePlayersList';
 import { motion } from 'framer-motion';
-import { useMember } from '@/integrations';
-import { playerService } from '@/services/playerService';
 
 interface Point {
   id: string;
@@ -37,33 +34,6 @@ export default function GamePage() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { member, isAuthenticated } = useMember();
-
-  // Update player status when component mounts
-  useEffect(() => {
-    let isMounted = true;
-
-    if (isAuthenticated && member?.loginEmail) {
-      const playerName = member.contact?.firstName || member.profile?.nickname || 'Player';
-      const nickname = member.profile?.nickname || member.contact?.firstName || 'Anonymous';
-      
-      playerService.registerPlayer(member.loginEmail, playerName, nickname).catch(error => {
-        if (isMounted) {
-          console.error('Error registering player:', error);
-        }
-      });
-    }
-
-    // Cleanup: mark player as offline when leaving
-    return () => {
-      isMounted = false;
-      if (isAuthenticated && member?.loginEmail) {
-        playerService.setPlayerOffline(member.loginEmail).catch(error => {
-          console.error('Error setting player offline:', error);
-        });
-      }
-    };
-  }, [isAuthenticated, member]);
 
   const handleMouseDown = (e: React.MouseEvent, pointId: string) => {
     e.preventDefault();
@@ -123,12 +93,12 @@ export default function GamePage() {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
-      <main className="flex-1 w-full max-w-[120rem] mx-auto px-3 md:px-4 py-4 md:py-8 mt-[110px] md:mt-0">
-        <div className="mb-4 md:mb-6">
-          <h1 className="font-heading text-3xl md:text-5xl font-bold text-foreground mb-2">
+      <main className="flex-1 w-full max-w-[120rem] mx-auto px-4 py-8">
+        <div className="mb-6">
+          <h1 className="font-heading text-5xl font-bold text-foreground mb-2">
             Mapa da Cidade
           </h1>
-          <p className="font-paragraph text-sm md:text-lg text-secondary">
+          <p className="font-paragraph text-lg text-secondary">
             Clique e arraste os pontos para explorar diferentes locais
           </p>
         </div>
@@ -141,7 +111,7 @@ export default function GamePage() {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             aspectRatio: '16 / 9',
-            minHeight: '300px',
+            minHeight: '500px',
           }}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -167,7 +137,7 @@ export default function GamePage() {
                 onMouseDown={(e) => handleMouseDown(e, point.id)}
                 onClick={() => handlePointClick(point)}
                 className={`
-                  relative w-8 h-8 md:w-12 md:h-12 rounded-full flex items-center justify-center
+                  relative w-12 h-12 rounded-full flex items-center justify-center
                   transition-all duration-200 cursor-grab active:cursor-grabbing
                   ${draggingId === point.id ? 'cursor-grabbing' : 'cursor-grab'}
                   ${point.link 
@@ -218,33 +188,28 @@ export default function GamePage() {
         </div>
 
         {/* Instructions */}
-        <div className="mt-6 md:mt-8 bg-background/50 backdrop-blur-sm border border-secondary/30 rounded-lg p-4 md:p-6">
-          <h2 className="font-heading text-xl md:text-2xl font-bold text-foreground mb-3">
+        <div className="mt-8 bg-background/50 backdrop-blur-sm border border-secondary/30 rounded-lg p-6">
+          <h2 className="font-heading text-2xl font-bold text-foreground mb-3">
             Como Usar
           </h2>
-          <ul className="font-paragraph text-foreground space-y-2 text-sm md:text-base">
+          <ul className="font-paragraph text-foreground space-y-2">
             <li className="flex items-start">
-              <span className="text-secondary mr-3 flex-shrink-0">•</span>
+              <span className="text-secondary mr-3">•</span>
               <span>Arraste qualquer ponto para movê-lo pelo mapa</span>
             </li>
             <li className="flex items-start">
-              <span className="text-secondary mr-3 flex-shrink-0">•</span>
+              <span className="text-secondary mr-3">•</span>
               <span>Clique em um ponto para obter mais informações</span>
             </li>
             <li className="flex items-start">
-              <span className="text-secondary mr-3 flex-shrink-0">•</span>
+              <span className="text-secondary mr-3">•</span>
               <span>Pontos em laranja levam a outras páginas</span>
             </li>
             <li className="flex items-start">
-              <span className="text-secondary mr-3 flex-shrink-0">•</span>
+              <span className="text-secondary mr-3">•</span>
               <span>Passe o mouse sobre um ponto para ver seu nome</span>
             </li>
           </ul>
-        </div>
-
-        {/* Online Players Section */}
-        <div className="mt-6 md:mt-8">
-          <OnlinePlayersList />
         </div>
       </main>
 

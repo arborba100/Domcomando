@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Vault, Zap } from 'lucide-react';
+import { Bell, Settings, Crown, Vault, Zap } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { useGameStore } from '@/store/gameStore';
 import { useDirtyMoneyStore } from '@/store/dirtyMoneyStore';
@@ -21,8 +21,6 @@ export default function Header() {
 
   // Load saved data from localStorage
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
     const savedName = localStorage.getItem('playerName');
     const savedCustomName = localStorage.getItem('customPlayerName');
     const savedAvatar = localStorage.getItem('playerAvatar');
@@ -38,7 +36,7 @@ export default function Header() {
     if (savedAvatar) {
       setAvatarUrl(savedAvatar);
     }
-  }, [setPlayerName]);
+  }, []);
 
   // Handle avatar click to open file picker
   const handleAvatarClick = () => {
@@ -105,7 +103,7 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-auto md:h-[110px]" style={{
+    <header className="fixed top-0 left-0 right-0 z-50 h-[110px]" style={{
       background: 'rgba(15,20,30,0.85)',
       backdropFilter: 'blur(10px)',
       borderBottom: '2px solid #00eaff',
@@ -113,40 +111,28 @@ export default function Header() {
     }}>
       {/* HUD Lines */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[30px] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-hud-line-blue/20 to-transparent hidden md:block" />
-        <div className="absolute bottom-[30px] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-hud-line-blue/20 to-transparent hidden md:block" />
+        <div className="absolute top-[30px] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-hud-line-blue/20 to-transparent" />
+        <div className="absolute bottom-[30px] left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-hud-line-blue/20 to-transparent" />
       </div>
-      <div className="h-full max-w-[120rem] mx-auto px-3 md:px-6 py-3 md:py-0 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-0">
+      <div className="h-full max-w-[120rem] mx-auto px-6 flex items-center justify-between">
         {/* Left Area - Logo */}
-        <div className="flex items-center gap-3 md:flex-1">
+        <div className="flex items-center gap-3">
           <div className="relative">
-            <Image
-              src="https://static.wixstatic.com/media/50f4bf_fda705d9cabd430cb14b2281f9cfe089~mv2.png"
-              alt="Domínio do Comando Logo"
-              width={40}
-              className="w-8 h-8 md:w-10 md:h-10 object-contain"
-            />
+
           </div>
           <div className="flex flex-col">
-            <h1 className="font-heading font-bold text-sm md:text-lg text-white tracking-wider" style={{
-              background: 'linear-gradient(90deg, #FF4500 0%, #FF0000 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}>
-              DOMÍNIO
-            </h1>
-            <p className="font-heading text-xs text-subtitle-neon-blue tracking-wider">DO COMANDO</p>
+
           </div>
         </div>
 
         {/* Center Area - Avatar */}
-        <div className="flex items-center justify-center md:flex-1">
+        <div className="flex items-center justify-center">
           <button
             onClick={handleAvatarClick}
             className="relative group cursor-pointer transition-transform duration-300 hover:scale-110"
             aria-label="Alterar avatar"
           >
-            <div className="w-[60px] h-[60px] md:w-[70px] md:h-[70px] rounded-full overflow-hidden border-[3px] border-subtitle-neon-blue relative" style={{
+            <div className="w-[70px] h-[70px] rounded-full overflow-hidden border-[3px] border-subtitle-neon-blue relative" style={{
               boxShadow: '0 0 20px rgba(0,234,255,0.8), inset 0 0 10px rgba(0,234,255,0.3)'
             }}>
               <Image
@@ -173,37 +159,12 @@ export default function Header() {
         </div>
 
         {/* Right Area - Player Name & Icons */}
-        <div className="flex items-center gap-2 md:gap-6 md:flex-1 justify-end flex-wrap md:flex-nowrap">
-          {/* Player Names - Hidden on mobile, shown on md+ */}
-          <div className="hidden md:flex flex-col items-start gap-1">
+        <div className="flex items-center gap-6">
+          {/* Player Names */}
+          <div className="flex flex-col items-start gap-1">
             {/* Main Player Name */}
             <div className="flex items-center gap-2">
-              {isEditingName ? (
-                <input
-                  type="text"
-                  value={tempName}
-                  onChange={(e) => setTempName(e.target.value)}
-                  onBlur={handleNameSave}
-                  onKeyDown={handleNameKeyPress}
-                  className="bg-transparent border-b-2 border-subtitle-neon-blue text-subtitle-neon-blue font-paragraph text-sm md:text-base font-medium tracking-wider outline-none px-2"
-                  style={{
-                    textShadow: '0 0 8px rgba(0,234,255,0.6)'
-                  }}
-                  autoFocus
-                  maxLength={30}
-                  placeholder="Digite seu nome..."
-                />
-              ) : (
-                <button
-                  onClick={handleNameClick}
-                  className="px-3 py-1 rounded border-2 border-subtitle-neon-blue text-subtitle-neon-blue font-paragraph text-sm md:text-base font-medium tracking-wider hover:bg-subtitle-neon-blue/10 hover:brightness-150 transition-all duration-300 whitespace-nowrap"
-                  style={{
-                    textShadow: '0 0 8px rgba(0,234,255,0.6)'
-                  }}
-                >
-                  {playerName || '+ Nome'}
-                </button>
-              )}
+
             </div>
 
             {/* Custom Player Name */}
@@ -226,7 +187,7 @@ export default function Header() {
               ) : (
                 <button
                   onClick={handleCustomNameClick}
-                  className="px-3 py-1 rounded border-2 border-logo-gradient-start text-logo-gradient-start font-paragraph text-sm md:text-base font-medium tracking-wider hover:bg-logo-gradient-start/10 hover:brightness-150 transition-all duration-300 whitespace-nowrap"
+                  className="px-3 py-1 rounded border-2 border-logo-gradient-start text-logo-gradient-start font-paragraph text-sm md:text-base font-medium tracking-wider hover:bg-logo-gradient-start/10 hover:brightness-150 transition-all duration-300"
                   style={{
                     textShadow: '0 0 8px rgba(255,69,0,0.6)'
                   }}
@@ -236,44 +197,65 @@ export default function Header() {
               )}
             </div>
           </div>
-          
-          {/* Vaults - Responsive sizing */}
-          <div className="hidden lg:flex items-center gap-2 px-2 md:px-4 py-2 bg-gradient-to-r from-logo-gradient-start/20 to-logo-gradient-end/20 rounded-lg border-2 border-logo-gradient-start text-xs md:text-sm" style={{
+          {/* Clean Money Vault */}
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-logo-gradient-start/20 to-logo-gradient-end/20 rounded-lg border-2 border-logo-gradient-start" style={{
             filter: 'drop-shadow(0 0 10px rgba(255,69,0,0.5))'
           }}>
-            <Vault className="w-5 h-5 md:w-6 md:h-6 text-logo-gradient-start flex-shrink-0" style={{
+            <Vault className="w-6 h-6 text-logo-gradient-start" style={{
               filter: 'drop-shadow(0 0 8px rgba(255,69,0,0.8))'
             }} />
             <div className="flex flex-col">
-              <span className="text-xs text-logo-gradient-start font-heading">SUJO</span>
-              <span className="text-sm md:text-lg font-bold text-white font-heading">R$ {dirtyMoney.toLocaleString('pt-BR')}</span>
+              <span className="text-xs text-logo-gradient-start font-heading">COFRE SUJO</span>
+              <span className="text-lg font-bold text-white font-heading">R$ {dirtyMoney.toLocaleString('pt-BR')}</span>
             </div>
           </div>
-          <div className="hidden lg:flex items-center gap-2 px-2 md:px-4 py-2 bg-gradient-to-r from-subtitle-neon-blue/20 to-subtitle-neon-blue/10 rounded-lg border-2 border-subtitle-neon-blue text-xs md:text-sm" style={{
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-subtitle-neon-blue/20 to-subtitle-neon-blue/10 rounded-lg border-2 border-subtitle-neon-blue" style={{
             filter: 'drop-shadow(0 0 10px rgba(0,234,255,0.5))'
           }}>
-            <Vault className="w-5 h-5 md:w-6 md:h-6 text-subtitle-neon-blue flex-shrink-0" style={{
+            <Vault className="w-6 h-6 text-subtitle-neon-blue" style={{
               filter: 'drop-shadow(0 0 8px rgba(0,234,255,0.8))'
             }} />
             <div className="flex flex-col">
-              <span className="text-xs text-subtitle-neon-blue font-heading">LIMPO</span>
-              <span className="text-sm md:text-lg font-bold text-white font-heading">R$ {cleanMoney.toLocaleString('pt-BR')}</span>
+              <span className="text-xs text-subtitle-neon-blue font-heading">COFRE LIMPO</span>
+              <span className="text-lg font-bold text-white font-heading">R$ {cleanMoney.toLocaleString('pt-BR')}</span>
             </div>
           </div>
+          {/* Dirty Money Vault - Updated from Giro no Asfalto */}
+          {/* Level Display */}
 
-          <div className="hidden md:flex items-center gap-2 px-2 md:px-4 py-2 bg-gradient-to-r from-logo-gradient-start/20 to-logo-gradient-end/20 rounded-lg border-2 border-logo-gradient-start text-xs md:text-sm" style={{
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-logo-gradient-start/20 to-logo-gradient-end/20 rounded-lg border-2 border-logo-gradient-start" style={{
             filter: 'drop-shadow(0 0 10px rgba(255,69,0,0.5))'
           }}>
-            <Zap className="w-5 h-5 md:w-6 md:h-6 text-logo-gradient-start flex-shrink-0" style={{
+            <Zap className="w-6 h-6 text-logo-gradient-start" style={{
               filter: 'drop-shadow(0 0 8px rgba(255,69,0,0.8))'
             }} />
             <div className="flex flex-col">
               <span className="text-xs text-logo-gradient-start font-heading">NÍVEL</span>
-              <span className="text-sm md:text-lg font-bold text-white font-heading">{level}/100</span>
+              <span className="text-lg font-bold text-white font-heading">{level}/100</span>
             </div>
           </div>
+          {/* Dirty Money Display */}
+          {/* Icons */}
+          <div className="flex items-center gap-4">
+            <button
+              className="text-white hover:text-subtitle-neon-blue transition-all duration-300 hover:brightness-150"
+              style={{
+                filter: 'drop-shadow(0 0 8px rgba(0,234,255,0.6))'
+              }}
+              aria-label="Notificações"
+            >
 
+            </button>
+            <button
+              className="text-white hover:text-subtitle-neon-blue transition-all duration-300 hover:brightness-150"
+              style={{
+                filter: 'drop-shadow(0 0 8px rgba(0,234,255,0.6))'
+              }}
+              aria-label="Configurações"
+            >
 
+            </button>
+          </div>
         </div>
       </div>
     </header>
