@@ -1,3 +1,4 @@
+import { Image } from '@/components/ui/image';
 import { useRef, useState } from "react";
 
 export default function GameMapScreen(){
@@ -100,15 +101,12 @@ transition:"transform 0.05s linear"
 }}
 >
 
-<img
-src="/mapa-cidade.png"
-style={{
+<Image src="/mapa-cidade.png" style={{
 width:"100%",
 height:"100%",
 objectFit:"cover",
 pointerEvents:"none"
-}}
-/>
+}} />
 
 </div>
 
