@@ -163,6 +163,9 @@ export default function GameMap() {
       addElemento('https://static.wixstatic.com/media/50f4bf_1776337cd2dc4ff1982d01b0079a48d2~mv2.png', 200, 290, 200, 220, '', 'MEU QG', () => {
         navigate('/barraco');
       });
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 400, 150, 40, 27, 'giroflex', 'GIRO NO ASFALTO', () => {
+        navigate('/giro-no-asfalto');
+      });
 
       // Adicionar listeners para coordenadas
       if (mapContainer.current) {
