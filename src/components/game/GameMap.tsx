@@ -11,62 +11,29 @@ export default function GameMap() {
     link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
     document.head.appendChild(link);
 
-    // Add styles for neon tooltips and giroflex animation
+    // Add styles for giroflex animation and interactive elements
     const style = document.createElement('style');
     style.innerHTML = `
-      body, html { margin: 0; padding: 0; overflow: hidden; }
+      body, html { margin: 0; padding: 0; overflow: hidden; background: #000; }
       #map { margin: 0; padding: 0; }
       .leaflet-container { background: #000 !important; }
-      .leaflet-marker-icon { 
-        border: none !important; 
-        background: none !important;
-        filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.5));
+      
+      /* Efeito Giroflex */
+      .giroflex { 
+        animation: light 0.6s infinite; 
+        pointer-events: none;
       }
-      .leaflet-marker-icon.animacao-policia { 
-        animation: giroflex 0.6s infinite !important;
+      @keyframes light {
+        0% { filter: drop-shadow(0 0 5px red); }
+        50% { filter: drop-shadow(0 0 10px blue); }
+        100% { filter: drop-shadow(0 0 5px red); }
       }
-      .tooltip-neon {
-        background: rgba(10, 10, 15, 0.95) !important;
-        border: 2px solid #0ff !important;
-        color: #0ff !important;
-        font-family: 'space grotesk', sans-serif;
-        text-align: center;
-        border-radius: 8px !important;
-        padding: 8px !important;
-      }
-      .tooltip-neon b {
-        color: #0ff;
-        font-weight: bold;
-      }
-      .btn-entrar {
-        display: inline-block; 
-        margin-top: 8px; 
-        padding: 5px 12px;
-        border: 1px solid #0ff; 
-        color: #0ff; 
-        background: rgba(0, 255, 255, 0.1);
-        border-radius: 6px; 
-        font-weight: bold;
+      
+      .leaflet-image-layer {
         cursor: pointer;
-        font-size: 12px;
       }
-      .btn-entrar:hover {
-        background: rgba(0, 255, 255, 0.2);
-        box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-      }
-      @keyframes giroflex {
-        0% { filter: drop-shadow(0 0 5px #ff0000) drop-shadow(0 0 10px #ff0000); }
-        50% { filter: drop-shadow(0 0 10px #0000ff) drop-shadow(0 0 15px #0000ff); }
-        100% { filter: drop-shadow(0 0 5px #ff0000) drop-shadow(0 0 10px #ff0000); }
-      }
-      .leaflet-popup-content-wrapper {
-        background: rgba(10, 10, 15, 0.95) !important;
-        border: 2px solid #0ff !important;
-        border-radius: 8px !important;
-      }
-      .leaflet-popup-tip {
-        background: rgba(10, 10, 15, 0.95) !important;
-        border: 2px solid #0ff !important;
+      .leaflet-image-layer:hover {
+        opacity: 0.9;
       }
     `;
     document.head.appendChild(style);
@@ -78,75 +45,50 @@ export default function GameMap() {
     script.onload = () => {
       if (mapContainer.current && (window as any).L) {
         const L = (window as any).L;
-        const urlMapaFundo = 'https://static.wixstatic.com/media/50f4bf_9dbf16b020134b02adc81709d1e774b9~mv2.png';
         
         // Destroy existing map if it exists
         if (mapInstance.current) {
           mapInstance.current.remove();
         }
         
+        // Setup do Mapa
         const map = L.map(mapContainer.current, {
           crs: L.CRS.Simple,
-          minZoom: -1.5,
+          minZoom: -1,
           maxZoom: 2,
-          zoom: 0,
           zoomControl: false,
-          attributionControl: false,
-          dragging: true,
-          touchZoom: true,
-          scrollWheelZoom: true,
+          attributionControl: false
         });
-        
-        mapInstance.current = map;
-        
+
         const bounds = [[0, 0], [1000, 600]];
-        L.imageOverlay(urlMapaFundo, bounds).addTo(map);
+        L.imageOverlay('https://static.wixstatic.com/media/50f4bf_9dbf16b020134b02adc81709d1e774b9~mv2.png', bounds).addTo(map);
         map.fitBounds(bounds);
 
-        // Helper function to add locations with proper icon handling
-        function addLocal(nome: string, img: string, x: number, y: number, size: number, css = '') {
-          const icon = L.icon({
-            iconUrl: img,
-            iconSize: [size, size],
-            iconAnchor: [size / 2, size],
-            popupAnchor: [0, -size],
-            className: css,
-          });
+        mapInstance.current = map;
+
+        // Função para Criar Elementos que acompanham o Zoom
+        // Usamos ImageOverlay em vez de Markers para eles "grudarem" na escala do mapa
+        function addElemento(url: string, x: number, y: number, largura: number, altura: number, cssClass = '') {
+          const area = [[y, x], [y + altura, x + largura]];
+          const img = L.imageOverlay(url, area, { 
+            interactive: true,
+            className: cssClass 
+          }).addTo(map);
           
-          const marker = L.marker([y, x], { icon: icon }).addTo(map);
+          // Adiciona o Tooltip (opcional)
+          img.bindTooltip("ENTRAR", { direction: 'top', sticky: true });
           
-          marker.bindTooltip(`<b>${nome}</b><br><div class="btn-entrar">ENTRAR</div>`, {
-            direction: 'top',
-            offset: [0, -10],
-            className: 'tooltip-neon',
-            permanent: false,
-            sticky: true,
-          });
-          
-          // Add click event
-          marker.on('click', () => {
-            console.log(`Clicked: ${nome}`);
-          });
+          return img;
         }
 
-        // 1. Police Vehicle (at the entrance of the favela - adjusted coordinates)
-        addLocal(
-          'VIATURA PM',
-          'https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png',
-          380,
-          420,
-          70,
-          'animacao-policia'
-        );
+        // POSICIONAMENTO MANUAL (Ajuste os números para o lugar exato)
+        
+        // Viatura na entrada da favela (x, y, largura, altura)
+        // Aumente/Diminua largura e altura para o tamanho desejado
+        addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 380, 420, 60, 40, 'giroflex');
 
-        // 2. Your Initial QG (deeper inside the community)
-        addLocal(
-          'SEU QG',
-          'https://static.wixstatic.com/media/50f4bf_1776337cd2dc4ff1982d01b0079a48d2~mv2.png',
-          200,
-          300,
-          100
-        );
+        // Seu QG (Barraco inicial)
+        addElemento('https://static.wixstatic.com/media/50f4bf_1776337cd2dc4ff1982d01b0079a48d2~mv2.png', 200, 300, 80, 80);
       }
     };
     document.body.appendChild(script);
