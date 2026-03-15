@@ -1,80 +1,71 @@
 import { useGameScreenStore } from '@/store/gameScreenStore'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
-import GameMenuScreen from '@/components/game/GameMenuScreen'
-import GameMapScreen from '@/components/game/GameMapScreen'
-import GameLocationScreen from '@/components/game/GameLocationScreen'
 import GameCharacterScreen from '@/components/game/GameCharacterScreen'
 import GameInventoryScreen from '@/components/game/GameInventoryScreen'
+import GameLocationScreen from '@/components/game/GameLocationScreen'
+import GameMapScreen from '@/components/game/GameMapScreen'
+import GameMenuScreen from '@/components/game/GameMenuScreen'
 import GameStatusScreen from '@/components/game/GameStatusScreen'
 
 import CinematicSignboard from '@/components/CinematicSignboard'
 
 export default function GamePage() {
-
   const currentScreen = useGameScreenStore((state) => state.currentScreen)
-    const setScreen = useGameScreenStore((state) => state.setScreen)
+  const setScreen = useGameScreenStore((state) => state.setScreen)
 
-      const [showCinematic, setShowCinematic] = useState(true)
+  const [showCinematic, setShowCinematic] = useState(true)
 
-        useEffect(() => {
+  useEffect(() => {
+    // define menu como tela inicial
+    setScreen('menu')
 
-            // define menu como tela inicial
-                setScreen('menu')
+    // controla a intro cinematográfica
+    const timer = setTimeout(() => {
+      setShowCinematic(false)
 
-                    // controla a intro cinematográfica
-                        const timer = setTimeout(() => {
+      // garante que após a intro vá para o menu
+      setScreen('menu')
+    }, 5000)
 
-                              setShowCinematic(false)
+    return () => clearTimeout(timer)
+  }, [])
 
-                                    // garante que após a intro vá para o menu
-                                          setScreen('menu')
+  // tela da intro
+  if (showCinematic) {
+    return (
+      <div className="w-screen h-screen bg-black overflow-hidden relative">
+        <CinematicSignboard />
+      </div>
+    )
+  }
 
-                                              }, 5000)
+  // jogo
+  return (
+    <div className="w-screen h-screen bg-black overflow-hidden relative">
+      {currentScreen === 'menu' && (
+        <GameMenuScreen />
+      )}
 
-                                                  return () => clearTimeout(timer)
+      {currentScreen === 'map' && (
+        <GameMapScreen />
+      )}
 
-                                                    }, [])
+      {currentScreen === 'location' && (
+        <GameLocationScreen />
+      )}
 
-                                                      // tela da intro
-                                                        if (showCinematic) {
-                                                            return (
-                                                                  <div className="w-screen h-screen bg-black overflow-hidden relative">
-                                                                          <CinematicSignboard />
-                                                                                </div>
-                                                                                    )
-                                                                                      }
+      {currentScreen === 'character' && (
+        <GameCharacterScreen />
+      )}
 
-                                                                                        // jogo
-                                                                                          return (
+      {currentScreen === 'inventory' && (
+        <GameInventoryScreen />
+      )}
 
-                                                                                              <div className="w-screen h-screen bg-black overflow-hidden relative">
-
-                                                                                                    {currentScreen === 'menu' && (
-                                                                                                            <GameMenuScreen />
-                                                                                                                  )}
-
-                                                                                                                        {currentScreen === 'map' && (
-                                                                                                                                <GameMapScreen />
-                                                                                                                                      )}
-
-                                                                                                                                            {currentScreen === 'location' && (
-                                                                                                                                                    <GameLocationScreen />
-                                                                                                                                                          )}
-
-                                                                                                                                                                {currentScreen === 'character' && (
-                                                                                                                                                                        <GameCharacterScreen />
-                                                                                                                                                                              )}
-
-                                                                                                                                                                                    {currentScreen === 'inventory' && (
-                                                                                                                                                                                            <GameInventoryScreen />
-                                                                                                                                                                                                  )}
-
-                                                                                                                                                                                                        {currentScreen === 'status' && (
-                                                                                                                                                                                                                <GameStatusScreen />
-                                                                                                                                                                                                                      )}
-
-                                                                                                                                                                                                                          </div>
-
-                                                                                                                                                                                                                            )
-                                                                                                                                                                                                                            }
+      {currentScreen === 'status' && (
+        <GameStatusScreen />
+      )}
+    </div>
+  )
+}
