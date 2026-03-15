@@ -69,9 +69,8 @@ export default function GameMap() {
 
       // Blitz e QG permanecem nos mesmos lugares
       addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 130, 430, 80, 54, 'giroflex', 'BLITZ');
-      addElemento('https://static.wixstatic.com/media/50f4bf_1776337cd2dc4ff1982d01b0079a48d2~mv2.png', 210, 290, 200, 200, '', 'MEU QG');
+      addElemento('https://static.wixstatic.com/media/50f4bf_1776337cd2dc4ff1982d01b0079a48d2~mv2.png', 210, 290, 200, 220, '', 'MEU QG');
     };
-
     document.body.appendChild(script);
     return () => { if (mapInstance.current) mapInstance.current.remove(); };
   }, []);
