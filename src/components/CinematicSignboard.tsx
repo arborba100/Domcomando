@@ -3,264 +3,257 @@ import * as THREE from "three";
 
 export default function CinematicIntro() {
 
-  const containerRef = useRef<HTMLDivElement>(null);
+const mountRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
+useEffect(()=>{
 
-        if (!containerRef.current) return;
+if(!mountRef.current) return;
 
-            // SCENE
-                const scene = new THREE.Scene();
-                    scene.background = new THREE.Color(0x000000);
-                        scene.fog = new THREE.Fog(0x000000, 40, 300);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
 
-                            // CAMERA
-                                const camera = new THREE.PerspectiveCamera(
-                                      70,
-                                            window.innerWidth / window.innerHeight,
-                                                  0.1,
-                                                        1000
-                                                            );
+const camera = new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+2000
+);
 
-                                                                camera.position.set(0, 15, 220);
+camera.position.set(0,15,200);
 
-                                                                    // RENDERER
-                                                                        const renderer = new THREE.WebGLRenderer({
-                                                                              antialias: true,
-                                                                                    powerPreference: "high-performance"
-                                                                                        });
+const renderer = new THREE.WebGLRenderer({antialias:true});
 
-                                                                                            renderer.setSize(window.innerWidth, window.innerHeight);
-                                                                                                renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
 
-                                                                                                    containerRef.current.appendChild(renderer.domElement);
+mountRef.current.appendChild(renderer.domElement);
 
-                                                                                                        // LUZ AMBIENTE
-                                                                                                            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-                                                                                                                scene.add(ambientLight);
+const ambient = new THREE.AmbientLight(0xffffff,1);
+scene.add(ambient);
 
-                                                                                                                    // HOLOFOTE
-                                                                                                                        const spotLight = new THREE.SpotLight(0xffd700, 6, 300, Math.PI / 4, 0.5, 1);
-                                                                                                                            spotLight.position.set(0, 80, 40);
-                                                                                                                                scene.add(spotLight);
+const loader = new THREE.TextureLoader();
 
-                                                                                                                                    // NEON
-                                                                                                                                        const neonLight = new THREE.PointLight(0x00eaff, 2, 120);
-                                                                                                                                            neonLight.position.set(0, -8, 20);
-                                                                                                                                                scene.add(neonLight);
+//
+// BACKGROUND CIDADE
+//
 
-                                                                                                                                                    // GRUPO DO LETREIRO
-                                                                                                                                                        const signGroup = new THREE.Group();
-                                                                                                                                                            scene.add(signGroup);
+const bgTexture = loader.load(
+"https://static.wixstatic.com/media/50f4bf_f00fd8f0db544aff8e225b236ad4eee1~mv2.png"
+);
 
-                                                                                                                                                                // ==========================
-                                                                                                                                                                    // CANVAS DO LETREIRO
-                                                                                                                                                                        // ==========================
+const bgMaterial = new THREE.MeshBasicMaterial({
+map:bgTexture
+});
 
-                                                                                                                                                                            const canvas = document.createElement("canvas");
+const bgPlane = new THREE.Mesh(
+new THREE.PlaneGeometry(700,350),
+bgMaterial
+);
 
-                                                                                                                                                                                canvas.width = 2048;
-                                                                                                                                                                                    canvas.height = 512;
+bgPlane.position.z = -200;
 
-                                                                                                                                                                                        const ctx = canvas.getContext("2d");
+scene.add(bgPlane);
 
-                                                                                                                                                                                            if (ctx) {
+//
+// LETREIRO
+//
 
-                                                                                                                                                                                                  // FUNDO
-                                                                                                                                                                                                        ctx.fillStyle = "#050505";
-                                                                                                                                                                                                              ctx.fillRect(0, 0, canvas.width, canvas.height);
+const signTexture = loader.load(
+"https://static.wixstatic.com/media/50f4bf_da5491b446c6486a8a26d7d3a300d4d3~mv2.png"
+);
 
-                                                                                                                                                                                                                    ctx.textAlign = "center";
-                                                                                                                                                                                                                          ctx.textBaseline = "middle";
+const signMaterial = new THREE.MeshBasicMaterial({
+map:signTexture,
+transparent:true
+});
 
-                                                                                                                                                                                                                                // FONTE SEGURA
-                                                                                                                                                                                                                                      ctx.font = "bold 160px Arial";
+const sign = new THREE.Mesh(
+new THREE.PlaneGeometry(120,35),
+signMaterial
+);
 
-                                                                                                                                                                                                                                            // GRADIENTE OURO
-                                                                                                                                                                                                                                                  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+sign.position.y = 8;
 
-                                                                                                                                                                                                                                                        gradient.addColorStop(0, "#fff2a8");
-                                                                                                                                                                                                                                                              gradient.addColorStop(0.5, "#ffd700");
-                                                                                                                                                                                                                                                                    gradient.addColorStop(1, "#8a6d3b");
+scene.add(sign);
 
-                                                                                                                                                                                                                                                                          ctx.fillStyle = gradient;
+//
+// PARTÍCULAS (CHUVA / POEIRA)
+//
 
-                                                                                                                                                                                                                                                                                // SOMBRA NEON
-                                                                                                                                                                                                                                                                                      ctx.shadowColor = "#00eaff";
-                                                                                                                                                                                                                                                                                            ctx.shadowBlur = 25;
+const rainGeometry = new THREE.BufferGeometry();
+const rainCount = 2000;
 
-                                                                                                                                                                                                                                                                                                  // BORDA DO TEXTO
-                                                                                                                                                                                                                                                                                                        ctx.lineWidth = 8;
-                                                                                                                                                                                                                                                                                                              ctx.strokeStyle = "#000";
+const rainPositions = new Float32Array(rainCount*3);
 
-                                                                                                                                                                                                                                                                                                                    const text = "COMPLEXO DO COMANDO NORTE";
+for(let i=0;i<rainCount;i++){
 
-                                                                                                                                                                                                                                                                                                                          ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
-                                                                                                                                                                                                                                                                                                                                ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-                                                                                                                                                                                                                                                                                                                                    }
+rainPositions[i*3] = (Math.random()-0.5)*800;
+rainPositions[i*3+1] = Math.random()*400;
+rainPositions[i*3+2] = (Math.random()-0.5)*600;
 
-                                                                                                                                                                                                                                                                                                                                        const texture = new THREE.CanvasTexture(canvas);
-                                                                                                                                                                                                                                                                                                                                            texture.needsUpdate = true;
+}
 
-                                                                                                                                                                                                                                                                                                                                                // MATERIAL
-                                                                                                                                                                                                                                                                                                                                                    const signMaterial = new THREE.MeshStandardMaterial({
-                                                                                                                                                                                                                                                                                                                                                          map: texture,
-                                                                                                                                                                                                                                                                                                                                                                metalness: 0.9,
-                                                                                                                                                                                                                                                                                                                                                                      roughness: 0.2,
-                                                                                                                                                                                                                                                                                                                                                                            emissive: new THREE.Color(0x111111)
-                                                                                                                                                                                                                                                                                                                                                                                });
+rainGeometry.setAttribute(
+"position",
+new THREE.BufferAttribute(rainPositions,3)
+);
 
-                                                                                                                                                                                                                                                                                                                                                                                    const signMesh = new THREE.Mesh(
-                                                                                                                                                                                                                                                                                                                                                                                          new THREE.PlaneGeometry(60, 15),
-                                                                                                                                                                                                                                                                                                                                                                                                signMaterial
-                                                                                                                                                                                                                                                                                                                                                                                                    );
+const rainMaterial = new THREE.PointsMaterial({
+color:0xffffff,
+size:1,
+opacity:0.7,
+transparent:true
+});
 
-                                                                                                                                                                                                                                                                                                                                                                                                        signGroup.add(signMesh);
+const rain = new THREE.Points(
+rainGeometry,
+rainMaterial
+);
 
-                                                                                                                                                                                                                                                                                                                                                                                                            // MOLDURA
-                                                                                                                                                                                                                                                                                                                                                                                                                const frame = new THREE.Mesh(
-                                                                                                                                                                                                                                                                                                                                                                                                                      new THREE.BoxGeometry(64, 19, 1),
-                                                                                                                                                                                                                                                                                                                                                                                                                            new THREE.MeshStandardMaterial({
-                                                                                                                                                                                                                                                                                                                                                                                                                                    color: 0xffd700,
-                                                                                                                                                                                                                                                                                                                                                                                                                                            metalness: 1,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    roughness: 0.2
-                                                                                                                                                                                                                                                                                                                                                                                                                                                          })
-                                                                                                                                                                                                                                                                                                                                                                                                                                                              );
+scene.add(rain);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                  frame.position.z = -0.5;
+//
+// LUZ POLICIAL
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                      signGroup.add(frame);
+const policeRed = new THREE.PointLight(0xff0000,3,200);
+policeRed.position.set(-60,10,20);
+scene.add(policeRed);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                          // ==========================
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                              // PARTÍCULAS
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  // ==========================
+const policeBlue = new THREE.PointLight(0x0040ff,3,200);
+policeBlue.position.set(60,10,20);
+scene.add(policeBlue);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      const particleCount = 1200;
+//
+// HELICÓPTERO (simulação luz passando)
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          const particles = new THREE.BufferGeometry();
+const heliLight = new THREE.SpotLight(0xffffff,6,500,0.5,0.5,1);
+heliLight.position.set(-200,120,80);
+scene.add(heliLight);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              const positions = new Float32Array(particleCount * 3);
+//
+// ANIMAÇÃO
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  for (let i = 0; i < particleCount; i++) {
+const startTime = Date.now();
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        positions[i * 3] = (Math.random() - 0.5) * 200;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              positions[i * 3 + 1] = Math.random() * 80 - 20;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    positions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+function animate(){
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
+requestAnimationFrame(animate);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            particles.setAttribute(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  "position",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        new THREE.BufferAttribute(positions, 3)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            );
+const elapsed = Date.now()-startTime;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                const particleMaterial = new THREE.PointsMaterial({
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      color: 0xffffff,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            size: 0.7,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  transparent: true,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        opacity: 0.6
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            });
+//
+// ZOOM CINEMATOGRÁFICO
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                const particleSystem = new THREE.Points(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      particles,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            particleMaterial
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                );
+const progress = Math.min(elapsed/7000,1);
+const ease = 1-Math.pow(1-progress,3);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    scene.add(particleSystem);
+camera.position.z = 200-(ease*160);
+camera.position.y = 15-(ease*10);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        // ==========================
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            // ANIMAÇÃO
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // ==========================
+//
+// LETREIRO MOVIMENTO
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    const startTime = Date.now();
+sign.rotation.y = Math.sin(elapsed*0.001)*0.05;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        const introDuration = 6000;
+//
+// CHUVA CAINDO
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            const animate = () => {
+const positions = rain.geometry.attributes.position.array;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  requestAnimationFrame(animate);
+for(let i=0;i<rainCount;i++){
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        const elapsed = Date.now() - startTime;
+positions[i*3+1]-=1.5;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              if (elapsed < introDuration) {
+if(positions[i*3+1]<-50){
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      const progress = elapsed / introDuration;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              const ease = 1 - Math.pow(1 - progress, 4);
+positions[i*3+1]=200;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      camera.position.z = 220 - ease * 180;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              camera.position.y = 15 - ease * 12;
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      signGroup.position.y = -10 + ease * 10;
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              neonLight.intensity = 1.5 + Math.sin(elapsed * 0.005) * 2;
+rain.geometry.attributes.position.needsUpdate=true;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    } else {
+//
+// LUZ POLICIAL PISCANDO
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            camera.position.x = Math.sin(elapsed * 0.002) * 0.15;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    camera.position.y = 3 + Math.cos(elapsed * 0.002) * 0.15;
+policeRed.intensity = 2 + Math.sin(elapsed*0.01)*2;
+policeBlue.intensity = 2 + Math.cos(elapsed*0.01)*2;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          }
+//
+// HELICÓPTERO PASSANDO
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                signGroup.rotation.y = Math.sin(elapsed * 0.001) * 0.04;
+heliLight.position.x = Math.sin(elapsed*0.0004)*250;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      particleSystem.rotation.y += 0.0005;
+renderer.render(scene,camera);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            renderer.render(scene, camera);
+//
+// ENTRAR NO JOGO
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  // TRANSIÇÃO PARA O JOGO
+if(elapsed>10000){
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        if (elapsed > 9000) {
+document.body.style.transition="opacity 2s";
+document.body.style.opacity="0";
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                document.body.style.transition = "opacity 1.5s";
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        document.body.style.opacity = "0";
+setTimeout(()=>{
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                setTimeout(() => {
+window.location.href="/game";
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          window.location.href = "/game";
+},2000);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  }, 1500);
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            };
+animate();
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                animate();
+//
+// RESPONSIVO
+//
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    // RESIZE
+function resize(){
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        const handleResize = () => {
+camera.aspect = window.innerWidth/window.innerHeight;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth,window.innerHeight);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          renderer.setSize(window.innerWidth, window.innerHeight);
+}
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              };
+window.addEventListener("resize",resize);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  window.addEventListener("resize", handleResize);
+return ()=>{
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      return () => {
+window.removeEventListener("resize",resize);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            window.removeEventListener("resize", handleResize);
+renderer.dispose();
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  renderer.dispose();
+};
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      };
+},[]);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }, []);
+return(
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          return (
+<div
+ref={mountRef}
+style={{
+width:"100vw",
+height:"100vh",
+background:"#000",
+overflow:"hidden"
+}}
+/>
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <div
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ref={containerRef}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          style={{
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  width: "100vw",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          height: "100vh",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  background: "#000",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          overflow: "hidden"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    />
+);
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      );
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      }
+}
