@@ -2,36 +2,41 @@ import { MemberProvider } from '@/integrations';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import { ScrollToTop } from '@/lib/scroll-to-top';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
-import HomePage from '@/components/pages/HomePage';
-import GiroNoAsfaltoPage from '@/components/pages/GiroNoAsfaltoPage';
-import LuxuryShowroomPage from '@/components/pages/LuxuryShowroomPage';
-import Luxo1Page from '@/components/pages/Luxo1Page';
-import Luxo2Page from '@/components/pages/Luxo2Page';
-import Luxo3Page from '@/components/pages/Luxo3Page';
-import Luxo4Page from '@/components/pages/Luxo4Page';
-import Luxo5Page from '@/components/pages/Luxo5Page';
-import Luxo6Page from '@/components/pages/Luxo6Page';
-import Luxo7Page from '@/components/pages/Luxo7Page';
-import Luxo8Page from '@/components/pages/Luxo8Page';
-import Luxo9Page from '@/components/pages/Luxo9Page';
-import Luxo10Page from '@/components/pages/Luxo10Page';
-import Luxo11Page from '@/components/pages/Luxo11Page';
-import Luxo12Page from '@/components/pages/Luxo12Page';
-import Luxo13Page from '@/components/pages/Luxo13Page';
-import Luxo14Page from '@/components/pages/Luxo14Page';
-import Luxo15Page from '@/components/pages/Luxo15Page';
-import GamePage from '@/components/pages/GamePage';
-import CasaPage from '@/components/pages/CasaPage';
-import BarracoPage from '@/components/pages/BarracoPage';
-import ProjectsPage from '@/components/pages/ProjectsPage';
-import BriberyGuardPage from '@/components/pages/BriberyGuardPage';
+import { lazy, Suspense } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+
+const HomePage = lazy(() => import('@/components/pages/HomePage'));
+const GiroNoAsfaltoPage = lazy(() => import('@/components/pages/GiroNoAsfaltoPage'));
+const LuxuryShowroomPage = lazy(() => import('@/components/pages/LuxuryShowroomPage'));
+const Luxo1Page = lazy(() => import('@/components/pages/Luxo1Page'));
+const Luxo2Page = lazy(() => import('@/components/pages/Luxo2Page'));
+const Luxo3Page = lazy(() => import('@/components/pages/Luxo3Page'));
+const Luxo4Page = lazy(() => import('@/components/pages/Luxo4Page'));
+const Luxo5Page = lazy(() => import('@/components/pages/Luxo5Page'));
+const Luxo6Page = lazy(() => import('@/components/pages/Luxo6Page'));
+const Luxo7Page = lazy(() => import('@/components/pages/Luxo7Page'));
+const Luxo8Page = lazy(() => import('@/components/pages/Luxo8Page'));
+const Luxo9Page = lazy(() => import('@/components/pages/Luxo9Page'));
+const Luxo10Page = lazy(() => import('@/components/pages/Luxo10Page'));
+const Luxo11Page = lazy(() => import('@/components/pages/Luxo11Page'));
+const Luxo12Page = lazy(() => import('@/components/pages/Luxo12Page'));
+const Luxo13Page = lazy(() => import('@/components/pages/Luxo13Page'));
+const Luxo14Page = lazy(() => import('@/components/pages/Luxo14Page'));
+const Luxo15Page = lazy(() => import('@/components/pages/Luxo15Page'));
+const GamePage = lazy(() => import('@/components/pages/GamePage'));
+const CasaPage = lazy(() => import('@/components/pages/CasaPage'));
+const BarracoPage = lazy(() => import('@/components/pages/BarracoPage'));
+const ProjectsPage = lazy(() => import('@/components/pages/ProjectsPage'));
+const BriberyGuardPage = lazy(() => import('@/components/pages/BriberyGuardPage'));
 
 // Layout component that includes ScrollToTop
 function Layout() {
   return (
     <>
       <ScrollToTop />
-      <Outlet />
+      <Suspense fallback={<LoadingSpinner />}>
+        <Outlet />
+      </Suspense>
     </>
   );
 }
