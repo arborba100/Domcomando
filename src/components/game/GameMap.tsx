@@ -77,7 +77,7 @@ export default function GameMap() {
 
       // Get the current QG skin based on player level
       const imagemDoQG = getSkinAtual(level);
-      
+
       // Determine if police car giroflex should be active
       // (This would need to be connected to bribery completion state in a full implementation)
       const viaturaLigada = level > 0; // Placeholder logic
