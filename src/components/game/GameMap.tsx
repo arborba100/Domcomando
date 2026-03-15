@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function GameMap() {
   const mapContainer = useRef(null);
@@ -59,31 +59,6 @@ export default function GameMap() {
       map.fitBounds(bounds);
       mapInstance.current = map;
 
-      // --- CAMINHO DO NPC DE TRÂNSITO ---
-      const rotaTransito = [
-        [900, 480], [700, 460], [500, 440], [300, 420], [100, 410]
-      ];
-
-      // 2. ADICIONANDO O NPC DE TRÂNSITO (A imagem com faróis que você enviou)
-      const larguraFila = 250;
-      const alturaFila = 450;
-      let step = 0;
-
-      const npcTransito = L.imageOverlay(
-        'https://static.wixstatic.com/media/50f4bf_5f510ad4c3724b18817da9394dd05936~mv2.png',
-        [[rotaTransito[0][0], rotaTransito[0][1]], [rotaTransito[0][0] + alturaFila, rotaTransito[0][1] + larguraFila]],
-        { className: 'npc-transito' }
-      ).addTo(map);
-
-      // Função de movimento do NPC
-      function moverNPC() {
-        if (step >= rotaTransito.length) step = 0;
-        const pos = rotaTransito[step];
-        npcTransito.setBounds([[pos[0], pos[1]], [pos[0] + alturaFila, pos[1] + larguraFila]]);
-        step++;
-        setTimeout(moverNPC, 2000); // Velocidade do movimento
-      }
-      moverNPC();
 
       // 3. RESTANTE DO CÓDIGO IGUAL (OBJETOS FIXOS)
       function addElemento(url, x, y, largura, altura, cssClass = '', label = '') {
