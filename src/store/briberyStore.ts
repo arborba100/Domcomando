@@ -25,7 +25,6 @@ interface BriberyState {
   hasConsequence: (type: BriberyConsequence) => boolean;
   getActiveConsequences: () => BriberyConsequence[];
   clearExpiredConsequences: () => void;
-  reset: () => void;
 }
 
 export const useBriberyStore = create<BriberyState>((set, get) => {
@@ -96,12 +95,6 @@ export const useBriberyStore = create<BriberyState>((set, get) => {
           (c) => c.expiresAt > Date.now()
         ),
       }));
-    },
-
-    reset: () => {
-      set({
-        activeConsequences: [],
-      });
     },
   };
 });
