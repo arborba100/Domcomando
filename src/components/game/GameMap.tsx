@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getSkinAtual } from '@/config/skinsQG';
+import { usePlayerStore } from '@/store/playerStore';
 
 export default function GameMap() {
   const mapContainer = useRef(null);
   const mapInstance = useRef(null);
   const navigate = useNavigate();
+  const { level } = usePlayerStore();
 
   useEffect(() => {
     if (!document.getElementById('leaflet-css')) {
@@ -72,17 +75,25 @@ export default function GameMap() {
         }
       }
 
+      // Get the current QG skin based on player level
+      const imagemDoQG = getSkinAtual(level);
+      
+      // Determine if police car giroflex should be active
+      // (This would need to be connected to bribery completion state in a full implementation)
+      const viaturaLigada = level > 0; // Placeholder logic
+      const classeBlitz = viaturaLigada ? 'giroflex' : '';
+
       // Blitz e QG permanecem nos mesmos lugares
-      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 130, 430, 80, 54, 'giroflex', 'BLITZ', () => {
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 130, 430, 80, 54, classeBlitz, 'BLITZ', () => {
         navigate('/bribery-guard');
       });
-      addElemento('https://static.wixstatic.com/media/50f4bf_1776337cd2dc4ff1982d01b0079a48d2~mv2.png', 200, 290, 200, 220, '', 'MEU QG', () => {
+      addElemento(imagemDoQG, 200, 290, 200, 220, '', 'MEU QG', () => {
         navigate('/barraco');
       });
     };
     document.body.appendChild(script);
     return () => { if (mapInstance.current) mapInstance.current.remove(); };
-  }, [navigate]);
+  }, [navigate, level]);
 
   return <div ref={mapContainer} id="map" />;
 }

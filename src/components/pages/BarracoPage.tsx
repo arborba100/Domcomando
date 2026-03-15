@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
 import { usePlayerStore } from '@/store/playerStore';
 import RoyalGreeting from '@/components/RoyalGreeting';
+import { getSkinAtual } from '@/config/skinsQG';
 
 const BARRACO_LEVELS = [
   { level: 10, milestone: 'Casa de Alvenaria' },
@@ -105,50 +106,7 @@ export default function BarracoPage() {
     return Math.round(BASE_EVOLUTION_COST * Math.pow(COST_MULTIPLIER, currentLevel - 1));
   };
 
-  const getBarracoImage = (level: number): string => {
-    // Return the level 100 image for level 100
-    if (level >= 100) {
-      return 'https://static.wixstatic.com/media/50f4bf_9683cd5787de47bf883c2453384fd2ae~mv2.png';
-    }
-    // Return the Mansão Blindada com Heliporto image for level 90 and above
-    if (level >= 90) {
-      return 'https://static.wixstatic.com/media/50f4bf_dacc94520dfa449384a529f15de074f6~mv2.png';
-    }
-    // Return the Mansão Luxuosa Blindada image for level 80 and above
-    if (level >= 80) {
-      return 'https://static.wixstatic.com/media/50f4bf_b57bffd9299941ae84ea8d7589a9eda8~mv2.png';
-    }
-    // Return the Mansão do Complexo image for level 70 and above
-    if (level >= 70) {
-      return 'https://static.wixstatic.com/media/50f4bf_9b7bbc6679924b529acd7428f28e817d~mv2.png';
-    }
-    // Return the Triplex com piscina borda infinita no rooftop image for level 60 and above
-    if (level >= 60) {
-      return 'https://static.wixstatic.com/media/50f4bf_f36ccf79521242ab8518cf871e9f6a16~mv2.png';
-    }
-    // Return the Triplex alto padrão image for level 50 and above
-    if (level >= 50) {
-      return 'https://static.wixstatic.com/media/50f4bf_f363ec9d5ca846c4990f7730c5bf479c~mv2.png';
-    }
-    // Return the Sobrado de Luxo image for level 40 and above
-    if (level >= 40) {
-      return 'https://static.wixstatic.com/media/50f4bf_86c3183c0550490fab41c5a8a8f6184b~mv2.png';
-    }
-    // Return the Sobrado com Piscina image for level 30 and above
-    if (level >= 30) {
-      return 'https://static.wixstatic.com/media/50f4bf_b538b42955634d7190d28507d4b05023~mv2.png';
-    }
-    // Return the Sobrado image for level 20 and above
-    if (level >= 20) {
-      return 'https://static.wixstatic.com/media/50f4bf_b23aee963b00465fa534f7705505b5b9~mv2.png';
-    }
-    // Return the Casa de alvenaria image for level 10 and above
-    if (level >= 10) {
-      return 'https://static.wixstatic.com/media/50f4bf_6527240d26e94ca782357743f0ddddd7~mv2.png';
-    }
-    // Return the default barraco image for levels below 10
-    return 'https://static.wixstatic.com/media/50f4bf_99aa35fbb009493a96d4ede6c1af056b~mv2.png';
-  };
+  // ... keep existing code (getBarracoImage function removed - now using getSkinAtual from config) ...
 
   const handleEvolution = async () => {
     if (!player || !allItemsAtLevel) return;
@@ -226,7 +184,7 @@ export default function BarracoPage() {
   const nextLevel = currentLevel + 1;
   const evolutionCost = calculateEvolutionCost(currentLevel);
   const canEvolve = allItemsAtLevel && nextLevel <= 100;
-  const barraco_image = getBarracoImage(currentLevel);
+  const barraco_image = getSkinAtual(currentLevel);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
