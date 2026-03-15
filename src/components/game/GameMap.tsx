@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MapButtons from '@/components/MapButtons';
+import { useMapButtonsStore } from '@/store/mapButtonsStore';
 
 export default function GameMap() {
   const mapContainer = useRef(null);
@@ -8,6 +10,7 @@ export default function GameMap() {
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   const [clickedCoordinates, setClickedCoordinates] = useState(null);
   const [showCursor, setShowCursor] = useState(false);
+  const addButton = useMapButtonsStore((state) => state.addButton);
 
   useEffect(() => {
     if (!document.getElementById('leaflet-css')) {
@@ -157,6 +160,31 @@ export default function GameMap() {
         navigate('/barraco');
       });
 
+      // Adicionar botões do mapa usando o store
+      addButton({
+        id: 'btn-casa',
+        x: 450,
+        y: 150,
+        width: 60,
+        height: 40,
+        label: 'CASA',
+        color: 'bg-green-500 hover:bg-green-400 border-green-300 hover:border-green-200',
+        onClick: () => navigate('/casa'),
+        visible: true,
+      });
+
+      addButton({
+        id: 'btn-projects',
+        x: 350,
+        y: 350,
+        width: 60,
+        height: 40,
+        label: 'PROJETOS',
+        color: 'bg-purple-500 hover:bg-purple-400 border-purple-300 hover:border-purple-200',
+        onClick: () => navigate('/projects'),
+        visible: true,
+      });
+
       // Adicionar listeners para coordenadas
       if (mapContainer.current) {
         const handleMouseMove = (e) => {
@@ -202,6 +230,11 @@ export default function GameMap() {
 
   return (
     <div ref={mapContainer} id="map" className="relative">
+      {/* Componente de Botões do Mapa */}
+      {mapInstance.current && (
+        <MapButtons mapInstance={mapInstance.current} mapContainer={mapContainer} />
+      )}
+
       {/* Painel de Debug de Coordenadas */}
       <div className="coordinate-debug-panel">
         <div className="label">📍 COORDENADAS DO MAPA</div>
