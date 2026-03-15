@@ -11,7 +11,7 @@ import RoyalGreeting from '@/components/RoyalGreeting';
 import { getSkinAtual } from '@/config/skinsQG';
 
 const BARRACO_LEVELS = [
-  { level: 10, milestone: 'Casa de Alvenaria' },
+  { level: 10, milestonelevelsa de Alvenaria' },
   { level: 20, milestone: 'Sobrado' },
   { level: 30, milestone: 'Sobrado com Piscina' },
   { level: 40, milestone: 'Sobrado de Luxo' },
