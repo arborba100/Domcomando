@@ -29,6 +29,16 @@ const CasaPage = lazy(() => import('@/components/pages/CasaPage'));
 const BarracoPage = lazy(() => import('@/components/pages/BarracoPage'));
 const ProjectsPage = lazy(() => import('@/components/pages/ProjectsPage'));
 const BriberyGuardPage = lazy(() => import('@/components/pages/BriberyGuardPage'));
+const BriberyInvestigadorPage = lazy(() => import('@/components/pages/BriberyInvestigadorPage'));
+const BriberyDelegadoPage = lazy(() => import('@/components/pages/BriberyDelegadoPage'));
+const BriberyVereadorPage = lazy(() => import('@/components/pages/BriberyVereadorPage'));
+const BriberyPrefeitoPage = lazy(() => import('@/components/pages/BriberyPrefeitoPage'));
+const BriberyPromotorPage = lazy(() => import('@/components/pages/BriberyPromotorPage'));
+const BriberyJuizPage = lazy(() => import('@/components/pages/BriberyJuizPage'));
+const BriberySecretarioPage = lazy(() => import('@/components/pages/BriberySecretarioPage'));
+const BriberyGovernadorPage = lazy(() => import('@/components/pages/BriberyGovernadorPage'));
+const BriberyMinistroPage = lazy(() => import('@/components/pages/BriberyMinistroPage'));
+const BriberyPresidentePage = lazy(() => import('@/components/pages/BriberyPresidentePage'));
 
 // Layout component that includes ScrollToTop
 function Layout() {
@@ -214,6 +224,76 @@ const router = createBrowserRouter([
         element: <BriberyGuardPage />,
         routeMetadata: {
           pageIdentifier: 'bribery-guard',
+        },
+      },
+      {
+        path: "bribery-investigador",
+        element: <BriberyInvestigadorPage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-investigador',
+        },
+      },
+      {
+        path: "bribery-delegado",
+        element: <BriberyDelegadoPage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-delegado',
+        },
+      },
+      {
+        path: "bribery-vereador",
+        element: <BriberyVereadorPage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-vereador',
+        },
+      },
+      {
+        path: "bribery-prefeito",
+        element: <BriberyPrefeitoPage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-prefeito',
+        },
+      },
+      {
+        path: "bribery-promotor",
+        element: <BriberyPromotorPage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-promotor',
+        },
+      },
+      {
+        path: "bribery-juiz",
+        element: <BriberyJuizPage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-juiz',
+        },
+      },
+      {
+        path: "bribery-secretario",
+        element: <BriberySecretarioPage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-secretario',
+        },
+      },
+      {
+        path: "bribery-governador",
+        element: <BriberyGovernadorPage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-governador',
+        },
+      },
+      {
+        path: "bribery-ministro",
+        element: <BriberyMinistroPage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-ministro',
+        },
+      },
+      {
+        path: "bribery-presidente",
+        element: <BriberyPresidentePage />,
+        routeMetadata: {
+          pageIdentifier: 'bribery-presidente',
         },
       },
       {
