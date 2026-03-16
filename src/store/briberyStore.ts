@@ -29,14 +29,13 @@ interface BriberyState {
 
 export const useBriberyStore = create<BriberyState>((set, get) => {
   // Calculate bribery amounts for levels 1-100
-  // Level 1: 120, Level 2: 145, Level 3: 175, etc.
-  // Formula: amount = (amount * 1.2) + 1
+  // Formula: amount = (previous_amount + 17) * 1.2
   const calculateBriberyLevels = (): number[] => {
     const levels: number[] = [];
     let amount = 120;
     for (let i = 0; i < 100; i++) {
       levels.push(Math.floor(amount));
-      amount = (amount * 1.2) + 1;
+      amount = (amount + 17) * 1.2;
     }
     return levels;
   };
