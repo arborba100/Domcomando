@@ -120,6 +120,9 @@ export default function Game2Page() {
 
   // Determine which image to display based on player level
   const getDisplayImage = (): string => {
+    if (playerLevel >= 100) {
+      return 'https://static.wixstatic.com/media/50f4bf_c47b6eb7b3d646e992a903b063fcb3ea~mv2.png';
+    }
     if (playerLevel >= 90) {
       return 'https://static.wixstatic.com/media/50f4bf_66902b6651b341dcbb08fab36ea6b3fc~mv2.png';
     }
