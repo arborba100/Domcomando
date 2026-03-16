@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Image } from '@/components/ui/image';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from 'lucide-react';
@@ -7,15 +8,18 @@ interface Hotspot {
   id: string;
   x: number;
   y: number;
+  destination?: string;
 }
 
 export default function Game2Page() {
+  const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [images, setImages] = useState<string[]>([
     'https://static.wixstatic.com/media/50f4bf_6b3cb68c68a7486f93b1696d52192e7d~mv2.png',
   ]);
   const [isAddingHotspots, setIsAddingHotspots] = useState(false);
   const [hotspots, setHotspots] = useState<Hotspot[]>([]);
+  const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // Method to update the image during gameplay
@@ -48,9 +52,11 @@ export default function Game2Page() {
       id: crypto.randomUUID(),
       x,
       y,
+      destination: 'barraco',
     };
 
     setHotspots(prev => [...prev, newHotspot]);
+    setSelectedHotspotId(newHotspot.id);
   };
 
   const removeHotspot = (id: string) => {
@@ -95,9 +101,11 @@ export default function Game2Page() {
             }}
             onClick={(e) => {
               e.stopPropagation();
-              removeHotspot(hotspot.id);
+              if (hotspot.destination) {
+                navigate(`/${hotspot.destination}`);
+              }
             }}
-            title="Clique para remover"
+            title={`Clique para ir para ${hotspot.destination || 'destino'}`}
           >
             <X className="w-4 h-4 text-white" />
           </div>
