@@ -27,6 +27,27 @@ export default function Game2Page() {
       destination: 'barraco',
       number: 1,
     },
+    {
+      id: 'luxury-showroom-point',
+      x: 60,
+      y: 40,
+      destination: 'luxury-showroom',
+      number: 6,
+    },
+    {
+      id: 'giro-no-asfalto-point',
+      x: 70,
+      y: 60,
+      destination: 'giro-no-asfalto',
+      number: 7,
+    },
+    {
+      id: 'bribery-guard-point',
+      x: 40,
+      y: 70,
+      destination: 'bribery-guard',
+      number: 10,
+    },
   ]);
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
