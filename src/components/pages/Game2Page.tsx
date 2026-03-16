@@ -101,7 +101,7 @@ export default function Game2Page() {
       return 'https://static.wixstatic.com/media/50f4bf_b2170b375ed1400cb58429f269be5db1~mv2.png';
     }
     if (playerLevel >= 70) {
-      return 'https://static.wixstatic.com/media/50f4bf_82f30db8d0334ada86bd9943ecef2f21~mv2.png';
+      return 'https://static.wixstatic.com/media/50f4bf_59641328a66848a4b0e53be9cacc321e~mv2.png';
     }
     if (playerLevel >= 60) {
       return 'https://static.wixstatic.com/media/50f4bf_d91eb628c4944ca393540e381e4d242c~mv2.png';
