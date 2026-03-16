@@ -30,12 +30,18 @@ export default function Game2Page() {
       try {
         let loadedHotspots = JSON.parse(savedHotspots);
         
-        // Update destinations for specific points
+        // Ensure all hotspots have valid x and y percentages (0-100)
         loadedHotspots = loadedHotspots.map((h: Hotspot) => {
-          if (h.number === 1) return { ...h, destination: 'barraco' };
-          if (h.number === 2) return { ...h, destination: 'bribery-guard' };
-          if (h.number === 12) return { ...h, destination: 'giro-no-asfalto' };
-          return h;
+          const validX = typeof h.x === 'number' && h.x >= 0 && h.x <= 100 ? h.x : 50;
+          const validY = typeof h.y === 'number' && h.y >= 0 && h.y <= 100 ? h.y : 50;
+          
+          // Update destinations for specific points
+          let destination = h.destination || 'barraco';
+          if (h.number === 1) destination = 'barraco';
+          if (h.number === 2) destination = 'bribery-guard';
+          if (h.number === 12) destination = 'giro-no-asfalto';
+          
+          return { ...h, x: validX, y: validY, destination };
         });
         
         setHotspots(loadedHotspots);
