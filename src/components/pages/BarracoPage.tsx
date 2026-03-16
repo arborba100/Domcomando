@@ -433,6 +433,16 @@ export default function BarracoPage() {
                   👑 HOMENAGEM REAL
                 </motion.button>
               )}
+
+              {/* Reset Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/reset-barraco'}
+                className="w-full py-4 px-6 rounded-lg font-heading text-xl font-bold bg-slate-700 text-slate-200 hover:bg-slate-600 hover:shadow-lg hover:shadow-slate-700/50 cursor-pointer transition-all"
+              >
+                🔄 RESETAR NÍVEL
+              </motion.button>
             </motion.div>
           </div>
 
