@@ -35,7 +35,7 @@ export default function HomePage() {
     try {
       if (provider === 'visitor') {
         // For visitor access, navigate directly to the game without authentication
-        navigate('/game');
+        navigate('/game2');
       } else {
         // Trigger actual authentication via Wix Members SDK for other providers
         await actions.login();
