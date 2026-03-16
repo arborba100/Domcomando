@@ -160,19 +160,24 @@ export default function Game2Page() {
         {/* Police Car at Point 2 */}
         {hotspots.some(h => h.number === 2) && (
           <div
-            className="absolute w-86 h-86 flex items-center justify-center"
+            className="absolute w-86 h-86 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
             style={{
               left: `${hotspots.find(h => h.number === 2)?.x || 50}%`,
               top: `${hotspots.find(h => h.number === 2)?.y || 50}%`,
               transform: 'translate(-50%, -50%)',
             }}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate('/bribery-guard');
+            }}
+            title="Clique para ir para Suborno do Guarda"
           >
             <Image
               src="https://static.wixstatic.com/media/50f4bf_be8212bb9150412aada836ee21d92405~mv2.png"
               alt="Police Car"
               width={292}
               height={292}
-              className="w-full h-full object-contain animate-pulse"
+              className="w-full h-full object-contain"
             />
           </div>
         )}
