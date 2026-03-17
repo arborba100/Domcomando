@@ -41,32 +41,18 @@ export default function GameHUD() {
               </div>
               <div className="h-1 w-12 bg-gradient-to-r from-cyan-500/0 via-cyan-500 to-cyan-500/0 mt-2 rounded-full"></div>
             </div>
-
             {/* Dirty Money */}
             <div className="flex flex-col items-center">
               <div className="text-xs font-paragraph text-red-400/70 uppercase tracking-widest mb-2">
                 Dinheiro Sujo
               </div>
-              <div className="text-3xl font-heading text-red-400 drop-shadow-lg">
-                ${dirtMoney.toLocaleString()}
-              </div>
-              <div className="h-1 w-12 bg-gradient-to-r from-red-500/0 via-red-500 to-red-500/0 mt-2 rounded-full"></div>
-            </div>
 
-            {/* Clean Money (Spins) */}
-            <div className="flex flex-col items-center">
-              <div className="text-xs font-paragraph text-green-400/70 uppercase tracking-widest mb-2">
-                Dinheiro Limpo
-              </div>
-              <div className="text-3xl font-heading text-green-400 drop-shadow-lg">
-                ${spins.toLocaleString()}
-              </div>
-              <div className="h-1 w-12 bg-gradient-to-r from-green-500/0 via-green-500 to-green-500/0 mt-2 rounded-full"></div>
             </div>
+            {/* Clean Money (Spins) */}
+
           </div>
         </div>
       </motion.div>
-
       {/* Bottom Right Buttons */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
