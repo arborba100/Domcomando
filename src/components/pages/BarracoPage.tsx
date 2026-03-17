@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
 import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
 import { usePlayerStore } from '@/store/playerStore';
+import { useSpinVaultStore } from '@/store/spinVaultStore';
 import RoyalGreeting from '@/components/RoyalGreeting';
 
 const BARRACO_LEVELS = [
@@ -35,7 +36,8 @@ export default function BarracoPage() {
   const [levelUpAnimation, setLevelUpAnimation] = useState(false);
   const [previousLevel, setPreviousLevel] = useState<number | null>(null);
   const { cleanMoney, removeCleanMoney } = useCleanMoneyStore();
-  const { setLevel } = usePlayerStore();
+  const { setLevel, setBarracoLevel } = usePlayerStore();
+  const { setBarracoLevel: setSpinVaultBarracoLevel } = useSpinVaultStore();
 
   // Get player ID from localStorage or URL
   const getPlayerId = () => {
@@ -81,6 +83,8 @@ export default function BarracoPage() {
       // Update the player store with the level from database
       if (playerData?.level) {
         setLevel(playerData.level);
+        setBarracoLevel(playerData.level);
+        setSpinVaultBarracoLevel(playerData.level);
       }
       
       // Check if all items are at the same level
