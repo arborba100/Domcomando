@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { BaseCrudService } from '@/integrations';
-import { Players } from '@/entities';
+import { Players, Characters } from '@/entities';
 import { BRIBERY_ZONES, isInBriberyZone, isValidBarracoPosition } from '@/systems/briberyZoneSystem';
+import { useNavigate } from 'react-router-dom';
 
 interface Tile {
   id: number;
@@ -24,6 +25,17 @@ interface Barraco {
   color: number;
 }
 
+interface Building {
+  id: string;
+  name: string;
+  type: 'bribery' | 'qg' | 'business' | 'house';
+  position: { x: number; z: number };
+  mesh?: THREE.Group;
+  color: number;
+  npcType?: string;
+  routePath?: string;
+}
+
 // 800 tiles = 32x25 grid
 const GRID_SIZE = 32;
 const GRID_HEIGHT = 25;
@@ -36,14 +48,19 @@ const QG_START_X = (GRID_SIZE - QG_SIZE) / 2;
 const QG_START_Z = (GRID_HEIGHT - QG_SIZE) / 2;
 
 export default function Multiplayer3DMap() {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const tilesRef = useRef<Map<number, Tile>>(new Map());
   const barracosRef = useRef<Map<string, Barraco>>(new Map());
+  const buildingsRef = useRef<Map<string, Building>>(new Map());
   const playersRef = useRef<Map<string, any>>(new Map());
+  const raycasterRef = useRef<THREE.Raycaster>(new THREE.Raycaster());
+  const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2());
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
   
   // Camera controls state
   const [cameraControls, setCameraControls] = useState({
@@ -104,6 +121,44 @@ export default function Multiplayer3DMap() {
 
     // Create tiles
     createTiles(scene);
+
+    // Create buildings (bribery zones and QG)
+    createBuildings(scene);
+
+    // Handle mouse click for building selection
+    const handleMouseClick = (event: MouseEvent) => {
+      if (!containerRef.current || !cameraRef.current || !rendererRef.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      mouseRef.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseRef.current.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycasterRef.current.setFromCamera(mouseRef.current, cameraRef.current);
+
+      const buildingMeshes = Array.from(buildingsRef.current.values())
+        .map((b) => b.mesh)
+        .filter((m): m is THREE.Group => m !== undefined);
+
+      const intersects = raycasterRef.current.intersectObjects(buildingMeshes, true);
+
+      if (intersects.length > 0) {
+        const clickedObject = intersects[0].object;
+        let parent = clickedObject.parent;
+        while (parent && !(parent as any).buildingData) {
+          parent = parent.parent;
+        }
+
+        if (parent && (parent as any).buildingData) {
+          const building = (parent as any).buildingData as Building;
+          setSelectedBuilding(building);
+          if (building.routePath) {
+            navigate(building.routePath);
+          }
+        }
+      }
+    };
+
+    renderer.domElement.addEventListener('click', handleMouseClick);
 
     // Handle window resize
     const handleResize = () => {
@@ -218,9 +273,10 @@ export default function Multiplayer3DMap() {
       renderer.domElement.removeEventListener('mousemove', handleMouseMove);
       renderer.domElement.removeEventListener('mouseup', handleMouseUp);
       renderer.domElement.removeEventListener('wheel', handleWheel);
+      renderer.domElement.removeEventListener('click', handleMouseClick);
       containerRef.current?.removeChild(renderer.domElement);
     };
-  }, [cameraControls]);
+  }, [cameraControls, navigate]);
 
   // Create grid tiles
   const createTiles = (scene: THREE.Scene) => {
@@ -316,6 +372,146 @@ export default function Multiplayer3DMap() {
     gridHelper.position.y = 0.01;
     scene.add(gridHelper);
   };
+
+  // Create buildings for bribery zones and QG
+  const createBuildings = (scene: THREE.Scene) => {
+    // Create QG building
+    const qgBuilding = createBuildingMesh(
+      { x: QG_START_X + QG_SIZE / 2, z: QG_START_Z + QG_SIZE / 2 },
+      0x1a4d2e,
+      'QG do Complexo',
+      'qg'
+    );
+    scene.add(qgBuilding);
+    buildingsRef.current.set('qg', {
+      id: 'qg',
+      name: 'QG do Complexo',
+      type: 'qg',
+      position: { x: QG_START_X + QG_SIZE / 2, z: QG_START_Z + QG_SIZE / 2 },
+      mesh: qgBuilding,
+      color: 0x1a4d2e,
+    });
+
+    // Create bribery zone buildings
+    BRIBERY_ZONES.forEach((zone) => {
+      const buildingMesh = createBuildingMesh(
+        { x: zone.centerX, z: zone.centerZ },
+        zone.color,
+        zone.name,
+        'bribery'
+      );
+      scene.add(buildingMesh);
+      
+      const routeMap: Record<string, string> = {
+        'guard': '/bribery-guard',
+        'delegado': '/bribery-delegado',
+        'investigador': '/bribery-investigador',
+        'vereador': '/bribery-vereador',
+        'prefeito': '/bribery-prefeito',
+        'promotor': '/bribery-promotor',
+        'juiz': '/bribery-juiz',
+        'secretario': '/bribery-secretario',
+        'governador': '/bribery-governador',
+        'ministro': '/bribery-ministro',
+        'presidente': '/bribery-presidente',
+      };
+
+      buildingsRef.current.set(zone.id, {
+        id: zone.id,
+        name: zone.name,
+        type: 'bribery',
+        position: { x: zone.centerX, z: zone.centerZ },
+        mesh: buildingMesh,
+        color: zone.color,
+        npcType: zone.npcType,
+        routePath: routeMap[zone.npcType],
+      });
+    });
+  };
+
+  // Create a building mesh
+  const createBuildingMesh = (
+    position: { x: number; z: number },
+    color: number,
+    name: string,
+    type: string
+  ): THREE.Group => {
+    const group = new THREE.Group();
+    (group as any).buildingData = {
+      name,
+      type,
+      position,
+      color,
+    };
+
+    // Base
+    const baseGeometry = new THREE.BoxGeometry(2.5, 0.3, 2.5);
+    const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+    const base = new THREE.Mesh(baseGeometry, baseMaterial);
+    base.position.y = 0.15;
+    base.castShadow = true;
+    base.receiveShadow = true;
+    group.add(base);
+
+    // Main structure
+    const structureGeometry = new THREE.BoxGeometry(2.5, 2.5, 2.5);
+    const structureMaterial = new THREE.MeshStandardMaterial({
+      color,
+      emissive: color,
+      emissiveIntensity: 0.3,
+    });
+    const structure = new THREE.Mesh(structureGeometry, structureMaterial);
+    structure.position.y = 1.5;
+    structure.castShadow = true;
+    structure.receiveShadow = true;
+    group.add(structure);
+
+    // Roof
+    const roofGeometry = new THREE.ConeGeometry(1.8, 1.2, 4);
+    const roofMaterial = new THREE.MeshStandardMaterial({ color: 0xd2691e });
+    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+    roof.position.y = 3.2;
+    roof.rotation.y = Math.PI / 4;
+    roof.castShadow = true;
+    roof.receiveShadow = true;
+    group.add(roof);
+
+    // Door
+    const doorGeometry = new THREE.BoxGeometry(0.8, 1.5, 0.1);
+    const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
+    const door = new THREE.Mesh(doorGeometry, doorMaterial);
+    door.position.set(0, 1.2, 1.3);
+    door.castShadow = true;
+    group.add(door);
+
+    // Windows
+    for (let i = 0; i < 2; i++) {
+      const windowGeometry = new THREE.BoxGeometry(0.4, 0.4, 0.05);
+      const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x87CEEB });
+      const window = new THREE.Mesh(windowGeometry, windowMaterial);
+      window.position.set(-0.6 + i * 1.2, 2.2, 1.3);
+      window.castShadow = true;
+      group.add(window);
+    }
+
+    group.position.set(
+      position.x * TILE_SIZE,
+      0,
+      position.z * TILE_SIZE
+    );
+
+    return group;
+  };
+
+    // Add grid lines
+    const gridHelper = new THREE.GridHelper(
+      Math.max(GRID_SIZE, GRID_HEIGHT),
+      Math.max(GRID_SIZE, GRID_HEIGHT),
+      0x444444,
+      0x222222
+    );
+    gridHelper.position.y = 0.01;
+    scene.add(gridHelper);
 
   // Generate random barraco position (4 contiguous tiles) - avoiding QG area and bribery zones
   const generateBarracoPosition = (): { tiles: number[]; x: number; z: number } | null => {
@@ -546,13 +742,14 @@ export default function Multiplayer3DMap() {
         <p>Total de Tiles: {GRID_SIZE * GRID_HEIGHT}</p>
         <p>QG do Complexo: {QG_SIZE * QG_SIZE} tiles (área central)</p>
         <p>Barracos: {barracosRef.current.size}</p>
+        <p>Edifícios: {buildingsRef.current.size}</p>
         <p>Tiles por Barraco: {TILES_PER_BARRACO}</p>
         
         <div className="mt-4 border-t border-gray-600 pt-2">
           <h3 className="text-lg font-bold mb-2">Zonas de Suborno:</h3>
           <div className="space-y-1 text-sm">
             {BRIBERY_ZONES.map((zone) => (
-              <div key={zone.id} className="flex items-center gap-2">
+              <div key={zone.id} className="flex items-center gap-2 cursor-pointer hover:opacity-80">
                 <div
                   className="w-3 h-3 rounded"
                   style={{ backgroundColor: `#${zone.color.toString(16).padStart(6, '0')}` }}
@@ -562,6 +759,14 @@ export default function Multiplayer3DMap() {
             ))}
           </div>
         </div>
+
+        {selectedBuilding && (
+          <div className="mt-4 border-t border-gray-600 pt-2">
+            <h3 className="text-lg font-bold mb-2 text-secondary">Selecionado:</h3>
+            <p className="text-sm">{selectedBuilding.name}</p>
+            <p className="text-xs text-gray-400">Clique para entrar</p>
+          </div>
+        )}
       </div>
 
       {/* Controls Panel */}

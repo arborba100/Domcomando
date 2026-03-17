@@ -164,6 +164,57 @@ export default function GameMap() {
         navigate('/barraco');
       });
 
+      // Adicionar todos os locais de suborno
+      // Delegacia
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 450, 100, 70, 50, '', 'DELEGACIA', () => {
+        navigate('/bribery-delegado');
+      });
+
+      // Investigador
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 50, 100, 70, 50, '', 'INVESTIGADOR', () => {
+        navigate('/bribery-investigador');
+      });
+
+      // Vereador
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 450, 500, 70, 50, '', 'VEREADOR', () => {
+        navigate('/bribery-vereador');
+      });
+
+      // Prefeito
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 30, 250, 70, 50, '', 'PREFEITURA', () => {
+        navigate('/bribery-prefeito');
+      });
+
+      // Promotor
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 470, 250, 70, 50, '', 'PROMOTOR', () => {
+        navigate('/bribery-promotor');
+      });
+
+      // Juiz
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 280, 50, 70, 50, '', 'TRIBUNAL', () => {
+        navigate('/bribery-juiz');
+      });
+
+      // Secretário
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 280, 530, 70, 50, '', 'SECRETARIA', () => {
+        navigate('/bribery-secretario');
+      });
+
+      // Governador
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 100, 150, 60, 45, '', 'GOVERNO ESTADUAL', () => {
+        navigate('/bribery-governador');
+      });
+
+      // Ministro
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 400, 150, 60, 45, '', 'MINISTÉRIO', () => {
+        navigate('/bribery-ministro');
+      });
+
+      // Presidente
+      addElemento('https://static.wixstatic.com/media/50f4bf_73f5f22017304e5198d1a876f1537486~mv2.png', 280, 280, 60, 45, '', 'PALÁCIO DO GOVERNO', () => {
+        navigate('/bribery-presidente');
+      });
+
       // Adicionar listeners para coordenadas
       if (mapContainer.current) {
         const handleMouseMove = (e) => {
