@@ -75,8 +75,7 @@ Campos:
 - `/profile` - Perfil do jogador (requer autenticação)
 - `/giro-no-asfalto` - Página de negócios
 - `/luxury-showroom` - Loja de luxo
-- `/casa` - Casa do jogador
-- `/barraco` - Barracão
+- `/barraco` - Barraco do jogador
 
 ## 🔐 Segurança
 

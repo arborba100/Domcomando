@@ -24,7 +24,6 @@ const pageNameMap: Record<string, string> = {
   luxo14: 'luxo-14',
   luxo15: 'luxo-15',
   game: 'game',
-  casa: 'casa',
   barraco: 'barraco',
   projects: 'projects',
   briberyGuard: 'bribery-guard',

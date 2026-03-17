@@ -7,7 +7,7 @@ export default function PlayerHouses() {
     <>
       {Object.values(players).map((player: any) => (
         <div key={player.playerId}>
-          Casa nível {player.level}
+          Barraco nível {player.level}
         </div>
       ))}
     </>
