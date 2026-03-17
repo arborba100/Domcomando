@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CityMap from '@/components/CityMap';
+import GameHUD from '@/components/GameHUD';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -23,6 +24,7 @@ export default function CityMapPage() {
       
       <div className="flex-1 relative">
         <CityMap onTileClick={handleTileClick} />
+        <GameHUD />
         
         {/* Tile Info Panel */}
         {selectedTile && (
