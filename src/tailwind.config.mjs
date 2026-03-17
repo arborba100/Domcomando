@@ -25,6 +25,7 @@ export default {
             colors: {
                 'logo-gradient-start': '#FF4500',
                 'logo-gradient-end': '#FF0000',
+                'logo-gold': '#FFD700',
                 'subtitle-neon-blue': '#00eaff',
                 'player-info-glow-blue': '#00eaff',
                 'hud-line-blue': '#00eaff',
