@@ -7,6 +7,7 @@ interface PlayerState {
   progress: number;
   isGuest: boolean;
   profilePicture: string | null;
+  barracoLevel: number;
   
   setPlayerId: (id: string) => void;
   setPlayerName: (name: string) => void;
@@ -14,6 +15,7 @@ interface PlayerState {
   setProgress: (progress: number) => void;
   setIsGuest: (isGuest: boolean) => void;
   setProfilePicture: (url: string | null) => void;
+  setBarracoLevel: (level: number) => void;
   
   loadPlayerData: (data: Partial<PlayerState>) => void;
   resetPlayer: () => void;
@@ -26,6 +28,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   progress: 0,
   isGuest: false,
   profilePicture: null,
+  barracoLevel: 1,
   
   setPlayerId: (id: string) => set({ playerId: id }),
   setPlayerName: (name: string) => set({ playerName: name }),
@@ -33,6 +36,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   setProgress: (progress: number) => set({ progress }),
   setIsGuest: (isGuest: boolean) => set({ isGuest }),
   setProfilePicture: (url: string | null) => set({ profilePicture: url }),
+  setBarracoLevel: (level: number) => set({ barracoLevel: Math.max(1, level) }),
   
   loadPlayerData: (data: Partial<PlayerState>) => set(data),
   resetPlayer: () => set({
@@ -42,5 +46,6 @@ export const usePlayerStore = create<PlayerState>((set) => ({
     progress: 0,
     isGuest: false,
     profilePicture: null,
+    barracoLevel: 1,
   }),
 }));

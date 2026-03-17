@@ -2,13 +2,16 @@ import DraggableContainer from '@/components/DraggableContainer';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import SlotMachine from '@/components/SlotMachine';
+import SpinVaultNotification from '@/components/SpinVaultNotification';
 import { Image } from '@/components/ui/image';
 import { useDraggableContainers } from '@/hooks/useDraggableContainers';
+import { useSpinVault } from '@/hooks/useSpinVault';
 import { useState } from 'react';
 
 export default function GiroNoAsfaltoPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
+  const { showNotification, lastGainAmount } = useSpinVault();
 
   const { containers, removeContainer, toggleContainer, resetPositions } = useDraggableContainers([
     { id: 'header', title: 'Header', isVisible: true },
@@ -33,6 +36,8 @@ export default function GiroNoAsfaltoPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0d14] flex flex-col relative">
+      {/* Spin Vault Notification */}
+      <SpinVaultNotification show={showNotification} amount={lastGainAmount} />
       {/* Edit Title Modal */}
       {editingId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[101] backdrop-blur-sm">

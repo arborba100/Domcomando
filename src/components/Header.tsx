@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Settings, Crown, Vault, Zap, Menu, X } from 'lucide-react';
+import { Bell, Settings, Crown, Vault, Zap, Menu, X, Dice5 } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { useGameStore } from '@/store/gameStore';
 import { useDirtyMoneyStore } from '@/store/dirtyMoneyStore';
 import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
 import { usePlayerStore } from '@/store/playerStore';
+import { useSpinVault } from '@/hooks/useSpinVault';
 import { Link } from 'react-router-dom';
 import {
   DropdownMenu,
@@ -18,6 +19,7 @@ export default function Header() {
   const { dirtyMoney } = useDirtyMoneyStore();
   const { cleanMoney } = useCleanMoneyStore();
   const { playerName, level, setPlayerName, setLevel } = usePlayerStore();
+  const { spins, timeUntilNextGain, formatTime } = useSpinVault();
   const [customPlayerName, setCustomPlayerName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('https://static.wixstatic.com/media/50f4bf_a888df3d639f415b853110e459edba8c~mv2.png?originWidth=128&originHeight=128');
   const [isEditingName, setIsEditingName] = useState(false);
@@ -263,7 +265,20 @@ export default function Header() {
               <span className="text-lg font-bold text-white font-heading">R$ {cleanMoney.toLocaleString('pt-BR')}</span>
             </div>
           </div>
-          {/* Dirty Money Vault - Updated from Giro no Asfalto */}
+          {/* Spin Vault */}
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg border-2 border-yellow-400" style={{
+            filter: 'drop-shadow(0 0 10px rgba(255,193,7,0.5))'
+          }}>
+            <Dice5 className="w-6 h-6 text-yellow-400" style={{
+              filter: 'drop-shadow(0 0 8px rgba(255,193,7,0.8))'
+            }} />
+            <div className="flex flex-col">
+              <span className="text-xs text-yellow-400 font-heading">GIROS</span>
+              <span className="text-lg font-bold text-white font-heading">{spins}</span>
+              <span className="text-xs text-yellow-300 font-paragraph">+{Math.max(1, level)} em {formatTime(timeUntilNextGain)}</span>
+            </div>
+          </div>
+
           {/* Level Display */}
 
           <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-logo-gradient-start/20 to-logo-gradient-end/20 rounded-lg border-2 border-logo-gradient-start" style={{

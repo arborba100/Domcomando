@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Image } from '@/components/ui/image';
 import { useGameStore } from '@/store/gameStore';
 import { useDirtyMoneyStore } from '@/store/dirtyMoneyStore';
+import { useSpinVaultStore } from '@/store/spinVaultStore';
+import { usePlayerStore } from '@/store/playerStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const SLOT_ITEMS = [
@@ -70,14 +72,17 @@ const AnimatedMoney: React.FC<AnimatedMoneyProps> = ({ amount, id }) => {
 
 // Spin Button Component - Independent
 function SpinButton() {
-  const { spins, isSpinning, setIsSpinning, subtractSpins } = useGameStore();
+  const { isSpinning, setIsSpinning } = useGameStore();
+  const { spins, deductSpins } = useSpinVaultStore();
   const [selectedMultiplier, setSelectedMultiplier] = useState<number>(1);
 
   const handleSpin = async () => {
     if (spins <= 0 || isSpinning) return;
 
+    // Try to deduct spins
+    if (!deductSpins(1)) return;
+
     setIsSpinning(true);
-    subtractSpins(1);
 
     // Emit custom event for slots to spin
     window.dispatchEvent(new CustomEvent('spinSlots', { detail: { multiplier: selectedMultiplier } }));
@@ -313,17 +318,19 @@ function SlotsDisplay() {
 }
 
 export default function SlotMachine() {
-  const { hasInitialized, setSpins, setDirtMoney, setMultiplier, setHasInitialized } = useGameStore();
+  const { hasInitialized, setDirtMoney, setMultiplier, setHasInitialized } = useGameStore();
+  const { initializeVault } = useSpinVaultStore();
+  const { barracoLevel } = usePlayerStore();
 
   // Initialize game on first load
   useEffect(() => {
     if (!hasInitialized) {
-      setSpins(1000);
       setDirtMoney(0);
       setMultiplier(1);
+      initializeVault(barracoLevel);
       setHasInitialized(true);
     }
-  }, [hasInitialized, setSpins, setDirtMoney, setMultiplier, setHasInitialized]);
+  }, [hasInitialized, setDirtMoney, setMultiplier, setHasInitialized, initializeVault, barracoLevel]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-6">
