@@ -10,8 +10,18 @@ interface TileData {
   isSelected: boolean;
 }
 
+interface LuxuryStoreData {
+  position: { x: number; z: number };
+  gridX: number;
+  gridZ: number;
+  size: number; // 4x4 tiles
+  model: THREE.Group | null;
+  isClickable: boolean;
+}
+
 interface InteractiveTileGridProps {
   onTileSelect?: (tileId: number, position: { x: number; z: number }) => void;
+  onLuxuryStoreClick?: () => void;
   gridWidth?: number;
   gridHeight?: number;
   tileSize?: number;
@@ -19,6 +29,7 @@ interface InteractiveTileGridProps {
 
 const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
   onTileSelect,
+  onLuxuryStoreClick,
   gridWidth = 40,
   gridHeight = 20,
   tileSize = 1,
@@ -33,6 +44,15 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
   const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2());
   const selectedTileRef = useRef<number | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
+  const luxuryStoreRef = useRef<LuxuryStoreData>({
+    position: { x: 0, z: 0 },
+    gridX: 0,
+    gridZ: 0,
+    size: 4,
+    model: null,
+    isClickable: false,
+  });
+  const luxuryStoreGroupRef = useRef<THREE.Group | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -166,21 +186,52 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
     const gridLines = new THREE.LineSegments(gridLinesGeometry, gridLinesMaterial);
     scene.add(gridLines);
 
-    // ===== LOAD OPTIONAL 3D MODEL =====
+    // ===== LOAD LUXURY STORE 3D MODEL =====
     const gltfLoader = new GLTFLoader();
+    
+    // Calculate random position for 4x4 luxury store (16 tiles)
+    const storeSize = 4; // 4x4 tiles
+    const maxGridX = gridWidth - storeSize;
+    const maxGridZ = gridHeight - storeSize;
+    const randomGridX = Math.floor(Math.random() * maxGridX);
+    const randomGridZ = Math.floor(Math.random() * maxGridZ);
+    
+    // Convert grid coordinates to world coordinates
+    const storeWorldX = startX + randomGridX * tileSize + (storeSize * tileSize) / 2;
+    const storeWorldZ = startZ + randomGridZ * tileSize + (storeSize * tileSize) / 2;
+    
+    luxuryStoreRef.current = {
+      position: { x: storeWorldX, z: storeWorldZ },
+      gridX: randomGridX,
+      gridZ: randomGridZ,
+      size: storeSize,
+      model: null,
+      isClickable: true,
+    };
+    
     gltfLoader.load(
-      'https://static.wixstatic.com/3d/50f4bf_d6b5b42919df42f5a18545627953b239.glb',
+      'https://static.wixstatic.com/3d/50f4bf_55eda8581fc04c02a39a33c94b588afc.glb',
       (gltf) => {
         const model = gltf.scene;
+        
+        // Create a group for the luxury store
+        const storeGroup = new THREE.Group();
+        storeGroup.position.set(storeWorldX, 0, storeWorldZ);
+        
+        // Scale model to fit 4x4 tiles (approximately 4 units)
         model.scale.set(2, 2, 2);
-        model.position.set(gridTotalWidth / 2, 0, gridTotalHeight / 2);
         model.castShadow = true;
         model.receiveShadow = true;
-        scene.add(model);
+        
+        storeGroup.add(model);
+        scene.add(storeGroup);
+        
+        luxuryStoreRef.current.model = storeGroup;
+        luxuryStoreGroupRef.current = storeGroup;
       },
       undefined,
       (error) => {
-        console.warn('Failed to load 3D model:', error);
+        console.warn('Failed to load luxury store 3D model:', error);
       }
     );
 
@@ -239,6 +290,17 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
 
     const onMouseClick = (event: MouseEvent) => {
       raycasterRef.current.setFromCamera(mouseRef.current, camera);
+
+      // Check if luxury store was clicked
+      if (luxuryStoreGroupRef.current) {
+        const storeIntersects = raycasterRef.current.intersectObject(luxuryStoreGroupRef.current, true);
+        if (storeIntersects.length > 0) {
+          if (onLuxuryStoreClick) {
+            onLuxuryStoreClick();
+          }
+          return;
+        }
+      }
 
       const intersects = raycasterRef.current.intersectObject(instancedMesh);
 
@@ -309,7 +371,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
       controls.dispose();
       renderer.dispose();
     };
-  }, [gridWidth, gridHeight, tileSize, onTileSelect]);
+  }, [gridWidth, gridHeight, tileSize, onTileSelect, onLuxuryStoreClick]);
 
   return (
     <div

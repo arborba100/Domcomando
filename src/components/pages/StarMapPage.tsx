@@ -1,10 +1,16 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import InteractiveTileGrid from '@/components/game/InteractiveTileGrid';
 
 export default function StarMapPage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showLuxuryNotification, setShowLuxuryNotification] = useState(false);
+
+  const handleLuxuryStoreClick = () => {
+    setShowLuxuryNotification(true);
+    setTimeout(() => setShowLuxuryNotification(false), 3000);
+  };
 
   useEffect(() => {
     // Create animated starfield background
@@ -167,8 +173,20 @@ export default function StarMapPage() {
         <Header />
 
         {/* Interactive Tile Grid Section */}
-        <div className="flex-1 w-full h-full overflow-hidden">
-          <InteractiveTileGrid gridWidth={40} gridHeight={20} tileSize={1} />
+        <div className="flex-1 w-full h-full overflow-hidden relative">
+          <InteractiveTileGrid 
+            gridWidth={40} 
+            gridHeight={20} 
+            tileSize={1}
+            onLuxuryStoreClick={handleLuxuryStoreClick}
+          />
+          
+          {/* Luxury Store Notification */}
+          {showLuxuryNotification && (
+            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-logo-gradient-start to-logo-gradient-end px-6 py-3 rounded-lg shadow-lg animate-pulse">
+              <p className="text-white font-heading text-lg">🏢 Loja de Luxo 3D Clicada!</p>
+            </div>
+          )}
         </div>
 
         <Footer />
