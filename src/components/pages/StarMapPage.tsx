@@ -153,7 +153,7 @@ export default function StarMapPage() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full min-h-screen bg-background overflow-hidden">
+    <div ref={containerRef} className="relative w-full h-screen bg-background overflow-hidden">
       {/* Animated Starfield Background */}
       <canvas
         id="starfield-canvas"
@@ -163,11 +163,11 @@ export default function StarMapPage() {
       {/* Video Background Overlay (for future video integration) */}
       <div className="fixed top-0 left-0 w-full h-full z-0 bg-gradient-to-b from-transparent via-transparent to-background/50" />
       {/* Content */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col">
+      <div className="relative z-10 w-full h-screen flex flex-col">
         <Header />
 
         {/* Interactive Tile Grid Section */}
-        <div className="flex-1 w-full">
+        <div className="flex-1 w-full h-full overflow-hidden">
           <InteractiveTileGrid gridSize={28} tileSize={1} />
         </div>
 
