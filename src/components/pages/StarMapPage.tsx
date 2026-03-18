@@ -160,10 +160,8 @@ export default function StarMapPage() {
         className="fixed top-0 left-0 w-full h-full z-0"
         style={{ display: 'block' }}
       />
-
       {/* Video Background Overlay (for future video integration) */}
       <div className="fixed top-0 left-0 w-full h-full z-0 bg-gradient-to-b from-transparent via-transparent to-background/50" />
-
       {/* Content */}
       <div className="relative z-10 w-full min-h-screen flex flex-col">
         <Header />
@@ -177,76 +175,6 @@ export default function StarMapPage() {
             className="w-full max-w-4xl"
           >
             {/* Central Content Container */}
-            <div className="backdrop-blur-md bg-background/30 border border-subtitle-neon-blue/20 rounded-2xl p-8 md:p-16 text-center">
-              {/* Title */}
-              <motion.h1
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="font-heading text-5xl md:text-7xl font-bold text-foreground mb-4 tracking-wider"
-                style={{
-                  textShadow: '0 0 20px rgba(0, 234, 255, 0.3)',
-                }}
-              >
-                EXPLORE O COSMOS
-              </motion.h1>
-
-              {/* Subtitle */}
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="font-paragraph text-lg md:text-xl text-subtitle-neon-blue mb-12 tracking-wide"
-              >
-                Descubra um universo interativo de possibilidades infinitas
-              </motion.p>
-
-              {/* Divider */}
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="h-1 bg-gradient-to-r from-transparent via-subtitle-neon-blue to-transparent mb-12"
-              />
-
-              {/* 3D Model Container */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-                className="w-full aspect-video md:aspect-square max-h-[600px] rounded-xl border-2 border-subtitle-neon-blue/40 bg-background/50 backdrop-blur-sm flex items-center justify-center overflow-hidden"
-              >
-                {/* IFrame Container for Custom HTML/3D Model */}
-                <div
-                  id="holographic-container"
-                  className="w-full h-full flex items-center justify-center"
-                  style={{
-                    background:
-                      'radial-gradient(circle at center, rgba(0, 234, 255, 0.05) 0%, transparent 70%)',
-                  }}
-                >
-                  {/* Placeholder for custom IFrame */}
-                  <div className="text-center">
-                    <div className="text-subtitle-neon-blue/50 font-paragraph text-sm md:text-base">
-                      Insira seu modelo 3D e grade holográfica aqui
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Animated Border Glow */}
-              <motion.div
-                animate={{
-                  boxShadow: [
-                    '0 0 20px rgba(0, 234, 255, 0.2)',
-                    '0 0 40px rgba(0, 234, 255, 0.4)',
-                    '0 0 20px rgba(0, 234, 255, 0.2)',
-                  ],
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="absolute inset-0 rounded-xl pointer-events-none"
-              />
-            </div>
 
             {/* Floating Elements */}
             <motion.div
