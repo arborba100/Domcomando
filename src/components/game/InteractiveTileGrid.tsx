@@ -166,47 +166,21 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
     const gridLines = new THREE.LineSegments(gridLinesGeometry, gridLinesMaterial);
     scene.add(gridLines);
 
-    // ===== LOAD QG 3D MODEL =====
-    // Position QG in the center 4x4 grid (16 tiles total)
-    const qgGridSize = 4; // 4x4 grid
-    const qgAreaSize = qgGridSize * tileSize; // Size of 4x4 area in world units
-    
-    // Calculate center position of the 4x4 area within the grid
-    // The 4x4 area is centered in the middle of the entire grid
-    // Grid center is at (gridTotalWidth / 2, gridTotalHeight / 2) in world space
-    // But since we offset by startX and startZ, the actual center is at (0, 0)
-    const qgCenterX = (gridTotalWidth / 2) - (gridTotalWidth / 2); // = 0
-    const qgCenterZ = (gridTotalHeight / 2) - (gridTotalHeight / 2); // = 0
-    
+    // ===== LOAD OPTIONAL 3D MODEL =====
     const gltfLoader = new GLTFLoader();
     gltfLoader.load(
-      'https://static.wixstatic.com/3d/50f4bf_938928189a844f56ac340bada0b551bd.glb',
+      'https://static.wixstatic.com/3d/50f4bf_d6b5b42919df42f5a18545627953b239.glb',
       (gltf) => {
         const model = gltf.scene;
-        
-        // Scale model to fit within 4x4 grid area (4 units x 4 units)
-        // Use 80% of available space to leave some padding
-        const scale = (qgAreaSize * 0.8) / 2;
-        model.scale.set(scale, scale, scale);
-        
-        // Position exactly at center of the 4x4 area
-        model.position.set(qgCenterX, 0, qgCenterZ);
+        model.scale.set(2, 2, 2);
+        model.position.set(gridTotalWidth / 2, 0, gridTotalHeight / 2);
         model.castShadow = true;
         model.receiveShadow = true;
-        
-        // Ensure all children also cast/receive shadows
-        model.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-          }
-        });
-        
         scene.add(model);
       },
       undefined,
       (error) => {
-        console.warn('Failed to load QG 3D model:', error);
+        console.warn('Failed to load 3D model:', error);
       }
     );
 
