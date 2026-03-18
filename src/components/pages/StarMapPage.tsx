@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import InteractiveTileGrid from '@/components/game/InteractiveTileGrid';
 
 export default function StarMapPage() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -166,28 +167,11 @@ export default function StarMapPage() {
       <div className="relative z-10 w-full min-h-screen flex flex-col">
         <Header />
 
-        {/* Hero Section */}
-        <div className="flex-1 flex items-center justify-center px-4 py-12 md:py-0">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-            className="w-full max-w-4xl"
-          >
-            {/* Central Content Container */}
-
-            {/* Floating Elements */}
-            <motion.div
-              animate={{ y: [0, -20, 0] }}
-              transition={{ duration: 4, repeat: Infinity }}
-              className="absolute -top-20 -left-20 w-40 h-40 bg-subtitle-neon-blue/5 rounded-full blur-3xl pointer-events-none"
-            />
-            <motion.div
-              animate={{ y: [0, 20, 0] }}
-              transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
-              className="absolute -bottom-20 -right-20 w-40 h-40 bg-logo-gradient-start/5 rounded-full blur-3xl pointer-events-none"
-            />
-          </motion.div>
+        {/* Interactive Tile Grid Section */}
+        <div className="flex-1 flex items-center justify-center px-4 py-12 md:py-0 w-full">
+          <div className="w-full h-full min-h-[600px] md:min-h-[800px]">
+            <InteractiveTileGrid gridSize={28} tileSize={1} />
+          </div>
         </div>
 
         <Footer />
