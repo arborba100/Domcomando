@@ -72,6 +72,9 @@ export default function Multiplayer3DMap() {
     rotationX: 0,
     rotationY: 0,
     distance: 50,
+    panOffsetX: 0,
+    panOffsetY: 0,
+    panOffsetZ: 0,
   });
 
   // Initialize Three.js scene
@@ -204,18 +207,16 @@ export default function Multiplayer3DMap() {
           newControls.rotationX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, newControls.rotationX));
         } else if (prev.isPanning) {
           const panSpeed = 0.1;
-          const centerX = GRID_SIZE / 2;
-          const centerZ = GRID_HEIGHT / 2;
           
+          // Pan in world space - update the center point, not the camera directly
           const panX = -deltaX * panSpeed * Math.cos(prev.rotationY);
           const panZ = -deltaX * panSpeed * Math.sin(prev.rotationY);
           const panY = deltaY * panSpeed;
 
-          if (camera) {
-            camera.position.x += panX;
-            camera.position.z += panZ;
-            camera.position.y += panY;
-          }
+          // Store pan offset to be applied in animate loop
+          newControls.panOffsetX = (newControls.panOffsetX || 0) + panX;
+          newControls.panOffsetZ = (newControls.panOffsetZ || 0) + panZ;
+          newControls.panOffsetY = (newControls.panOffsetY || 0) + panY;
         }
 
         return newControls;
@@ -251,9 +252,9 @@ export default function Multiplayer3DMap() {
 
       // Update camera position based on controls
       if (camera) {
-        const centerX = GRID_SIZE / 2;
-        const centerZ = GRID_HEIGHT / 2;
-        const centerY = 10;
+        const centerX = GRID_SIZE / 2 + cameraControls.panOffsetX;
+        const centerZ = GRID_HEIGHT / 2 + cameraControls.panOffsetZ;
+        const centerY = 10 + cameraControls.panOffsetY;
 
         const x = centerX + cameraControls.distance * Math.sin(cameraControls.rotationY) * Math.cos(cameraControls.rotationX);
         const y = centerY + cameraControls.distance * Math.sin(cameraControls.rotationX);
@@ -813,6 +814,9 @@ export default function Multiplayer3DMap() {
             rotationX: 0,
             rotationY: 0,
             distance: 50,
+            panOffsetX: 0,
+            panOffsetY: 0,
+            panOffsetZ: 0,
           })}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition"
           title="Reset View"
