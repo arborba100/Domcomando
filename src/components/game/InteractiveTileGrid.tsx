@@ -88,11 +88,20 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
 
     // ===== LIGHTING =====
     // Ambient light with warm tone matching São Paulo aesthetic
-    const ambientLight = new THREE.AmbientLight(0xffccaa, 0.8);
+    const ambientLight = new THREE.AmbientLight(0xffccaa, 1.2);
     scene.add(ambientLight);
 
+    // Directional light for better object visibility
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    directionalLight.position.set(gridTotalWidth / 2, maxDim * 0.8, gridTotalHeight / 2);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    directionalLight.shadow.camera.far = 500;
+    scene.add(directionalLight);
+
     // Point light for additional illumination
-    const pointLight = new THREE.PointLight(0xffffff, 1.5);
+    const pointLight = new THREE.PointLight(0xffffff, 2.0);
     pointLight.position.set(gridTotalWidth / 2, maxDim * 1.2, gridTotalHeight / 2);
     pointLight.castShadow = true;
     scene.add(pointLight);
@@ -220,8 +229,25 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
         
         // Scale model to fit 4x4 tiles (approximately 4 units)
         model.scale.set(2, 2, 2);
-        model.castShadow = true;
-        model.receiveShadow = true;
+        
+        // Ensure model sits on the ground (y = 0)
+        model.position.y = 0;
+        
+        // Apply shadow properties recursively to all children
+        model.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            // Enhance material brightness for better visibility
+            if (child.material instanceof THREE.Material) {
+              if (child.material instanceof THREE.MeshStandardMaterial) {
+                child.material.emissiveIntensity = 0.3;
+                child.material.metalness = Math.max(0, child.material.metalness - 0.2);
+                child.material.roughness = Math.min(1, child.material.roughness + 0.1);
+              }
+            }
+          }
+        });
         
         storeGroup.add(model);
         scene.add(storeGroup);
