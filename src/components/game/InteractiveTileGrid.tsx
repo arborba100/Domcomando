@@ -166,21 +166,44 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
     const gridLines = new THREE.LineSegments(gridLinesGeometry, gridLinesMaterial);
     scene.add(gridLines);
 
-    // ===== LOAD OPTIONAL 3D MODEL =====
+    // ===== LOAD QG 3D MODEL =====
+    // Position QG in the center 4x4 grid (16 tiles total)
+    const qgGridSize = 4; // 4x4 grid
+    const qgCenterX = gridTotalWidth / 2;
+    const qgCenterZ = gridTotalHeight / 2;
+    
     const gltfLoader = new GLTFLoader();
     gltfLoader.load(
-      'https://static.wixstatic.com/3d/50f4bf_d6b5b42919df42f5a18545627953b239.glb',
+      'https://static.wixstatic.com/3d/50f4bf_938928189a844f56ac340bada0b551bd.glb',
       (gltf) => {
         const model = gltf.scene;
-        model.scale.set(2, 2, 2);
-        model.position.set(gridTotalWidth / 2, 0, gridTotalHeight / 2);
+        
+        // Calculate scale to fit within 4x4 grid area
+        // 4x4 grid = 4 tiles width/height
+        const qgAreaSize = qgGridSize * tileSize;
+        
+        // Scale model to fit nicely within the 4x4 area
+        const scale = (qgAreaSize * 0.8) / 2; // 80% of available space
+        model.scale.set(scale, scale, scale);
+        
+        // Position at center of grid
+        model.position.set(qgCenterX, 0, qgCenterZ);
         model.castShadow = true;
         model.receiveShadow = true;
+        
+        // Ensure all children also cast/receive shadows
+        model.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        
         scene.add(model);
       },
       undefined,
       (error) => {
-        console.warn('Failed to load 3D model:', error);
+        console.warn('Failed to load QG 3D model:', error);
       }
     );
 
