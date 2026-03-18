@@ -126,20 +126,131 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
     pointLight.castShadow = true;
     scene.add(pointLight);
 
+    // ===== CREATE REALISTIC GROUND TEXTURE =====
+    // Create canvas texture for beaten earth with variations
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d')!;
+    
+    // Base color: grayish-brown (#6b5e4a)
+    const baseColor = '#6b5e4a';
+    ctx.fillStyle = baseColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Add subtle color variations to avoid repetition
+    for (let i = 0; i < 200; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const size = Math.random() * 40 + 10;
+      const variation = Math.random() * 0.15 - 0.075; // ±7.5% variation
+      
+      // Create subtle patches of slightly different colors
+      ctx.fillStyle = `rgba(107, 94, 74, ${0.3 + variation})`;
+      ctx.fillRect(x, y, size, size);
+    }
+    
+    // Add sparse dry grass/vegetation (very light, sparse)
+    for (let i = 0; i < 80; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const grassLength = Math.random() * 8 + 3;
+      
+      // Dry grass color - muted brownish-green
+      ctx.strokeStyle = `rgba(100, 95, 70, ${0.4 + Math.random() * 0.3})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + (Math.random() - 0.5) * 4, y - grassLength);
+      ctx.stroke();
+    }
+    
+    // Add small stones/pebbles scattered across
+    for (let i = 0; i < 120; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const stoneSize = Math.random() * 6 + 2;
+      
+      // Stone colors - gray with slight variation
+      const stoneShade = Math.floor(Math.random() * 30 + 80);
+      ctx.fillStyle = `rgba(${stoneShade}, ${stoneShade - 5}, ${stoneShade - 10}, ${0.6 + Math.random() * 0.3})`;
+      ctx.beginPath();
+      ctx.arc(x, y, stoneSize, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Add subtle shadow to stones
+      ctx.strokeStyle = `rgba(40, 40, 40, 0.3)`;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+    
+    // Add wear marks and natural depressions
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const width = Math.random() * 30 + 15;
+      const height = Math.random() * 8 + 3;
+      
+      ctx.fillStyle = `rgba(60, 55, 45, ${0.2 + Math.random() * 0.2})`;
+      ctx.fillRect(x, y, width, height);
+    }
+    
+    const groundTexture = new THREE.CanvasTexture(canvas);
+    groundTexture.magFilter = THREE.LinearFilter;
+    groundTexture.minFilter = THREE.LinearMipmapLinearFilter;
+    groundTexture.wrapS = THREE.RepeatWrapping;
+    groundTexture.wrapT = THREE.RepeatWrapping;
+    groundTexture.repeat.set(4, 4); // Repeat pattern to avoid obvious tiling
+    
+    // ===== CREATE NORMAL MAP FOR DEPTH =====
+    // Create a simple normal map to simulate surface irregularity
+    const normalCanvas = document.createElement('canvas');
+    normalCanvas.width = 256;
+    normalCanvas.height = 256;
+    const normalCtx = normalCanvas.getContext('2d')!;
+    
+    // Base normal color (neutral blue - 0.5, 0.5, 1.0 in normalized space)
+    normalCtx.fillStyle = '#8080ff';
+    normalCtx.fillRect(0, 0, normalCanvas.width, normalCanvas.height);
+    
+    // Add subtle bumps and depressions
+    for (let i = 0; i < 150; i++) {
+      const x = Math.random() * normalCanvas.width;
+      const y = Math.random() * normalCanvas.height;
+      const size = Math.random() * 20 + 5;
+      
+      // Create subtle normal variations
+      const gradient = normalCtx.createRadialGradient(x, y, 0, x, y, size);
+      gradient.addColorStop(0, '#9090ff');
+      gradient.addColorStop(1, '#7070ff');
+      normalCtx.fillStyle = gradient;
+      normalCtx.beginPath();
+      normalCtx.arc(x, y, size, 0, Math.PI * 2);
+      normalCtx.fill();
+    }
+    
+    const normalMap = new THREE.CanvasTexture(normalCanvas);
+    normalMap.wrapS = THREE.RepeatWrapping;
+    normalMap.wrapT = THREE.RepeatWrapping;
+    normalMap.repeat.set(4, 4);
+    
     // ===== CREATE TILE GRID (40x20 = 800 tiles) =====
     const totalTiles = gridWidth * gridHeight;
     
     // Create 3D box geometry for tiles
     const geometry = new THREE.BoxGeometry(tileSize * 0.9, tileSize * 0.05, tileSize * 0.9);
     
-    // Base material - urban concrete/asphalt style with dark gray
+    // Base material - realistic beaten earth with texture
     const baseMaterial = new THREE.MeshStandardMaterial({
-      color: 0x3a3a3a,
-      metalness: 0.8,
-      roughness: 0.1,
+      map: groundTexture,
+      normalMap: normalMap,
+      color: 0x6b5e4a, // Grayish-brown base color
+      metalness: 0.0, // No metallic shine
+      roughness: 0.9, // Very rough, dry earth appearance
       side: THREE.FrontSide,
-      emissive: 0x003333,
-      emissiveIntensity: 0.2,
+      emissive: 0x000000,
+      emissiveIntensity: 0.0,
+      normalScale: new THREE.Vector2(0.5, 0.5), // Subtle normal map effect
     });
 
     // Create instanced mesh for performance
@@ -179,12 +290,15 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
     instancedMesh.instanceMatrix.needsUpdate = true;
     scene.add(instancedMesh);
 
-    // ===== ADD GROUND PLANE =====
+    // ===== ADD GROUND PLANE WITH REALISTIC TEXTURE =====
     const groundGeometry = new THREE.PlaneGeometry(gridTotalWidth * 1.3, gridTotalHeight * 1.3);
     const groundMaterial = new THREE.MeshStandardMaterial({
-      color: 0x2a2a2a,
-      metalness: 0.3,
+      map: groundTexture,
+      normalMap: normalMap,
+      color: 0x6b5e4a, // Match tile color for consistency
+      metalness: 0.0,
       roughness: 0.9,
+      normalScale: new THREE.Vector2(0.5, 0.5),
     });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
@@ -560,6 +674,8 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = ({
       groundMaterial.dispose();
       gridLinesGeometry.dispose();
       gridLinesMaterial.dispose();
+      groundTexture.dispose();
+      normalMap.dispose();
       instancedMesh.dispose();
       controls.dispose();
       renderer.dispose();
