@@ -5,12 +5,48 @@ import { useGameStore } from '@/store/gameStore';
 import { useLuxuryShopStore, luxuryItems } from '@/store/luxuryShopStore';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BaseCrudService } from '@/integrations';
+import { Players } from '@/entities';
 
 export default function LuxuryShowroomPage() {
-  const { playerLevel, dirtMoney, setDirtMoney } = useGameStore();
+  const { dirtMoney, setDirtMoney } = useGameStore();
   const { purchaseItem, isPurchased } = useLuxuryShopStore();
+  const [barraco, setBarraco] = useState<Players | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Find the item that matches the player's level
+  // Load barraco level from database
+  useEffect(() => {
+    const loadBarracoLevel = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        let playerId = urlParams.get('playerId') || localStorage.getItem('currentPlayerId') || '';
+        
+        if (!playerId) {
+          const result = await BaseCrudService.getAll<Players>('players', [], { limit: 1 });
+          if (result.items && result.items.length > 0) {
+            playerId = result.items[0]._id;
+            localStorage.setItem('currentPlayerId', playerId);
+          }
+        }
+
+        if (playerId) {
+          const playerData = await BaseCrudService.getById<Players>('players', playerId);
+          setBarraco(playerData);
+        }
+      } catch (err) {
+        console.error('Failed to load barraco level:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBarracoLevel();
+  }, []);
+
+  const playerLevel = barraco?.level || 1;
+
+  // Find the item that matches the barraco level
   const matchingItem = luxuryItems.find(item => item.level === playerLevel);
 
   const handlePurchase = () => {
