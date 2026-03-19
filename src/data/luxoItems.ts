@@ -246,3 +246,78 @@ const luxuryItems = {
                                                                                                                                                                                                                                                   };
 
 }
+const luxuryItems = {
+    31: [
+        { name: "Colar Imperial Noir", price: 2093.92 },
+            { name: "Anel Imperial Noir", price: 2093.92 },
+                { name: "Pulseira Imperial Noir", price: 2093.92 },
+                    { name: "Relógio Imperial Noir", price: 2093.92 },
+                        { name: "Bolsa Imperial Noir", price: 2093.92 },
+                          ],
+                            32: [
+                                { name: "Colar Crown Legacy", price: 2303.31 },
+                                    { name: "Anel Crown Legacy", price: 2303.31 },
+                                        { name: "Pulseira Crown Legacy", price: 2303.31 },
+                                            { name: "Relógio Crown Legacy", price: 2303.31 },
+                                                { name: "Bolsa Crown Legacy", price: 2303.31 },
+                                                  ],
+                                                    33: [
+                                                        { name: "Colar Supreme Dynasty", price: 2533.64 },
+                                                            { name: "Anel Supreme Dynasty", price: 2533.64 },
+                                                                { name: "Pulseira Supreme Dynasty", price: 2533.64 },
+                                                                    { name: "Relógio Supreme Dynasty", price: 2533.64 },
+                                                                        { name: "Bolsa Supreme Dynasty", price: 2533.64 },
+                                                                          ],
+                                                                            34: [
+                                                                                { name: "Colar Golden Empire", price: 2787.00 },
+                                                                                    { name: "Anel Golden Empire", price: 2787.00 },
+                                                                                        { name: "Pulseira Golden Empire", price: 2787.00 },
+                                                                                            { name: "Relógio Golden Empire", price: 2787.00 },
+                                                                                                { name: "Bolsa Golden Empire", price: 2787.00 },
+                                                                                                  ],
+                                                                                                    35: [
+                                                                                                        { name: "Colar Infinite Prestige", price: 3065.70 },
+                                                                                                            { name: "Anel Infinite Prestige", price: 3065.70 },
+                                                                                                                { name: "Pulseira Infinite Prestige", price: 3065.70 },
+                                                                                                                    { name: "Relógio Infinite Prestige", price: 3065.70 },
+                                                                                                                        { name: "Bolsa Infinite Prestige", price: 3065.70 },
+                                                                                                                          ],
+                                                                                                                            36: [
+                                                                                                                                { name: "Colar Platinum Empire", price: 3372.27 },
+                                                                                                                                    { name: "Anel Platinum Empire", price: 3372.27 },
+                                                                                                                                        { name: "Pulseira Platinum Empire", price: 3372.27 },
+                                                                                                                                            { name: "Relógio Platinum Empire", price: 3372.27 },
+                                                                                                                                                { name: "Bolsa Platinum Empire", price: 3372.27 },
+                                                                                                                                                  ],
+                                                                                                                                                    37: [
+                                                                                                                                                        { name: "Colar Diamond Sovereign", price: 3709.50 },
+                                                                                                                                                            { name: "Anel Diamond Sovereign", price: 3709.50 },
+                                                                                                                                                                { name: "Pulseira Diamond Sovereign", price: 3709.50 },
+                                                                                                                                                                    { name: "Relógio Diamond Sovereign", price: 3709.50 },
+                                                                                                                                                                        { name: "Bolsa Diamond Sovereign", price: 3709.50 },
+                                                                                                                                                                          ],
+                                                                                                                                                                            38: [
+                                                                                                                                                                                { name: "Colar Black Crown Elite", price: 4080.45 },
+                                                                                                                                                                                    { name: "Anel Black Crown Elite", price: 4080.45 },
+                                                                                                                                                                                        { name: "Pulseira Black Crown Elite", price: 4080.45 },
+                                                                                                                                                                                            { name: "Relógio Black Crown Elite", price: 4080.45 },
+                                                                                                                                                                                                { name: "Bolsa Black Crown Elite", price: 4080.45 },
+                                                                                                                                                                                                  ],
+                                                                                                                                                                                                    39: [
+                                                                                                                                                                                                        { name: "Colar Obsidian Royalty", price: 4488.50 },
+                                                                                                                                                                                                            { name: "Anel Obsidian Royalty", price: 4488.50 },
+                                                                                                                                                                                                                { name: "Pulseira Obsidian Royalty", price: 4488.50 },
+                                                                                                                                                                                                                    { name: "Relógio Obsidian Royalty", price: 4488.50 },
+                                                                                                                                                                                                                        { name: "Bolsa Obsidian Royalty", price: 4488.50 },
+                                                                                                                                                                                                                          ],
+                                                                                                                                                                                                                            40: [
+                                                                                                                                                                                                                                { name: "Colar Apex Dynasty", price: 4937.35 },
+                                                                                                                                                                                                                                    { name: "Anel Apex Dynasty", price: 4937.35 },
+                                                                                                                                                                                                                                        { name: "Pulseira Apex Dynasty", price: 4937.35 },
+                                                                                                                                                                                                                                            { name: "Relógio Apex Dynasty", price: 4937.35 },
+                                                                                                                                                                                                                                                { name: "Bolsa Apex Dynasty", price: 4937.35 },
+                                                                                                                                                                                                                                                  ],
+                                                                                                                                                                                                                                                  };
+
+
+}
