@@ -1,15 +1,19 @@
+import { Image } from '@/components/ui/image';
+
 export default function LuxuryShowroomPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-black overflow-hidden">
-      {/* Cinematographic background with gradient and spotlight effects */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-black to-slate-950" />
-        
-        {/* Spotlight effects */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl opacity-30" />
-        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-amber-400/5 rounded-full blur-3xl opacity-20" />
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl opacity-25" />
-      </div>
+    <div className="w-full h-screen fixed inset-0 overflow-hidden">
+      {/* Full-screen background image */}
+      <Image
+        src="https://static.wixstatic.com/media/50f4bf_38c9f88d54654e38906e049af6a8b5a4~mv2.png"
+        alt="Luxury Showroom Background"
+        className="w-full h-full object-cover"
+        width={1920}
+        height={1080}
+      />
+      
+      {/* Overlay for content */}
+      <div className="absolute inset-0 bg-black/20" />
     </div>
   );
 }
