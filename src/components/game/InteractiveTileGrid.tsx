@@ -523,11 +523,14 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     // ===== ORBIT CONTROLS WITH CUSTOM CONFIGURATION =====
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    // ===== CAMERA TARGET (Fixed at platform center) =====
-    const platformCenterX = gridTotalWidth / 2;
-    const platformCenterY = 0; // Ground level - FIXED, cannot change
-    const platformCenterZ = gridTotalHeight / 2;
-    controls.target.set(platformCenterX, platformCenterY, platformCenterZ);
+    // ===== CAMERA CONTROLS - Configuração conforme solicitado =====
+    controls.enablePan = true;          // permite mover lateralmente
+    controls.enableZoom = true;         // permite zoom
+    controls.enableRotate = true;       // permite girar em torno do grid
+    controls.target.set(0, 0, 0);       // centraliza no grid fixo
+    controls.maxPolarAngle = Math.PI/2; // impede câmera passar pelo chão
+    controls.minDistance = 10;          // zoom mínimo
+    controls.maxDistance = 100;         // zoom máximo
 
     // ===== DAMPING CONFIGURATION (Smooth Movement) =====
     controls.enableDamping = true;
@@ -536,24 +539,10 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     controls.autoRotateSpeed = 0;
 
     // ===== ZOOM CONFIGURATION =====
-    controls.enableZoom = true;
     controls.zoomSpeed = 1.2; // Sensitivity for scroll/pinch
-    controls.minDistance = maxDim * 0.4; // Zoom in limit (close to platform)
-    controls.maxDistance = maxDim * 2.5; // Zoom out limit (overview)
-
-    // ===== PAN CONFIGURATION =====
-    controls.enablePan = false; // Disable panning to keep focus on center
 
     // ===== ROTATION CONFIGURATION =====
-    controls.enableRotate = true;
     controls.rotateSpeed = 0.8; // Rotation sensitivity
-
-    // ===== VERTICAL ANGLE LOCK (Polar Angle: 30° to 75°) =====
-    // Convert degrees to radians
-    // 30° = Math.PI / 6 ≈ 0.524 rad
-    // 75° = Math.PI * 0.417 ≈ 1.309 rad
-    controls.minPolarAngle = Math.PI / 6; // 30° - slight incline
-    controls.maxPolarAngle = (Math.PI * 5) / 12; // 75° - tilted view
 
     // ===== AZIMUTH LOCK (Horizontal rotation only) =====
     // Allow free rotation around Y-axis (no restrictions)
@@ -567,54 +556,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     controls.update();
     controlsRef.current = controls;
 
-    // ===== ABSOLUTE GRID LOCK - PREVENT ANY MOVEMENT =====
-    // Store the fixed target position
-    const fixedTarget = new THREE.Vector3(platformCenterX, platformCenterY, platformCenterZ);
 
-    // Override the update method to enforce absolute grid immobility
-    const originalUpdate = controls.update.bind(controls);
-    controls.update = function() {
-      originalUpdate();
-
-      // RULE 1: Force target to remain at fixed position (0, 0, 0) relative to grid center
-      this.target.copy(fixedTarget);
-
-      // RULE 2: Lock all grid objects to prevent any transformation
-      // Grid position: LOCKED at (0, 0, 0)
-      if (instancedMesh) {
-        instancedMesh.position.set(0, 0, 0);
-        instancedMesh.rotation.set(0, 0, 0);
-        instancedMesh.scale.set(1, 1, 1);
-      }
-
-      // Lock ground plane
-      if (ground) {
-        ground.position.set(0, -0.05, 0);
-        ground.rotation.set(-Math.PI / 2, 0, 0);
-        ground.scale.set(1, 1, 1);
-      }
-
-      // Lock grid lines
-      if (gridLines) {
-        gridLines.position.set(0, 0, 0);
-        gridLines.rotation.set(0, 0, 0);
-        gridLines.scale.set(1, 1, 1);
-      }
-
-      // Lock luxury store group
-      if (luxuryStoreGroupRef.current) {
-        luxuryStoreGroupRef.current.position.set(storeWorldX, 0, storeWorldZ);
-        luxuryStoreGroupRef.current.rotation.set(0, 0, 0);
-        luxuryStoreGroupRef.current.scale.set(1, 1, 1);
-      }
-
-      // Lock QG group
-      if (qgGroupRef.current) {
-        qgGroupRef.current.position.set(qgWorldX, 0, qgWorldZ);
-        qgGroupRef.current.rotation.set(0, 0, 0);
-        qgGroupRef.current.scale.set(1, 1, 1);
-      }
-    };
 
     // ===== MOUSE INTERACTION FOR TILE SELECTION =====
     const onMouseMove = (event: MouseEvent) => {
