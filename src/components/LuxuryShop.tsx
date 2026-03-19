@@ -48,19 +48,6 @@ export default function LuxuryShop() {
           >
             <div className="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-amber-500 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
               {/* Header */}
-              <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-6 py-4 flex items-center justify-between border-b border-amber-700">
-                <div className="flex items-center gap-3">
-                  <ShoppingBag className="w-6 h-6 text-amber-300" />
-                  <h2 className="font-heading text-2xl text-amber-100">Loja de Luxo</h2>
-                </div>
-                <button
-                  onClick={handleClose}
-                  className="p-2 hover:bg-amber-700 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5 text-amber-100" />
-                </button>
-              </div>
-
               {/* Content */}
               <div className="flex-1 overflow-y-auto flex gap-6 p-6">
                 {/* Items Grid */}
@@ -208,6 +195,19 @@ export default function LuxuryShop() {
                     )}
                   </motion.div>
                 )}
+              </div>
+
+              <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-6 py-4 flex items-center justify-between border-b border-amber-700">
+                <div className="flex items-center gap-3">
+                  <ShoppingBag className="w-6 h-6 text-amber-300" />
+                  <h2 className="font-heading text-2xl text-amber-100">Loja de Luxo</h2>
+                </div>
+                <button
+                  onClick={handleClose}
+                  className="p-2 hover:bg-amber-700 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-amber-100" />
+                </button>
               </div>
 
               {/* Footer */}
