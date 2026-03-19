@@ -11,7 +11,10 @@ export default function StarMapPage() {
 
   const handleLuxuryStoreClick = () => {
     setShowLuxuryNotification(true);
-    setTimeout(() => setShowLuxuryNotification(false), 3000);
+    setTimeout(() => {
+      setShowLuxuryNotification(false);
+      window.location.href = '/luxury-showroom';
+    }, 1500);
   };
 
   const handleQGClick = () => {
