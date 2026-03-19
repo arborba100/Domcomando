@@ -26,7 +26,6 @@ const Luxo14Page = lazy(() => import('@/components/pages/Luxo14Page'));
 const Luxo15Page = lazy(() => import('@/components/pages/Luxo15Page'));
 const Game2Page = lazy(() => import('@/components/pages/Game2Page'));
 const BarracoPage = lazy(() => import('@/components/pages/BarracoPage'));
-const ProjectsPage = lazy(() => import('@/components/pages/ProjectsPage'));
 const BriberyGuardPage = lazy(() => import('@/components/pages/BriberyGuardPage'));
 const BriberyInvestigadorPage = lazy(() => import('@/components/pages/BriberyInvestigadorPage'));
 const BriberyDelegadoPage = lazy(() => import('@/components/pages/BriberyDelegadoPage'));
@@ -197,13 +196,6 @@ const router = createBrowserRouter([
         element: <BarracoPage />,
         routeMetadata: {
           pageIdentifier: 'barraco',
-        },
-      },
-      {
-        path: "projects",
-        element: <ProjectsPage />,
-        routeMetadata: {
-          pageIdentifier: 'projects',
         },
       },
       {
