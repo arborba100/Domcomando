@@ -108,6 +108,16 @@ const luxuryItems: LuxuryItem[] = [
     image: 'https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.png',
     bonus: { moneyMultiplier: 1.8, spinsBonus: 150 },
   },
+  {
+    id: 'ultimate-empire',
+    name: 'Império Supremo',
+    description: 'O pico do luxo - controle total do império criminal',
+    price: 500000,
+    level: 100,
+    category: 'property',
+    image: 'https://static.wixstatic.com/media/12d367_71ebdd7141d041e4be3d91d80d4578dd~mv2.png',
+    bonus: { moneyMultiplier: 5, spinsBonus: 1000, levelBonus: 10 },
+  },
 ];
 
 export const useLuxuryShopStore = create<LuxuryShopState>()(
