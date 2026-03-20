@@ -27,7 +27,13 @@ export default function LuxuryShowroomPage() {
 
                                       // ✅ LÓGICA AJUSTADA (base no nível do barraco)
 
+const level = usePlayerStore((state) => state.barracoLevel);
 
+if (!level) {
+  return <div>Carregando...</div>;
+  }
+
+  const system = getLuxurySystem(level);
                                           const items = (system?.items || []).map((item, index) => ({
                                               id: index,
                                                   name: item.name,
