@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Image } from '@/components/ui/image';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import BlingModal from '@/components/BlingModal';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import LuxuryNPCDialog from '@/components/LuxuryNPCDialog';
+import { Image } from '@/components/ui/image';
 import { usePlayerStore } from '@/store/playerStore';
+import { useEffect, useState } from 'react';
 
 // ✅ NOVO IMPORT
-import { getLuxurySystem } from '../../data/luxoItems';
 
 export default function LuxuryShowroomPage() {
   const [showItemsModal, setShowItemsModal] = useState(false);
@@ -28,7 +26,7 @@ export default function LuxuryShowroomPage() {
                                     }, []);
 
                                       // ✅ LÓGICA AJUSTADA (base no nível do barraco)
-                                        const system = getLuxurySystem(barracoLevel || 1
+
 
                                           const items = (system?.items || []).map((item, index) => ({
                                               id: index,
