@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import BlingModal from '@/components/BlingModal';
 import LuxuryNPCDialog from '@/components/LuxuryNPCDialog';
 import Luxury3DShowroom from '@/components/Luxury3DShowroom';
+import CreditCardPurchaseAnimation from '@/components/CreditCardPurchaseAnimation';
 import { usePlayerStore } from '@/store/playerStore';
 import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
 import { BaseCrudService } from '@/integrations';
@@ -21,6 +22,8 @@ export default function LuxuryShowroomPage() {
   const [purchaseMessage, setPurchaseMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [purchasedItems, setPurchasedItems] = useState<Set<number>>(new Set());
+  const [showCardAnimation, setShowCardAnimation] = useState(false);
+  const [animatingItem, setAnimatingItem] = useState<{ name: string; price: number } | null>(null);
 
   // 🔥 STORE
   const barracoLevel = usePlayerStore((state) => state.barracoLevel);
@@ -93,10 +96,17 @@ export default function LuxuryShowroomPage() {
     }
 
     if (cleanMoney >= item.price) {
-      removeCleanMoney(item.price);
-      setPurchasedItems(new Set(purchasedItems).add(itemIndex));
-      setPurchaseMessage(`✅ ${item.name} comprado com sucesso!`);
-      setTimeout(() => setPurchaseMessage(''), 3000);
+      // Inicia animação do cartão
+      setAnimatingItem({ name: item.name, price: item.price });
+      setShowCardAnimation(true);
+      
+      // Após a animação, completa a compra
+      setTimeout(() => {
+        removeCleanMoney(item.price);
+        setPurchasedItems(new Set(purchasedItems).add(itemIndex));
+        setPurchaseMessage(`✅ ${item.name} comprado com sucesso!`);
+        setTimeout(() => setPurchaseMessage(''), 3000);
+      }, 5000);
     } else {
       setPurchaseMessage(`❌ Dinheiro insuficiente! Faltam R$ ${(item.price - cleanMoney).toLocaleString('pt-BR')}`);
       setTimeout(() => setPurchaseMessage(''), 3000);
@@ -106,6 +116,19 @@ export default function LuxuryShowroomPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
+
+      {/* ANIMAÇÃO DO CARTÃO DE CRÉDITO */}
+      {animatingItem && (
+        <CreditCardPurchaseAnimation
+          isVisible={showCardAnimation}
+          itemName={animatingItem.name}
+          price={animatingItem.price}
+          onComplete={() => {
+            setShowCardAnimation(false);
+            setAnimatingItem(null);
+          }}
+        />
+      )}
 
       <div className="flex-1 relative w-full overflow-hidden bg-black">
 
