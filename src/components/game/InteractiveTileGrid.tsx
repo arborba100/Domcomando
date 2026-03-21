@@ -102,6 +102,9 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // Set scene as ready immediately so GiroAsfaltoObject can be rendered
+    setSceneReady(true);
+
     // ===== SCENE SETUP =====
     const scene = new THREE.Scene();
     scene.background = null; // Transparent background to show page background
@@ -871,7 +874,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
       controls.dispose();
       renderer.dispose();
 
-      setSceneReady(true);
+      setSceneReady(false);
     };
   }, [gridWidth, gridHeight, tileSize, onTileSelect, onLuxuryStoreClick, onQGClick, customObjects, level, navigate]);
 

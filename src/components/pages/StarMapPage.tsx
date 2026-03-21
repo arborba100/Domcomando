@@ -200,18 +200,6 @@ export default function StarMapPage() {
             tileSize={1}
             onLuxuryStoreClick={handleLuxuryStoreClick}
             onQGClick={handleQGClick}
-            customObjects={[
-              {
-                position: { x: -12, z: 12 },
-                gridX: 28,
-                gridZ: 8,
-                size: 8,
-                model: null,
-                isClickable: true,
-                modelUrl: 'https://static.wixstatic.com/3d/50f4bf_938928189a844f56ac340bada0b551bd.glb',
-                onClickCallback: handleGiroClick,
-              },
-            ]}
           />
           
           {/* Luxury Store Notification */}
