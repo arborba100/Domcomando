@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import InteractiveTileGrid from '@/components/game/InteractiveTileGrid';
+import { useNavigate } from 'react-router-dom';
 
 export default function StarMapPage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   const [showLuxuryNotification, setShowLuxuryNotification] = useState(false);
-
   const [showQGNotification, setShowQGNotification] = useState(false);
+  const [showGiroNotification, setShowGiroNotification] = useState(false);
 
   const handleLuxuryStoreClick = () => {
     setShowLuxuryNotification(true);
@@ -20,6 +22,14 @@ export default function StarMapPage() {
   const handleQGClick = () => {
     setShowQGNotification(true);
     setTimeout(() => setShowQGNotification(false), 3000);
+  };
+
+  const handleGiroClick = () => {
+    setShowGiroNotification(true);
+    setTimeout(() => {
+      setShowGiroNotification(false);
+      navigate('/giro-no-asfalto');
+    }, 1500);
   };
 
   useEffect(() => {
@@ -190,6 +200,18 @@ export default function StarMapPage() {
             tileSize={1}
             onLuxuryStoreClick={handleLuxuryStoreClick}
             onQGClick={handleQGClick}
+            customObjects={[
+              {
+                position: { x: -12, z: 12 },
+                gridX: 28,
+                gridZ: 8,
+                size: 8,
+                model: null,
+                isClickable: true,
+                modelUrl: 'https://static.wixstatic.com/3d/50f4bf_938928189a844f56ac340bada0b551bd.glb',
+                onClickCallback: handleGiroClick,
+              },
+            ]}
           />
           
           {/* Luxury Store Notification */}
@@ -203,6 +225,13 @@ export default function StarMapPage() {
           {showQGNotification && (
             <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-subtitle-neon-blue to-player-info-glow-blue px-6 py-3 rounded-lg shadow-lg animate-pulse">
               <p className="text-white font-heading text-lg">🏛️ Quartel General Clicado!</p>
+            </div>
+          )}
+
+          {/* Giro Notification */}
+          {showGiroNotification && (
+            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-logo-gradient-start to-logo-gradient-end px-6 py-3 rounded-lg shadow-lg animate-pulse">
+              <p className="text-white font-heading text-lg">🎰 Giro no Asfalto Clicado!</p>
             </div>
           )}
         </div>

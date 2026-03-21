@@ -6,10 +6,8 @@ import { lazy, Suspense } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 const HomePage = lazy(() => import('@/components/pages/HomePage'));
-const GamePage1 = lazy(() => import('@/components/pages/GamePage1'));
 const GiroNoAsfaltoPage = lazy(() => import('@/components/pages/GiroNoAsfaltoPage'));
 const LuxuryShowroomPage = lazy(() => import('@/components/pages/LuxuryShowroomPage'));
-const Game2Page = lazy(() => import('@/components/pages/Game2Page'));
 const BarracoPage = lazy(() => import('@/components/pages/BarracoPage'));
 const BriberyGuardPage = lazy(() => import('@/components/pages/BriberyGuardPage'));
 const BriberyInvestigadorPage = lazy(() => import('@/components/pages/BriberyInvestigadorPage'));
@@ -23,7 +21,6 @@ const BriberyGovernadorPage = lazy(() => import('@/components/pages/BriberyGover
 const BriberyMinistroPage = lazy(() => import('@/components/pages/BriberyMinistroPage'));
 const BriberyPresidentePage = lazy(() => import('@/components/pages/BriberyPresidentePage'));
 const StarMapPage = lazy(() => import('@/components/pages/StarMapPage'));
-const CameraControlPage = lazy(() => import('@/components/pages/CameraControlPage'));
 const ResetLuxuryPage = lazy(() => import('@/components/pages/ResetLuxuryPage'));
 
 // Layout component that includes ScrollToTop
@@ -49,20 +46,6 @@ const router = createBrowserRouter([
         element: <HomePage />,
         routeMetadata: {
           pageIdentifier: 'home',
-        },
-      },
-      {
-        path: "game1",
-        element: <GamePage1 />,
-        routeMetadata: {
-          pageIdentifier: 'game1',
-        },
-      },
-      {
-        path: "game2",
-        element: <Game2Page />,
-        routeMetadata: {
-          pageIdentifier: 'game2',
         },
       },
       {
@@ -168,13 +151,6 @@ const router = createBrowserRouter([
         element: <StarMapPage />,
         routeMetadata: {
           pageIdentifier: 'star-map',
-        },
-      },
-      {
-        path: "camera-control",
-        element: <CameraControlPage />,
-        routeMetadata: {
-          pageIdentifier: 'camera-control',
         },
       },
       {

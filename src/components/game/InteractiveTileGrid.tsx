@@ -28,10 +28,22 @@ interface QGData {
   isClickable: boolean;
 }
 
+interface CustomObjectData {
+  position: { x: number; z: number };
+  gridX: number;
+  gridZ: number;
+  size: number;
+  model: THREE.Group | null;
+  isClickable: boolean;
+  modelUrl: string;
+  onClickCallback?: () => void;
+}
+
 interface InteractiveTileGridProps {
   onTileSelect?: (tileId: number, position: { x: number; z: number }) => void;
   onLuxuryStoreClick?: () => void;
   onQGClick?: () => void;
+  customObjects?: CustomObjectData[];
   gridWidth?: number;
   gridHeight?: number;
   tileSize?: number;
@@ -42,6 +54,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     onTileSelect,
     onLuxuryStoreClick,
     onQGClick,
+    customObjects = [],
     gridWidth = 40,
     gridHeight = 20,
     tileSize = 1,
@@ -75,6 +88,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     isClickable: false,
   });
   const qgGroupRef = useRef<THREE.Group | null>(null);
+  const customObjectsRef = useRef<Map<number, THREE.Group>>(new Map());
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -520,6 +534,66 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
       }
     );
 
+    // ===== LOAD CUSTOM 3D OBJECTS =====
+    customObjects.forEach((customObj, index) => {
+      gltfLoader.load(
+        customObj.modelUrl,
+        (gltf) => {
+          const model = gltf.scene;
+
+          // Create a group for the custom object
+          const objGroup = new THREE.Group();
+
+          // Position at center of platform
+          objGroup.position.set(customObj.position.x, 0, customObj.position.z);
+
+          // Calculate bounding box to determine proper scale
+          const bbox = new THREE.Box3().setFromObject(model);
+          const size = bbox.getSize(new THREE.Vector3());
+          const maxDim = Math.max(size.x, size.y, size.z);
+
+          // Scale to fit the specified size
+          const targetSize = customObj.size * tileSize;
+          const scale = targetSize / maxDim;
+          model.scale.set(scale, scale, scale);
+
+          // Center the model within the group
+          bbox.setFromObject(model);
+          const center = bbox.getCenter(new THREE.Vector3());
+          model.position.sub(center);
+
+          // Ensure model sits on the ground (y = 0)
+          bbox.setFromObject(model);
+          const bottomY = bbox.min.y;
+          model.position.y -= bottomY;
+
+          // Apply shadow properties recursively to all children
+          model.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+              if (child.material instanceof THREE.Material) {
+                if (child.material instanceof THREE.MeshStandardMaterial) {
+                  child.material.emissiveIntensity = 0.3;
+                  child.material.metalness = Math.max(0, child.material.metalness - 0.2);
+                  child.material.roughness = Math.min(1, child.material.roughness + 0.1);
+                }
+              }
+            }
+          });
+
+          objGroup.add(model);
+          scene.add(objGroup);
+
+          customObjectsRef.current.set(index, objGroup);
+        },
+        undefined,
+        (error) => {
+          console.warn(`Failed to load custom object ${index}:`, error);
+        }
+      );
+    });
+
     // ===== ORBIT CONTROLS WITH CUSTOM CONFIGURATION =====
     const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -567,6 +641,20 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
 
     const onMouseClick = (event: MouseEvent) => {
       raycasterRef.current.setFromCamera(mouseRef.current, camera);
+
+      // Check if custom objects were clicked
+      for (let i = 0; i < customObjects.length; i++) {
+        const customObjGroup = customObjectsRef.current.get(i);
+        if (customObjGroup) {
+          const customIntersects = raycasterRef.current.intersectObject(customObjGroup, true);
+          if (customIntersects.length > 0) {
+            if (customObjects[i].onClickCallback) {
+              customObjects[i].onClickCallback!();
+            }
+            return;
+          }
+        }
+      }
 
       // Check if QG was clicked
       if (qgGroupRef.current) {
@@ -661,7 +749,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
       controls.dispose();
       renderer.dispose();
     };
-  }, [gridWidth, gridHeight, tileSize, onTileSelect, onLuxuryStoreClick, onQGClick]);
+  }, [gridWidth, gridHeight, tileSize, onTileSelect, onLuxuryStoreClick, onQGClick, customObjects]);
 
   return (
     <div
