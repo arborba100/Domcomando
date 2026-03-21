@@ -34,13 +34,13 @@ export default function HomePage() {
     setIsLoading(provider);
     try {
       if (provider === 'visitor') {
-        // For visitor access, navigate directly to game2
-        navigate('/game2');
+        // For visitor access, navigate directly to star-map
+        navigate('/star-map');
       } else {
         // Trigger actual authentication via Wix Members SDK for other providers
         await actions.login();
-        // After successful login, navigate to game2
-        navigate('/game2');
+        // After successful login, navigate to star-map
+        navigate('/star-map');
       }
     } catch (error) {
       console.error(`Login failed for ${provider}:`, error);
@@ -267,7 +267,7 @@ export default function HomePage() {
                     ) : (
                       <span className="flex items-center justify-center gap-3">
                         <UserCircle className="w-5 h-5" />
-                        Acesso Visitante
+                        Continuar para Mapa
                       </span>
                     )}
                   </Button>

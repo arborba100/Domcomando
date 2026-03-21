@@ -6,6 +6,7 @@
 export { GridSystem, type GridConfig, type GridPosition, type GridObject, type OccupiedTile } from './GridSystem';
 export { SpatialValidator, type ValidationResult } from './SpatialValidator';
 export { ObjectPositioner, type PositioningOptions } from './ObjectPositioner';
+export { Object3DScaler, type ScalingConfig, type Object3DMetrics, type ScaledObject3D } from './Object3DScaler';
 export { PLATFORM_RULES, calculateTileSetCenter, getOccupiedTiles, isWithinPlatformBounds } from './PlatformRules';
 export { default as briberyZoneSystem } from './briberyZoneSystem';
 export { default as factionSystem } from './factionSystem';

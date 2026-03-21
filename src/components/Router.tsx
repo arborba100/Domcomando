@@ -6,7 +6,6 @@ import { lazy, Suspense } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 const HomePage = lazy(() => import('@/components/pages/HomePage'));
-const GamePage2 = lazy(() => import('@/components/pages/GamePage2'));
 const GiroNoAsfaltoPage = lazy(() => import('@/components/pages/GiroNoAsfaltoPage'));
 const LuxuryShowroomPage = lazy(() => import('@/components/pages/LuxuryShowroomPage'));
 const BarracoPage = lazy(() => import('@/components/pages/BarracoPage'));
@@ -50,10 +49,10 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "game2",
-        element: <GamePage2 />,
+        path: "star-map",
+        element: <StarMapPage />,
         routeMetadata: {
-          pageIdentifier: 'game2',
+          pageIdentifier: 'star-map',
         },
       },
       {
@@ -152,13 +151,6 @@ const router = createBrowserRouter([
         element: <BriberyPresidentePage />,
         routeMetadata: {
           pageIdentifier: 'bribery-presidente',
-        },
-      },
-      {
-        path: "star-map",
-        element: <StarMapPage />,
-        routeMetadata: {
-          pageIdentifier: 'star-map',
         },
       },
       {
