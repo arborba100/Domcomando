@@ -88,7 +88,10 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     isClickable: false,
   });
   const qgGroupRef = useRef<THREE.Group | null>(null);
+  const delegaciaGroupRef = useRef<THREE.Group | null>(null);
   const customObjectsRef = useRef<Map<number, THREE.Group>>(new Map());
+  const navigate = useNavigate();
+  const { level } = usePlayerStore();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -594,6 +597,87 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
       );
     });
 
+    // ===== LOAD DELEGACIA 3D MODEL (8 tiles - 2x4 format) =====
+    // Position the delegacia in a strategic location (lower-right area)
+    const delegaciaSize = 2; // 2 tiles wide
+    const delegaciaDepth = 4; // 4 tiles deep
+    const delegaciaGridX = 28; // Right side of grid
+    const delegaciaGridZ = 12; // Lower-middle area
+
+    // Convert grid coordinates to world coordinates
+    const delegaciaCenterGridX = delegaciaGridX + delegaciaSize / 2;
+    const delegaciaCenterGridZ = delegaciaGridZ + delegaciaDepth / 2;
+
+    const delegaciaWorldX = startX + delegaciaCenterGridX * tileSize;
+    const delegaciaWorldZ = startZ + delegaciaCenterGridZ * tileSize;
+
+    console.log('Delegacia Position:', {
+      gridX: delegaciaGridX,
+      gridZ: delegaciaGridZ,
+      worldX: delegaciaWorldX,
+      worldZ: delegaciaWorldZ,
+      gridSize: `${delegaciaSize}x${delegaciaDepth}`,
+    });
+
+    gltfLoader.load(
+      'https://static.wixstatic.com/3d/50f4bf_6dad7dc336a548d1b45d2a925a05b458.glb',
+      (gltf) => {
+        const model = gltf.scene;
+
+        // Create a group for the delegacia
+        const delegaciaGroup = new THREE.Group();
+
+        // Position at center of platform
+        delegaciaGroup.position.set(delegaciaWorldX, 0, delegaciaWorldZ);
+
+        // Calculate bounding box to determine proper scale
+        const bbox = new THREE.Box3().setFromObject(model);
+        const size = bbox.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+
+        // Scale to fit exactly 8 tiles (2x4 format)
+        const targetSize = Math.max(delegaciaSize * tileSize, delegaciaDepth * tileSize);
+        const scale = targetSize / maxDim;
+        model.scale.set(scale, scale, scale);
+
+        // Center the model within the group
+        bbox.setFromObject(model);
+        const center = bbox.getCenter(new THREE.Vector3());
+        model.position.sub(center);
+
+        // Ensure model sits on the ground (y = 0)
+        bbox.setFromObject(model);
+        const bottomY = bbox.min.y;
+        model.position.y -= bottomY;
+
+        // Apply shadow properties recursively to all children
+        model.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            // Enhance material brightness for better visibility
+            if (child.material instanceof THREE.Material) {
+              if (child.material instanceof THREE.MeshStandardMaterial) {
+                child.material.emissiveIntensity = 0.2;
+                child.material.metalness = Math.max(0, child.material.metalness - 0.2);
+                child.material.roughness = Math.min(1, child.material.roughness + 0.1);
+              }
+            }
+          }
+        });
+
+        delegaciaGroup.add(model);
+        delegaciaGroup.userData = { clickable: true, type: 'delegacia' };
+        scene.add(delegaciaGroup);
+
+        delegaciaGroupRef.current = delegaciaGroup;
+      },
+      undefined,
+      (error) => {
+        console.warn('Failed to load delegacia 3D model:', error);
+      }
+    );
+
     // ===== ORBIT CONTROLS WITH CUSTOM CONFIGURATION =====
     const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -641,6 +725,25 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
 
     const onMouseClick = (event: MouseEvent) => {
       raycasterRef.current.setFromCamera(mouseRef.current, camera);
+
+      // Check if delegacia was clicked
+      if (delegaciaGroupRef.current) {
+        const delegaciaIntersects = raycasterRef.current.intersectObject(delegaciaGroupRef.current, true);
+        if (delegaciaIntersects.length > 0) {
+          // Handle delegacia click based on player level
+          if (level < 10) {
+            console.warn('Nível insuficiente para acessar a delegacia');
+            return;
+          }
+
+          if (level >= 10 && level < 20) {
+            navigate('/bribery-investigador');
+          } else if (level >= 20) {
+            navigate('/bribery-delegado');
+          }
+          return;
+        }
+      }
 
       // Check if custom objects were clicked
       for (let i = 0; i < customObjects.length; i++) {
@@ -749,7 +852,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
       controls.dispose();
       renderer.dispose();
     };
-  }, [gridWidth, gridHeight, tileSize, onTileSelect, onLuxuryStoreClick, onQGClick, customObjects]);
+  }, [gridWidth, gridHeight, tileSize, onTileSelect, onLuxuryStoreClick, onQGClick, customObjects, level, navigate]);
 
   return (
     <div
