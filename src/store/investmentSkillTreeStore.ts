@@ -470,18 +470,9 @@ export const useInvestmentSkillTreeStore = create<InvestmentSkillTreeState>()(
         const cost = skill.baseCost * Math.pow(skill.level + 1, 1.8);
         if (state.dirtyMoney < cost) return false;
 
-        // For level 0 (first level), always available if has money
-        if (skill.level === 0) {
-          return true;
-        }
-
-        // For level 1+, the previous level must be completed (level > 0)
-        // This ensures sequential progression: level 1 → level 2 → level 3, etc.
-        if (skill.level > 0) {
-          return true;
-        }
-
-        return false;
+        // All levels are available if you have money and no other skill is upgrading
+        // The progression is automatic: level 0 → 1 → 2 → 3, etc.
+        return true;
       },
 
       upgradeSkill: (skillId) => {
