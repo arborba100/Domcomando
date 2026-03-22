@@ -60,7 +60,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Monitore comunicações policiais',
     effect: '-0.5% falha',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'intel-3': {
     id: 'intel-3',
@@ -74,7 +74,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Acesse sistemas digitais',
     effect: '+2% eficiência',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'intel-4': {
     id: 'intel-4',
@@ -88,7 +88,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Construa rede de informações',
     effect: '+1.5% lucro global',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'intel-5': {
     id: 'intel-5',
@@ -102,7 +102,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Planeje operações estratégicas',
     effect: 'Bônus global',
-    isUnlocked: true,
+    isUnlocked: false,
   },
 
   // AGILIDADE
@@ -132,7 +132,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Manobras de risco',
     effect: '+0.5% fuga',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'agility-3': {
     id: 'agility-3',
@@ -146,7 +146,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Reações instantâneas',
     effect: '-1.5% cooldown',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'agility-4': {
     id: 'agility-4',
@@ -160,7 +160,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Movimento estratégico',
     effect: '+1% velocidade',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'agility-5': {
     id: 'agility-5',
@@ -174,7 +174,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Velocidade máxima',
     effect: 'Bônus global',
-    isUnlocked: true,
+    isUnlocked: false,
   },
 
   // ATAQUE
@@ -204,7 +204,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Controle territorial',
     effect: '+1.5% ganho',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'attack-3': {
     id: 'attack-3',
@@ -218,7 +218,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Força bruta coordenada',
     effect: '+2% eficiência',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'attack-4': {
     id: 'attack-4',
@@ -232,7 +232,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Operações sincronizadas',
     effect: '+1% ataque',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'attack-5': {
     id: 'attack-5',
@@ -246,7 +246,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Poder máximo',
     effect: 'Bônus ofensivo',
-    isUnlocked: true,
+    isUnlocked: false,
   },
 
   // DEFESA
@@ -276,7 +276,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Proteção de bens',
     effect: '+1.5% proteção',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'defense-3': {
     id: 'defense-3',
@@ -290,7 +290,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Defesa territorial',
     effect: '-1.5% dano',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'defense-4': {
     id: 'defense-4',
@@ -304,7 +304,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Sistemas avançados',
     effect: '+1% resistência',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'defense-5': {
     id: 'defense-5',
@@ -318,7 +318,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Proteção total',
     effect: 'Bônus global defesa',
-    isUnlocked: true,
+    isUnlocked: false,
   },
 
   // RESPEITO
@@ -348,7 +348,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Influencie NPCs',
     effect: 'Acesso NPCs',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'respect-3': {
     id: 'respect-3',
@@ -362,7 +362,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Expanda contatos',
     effect: 'Operações',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'respect-4': {
     id: 'respect-4',
@@ -376,7 +376,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Controle regional',
     effect: 'Acesso mapa',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'respect-5': {
     id: 'respect-5',
@@ -390,7 +390,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Poder supremo',
     effect: 'Conteúdo global',
-    isUnlocked: true,
+    isUnlocked: false,
   },
 
   // VIGOR
@@ -420,7 +420,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Força física',
     effect: '-energia',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'vigor-3': {
     id: 'vigor-3',
@@ -434,7 +434,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Aumente ações',
     effect: '+ações',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'vigor-4': {
     id: 'vigor-4',
@@ -448,7 +448,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Regeneração rápida',
     effect: '+regen',
-    isUnlocked: true,
+    isUnlocked: false,
   },
   'vigor-5': {
     id: 'vigor-5',
@@ -462,7 +462,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Energia infinita',
     effect: 'Bônus stamina',
-    isUnlocked: true,
+    isUnlocked: false,
   },
 };
 
