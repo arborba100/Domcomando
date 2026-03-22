@@ -466,19 +466,18 @@ export const useInvestmentSkillTreeStore = create<InvestmentSkillTreeState>()(
           if (s.upgrading) return false;
         }
 
-        // All level 1 skills are always available (level 0 means not started yet)
+        // Check money
+        const cost = skill.baseCost * Math.pow(skill.level + 1, 1.8);
+        if (state.dirtyMoney < cost) return false;
+
+        // For level 0 (first level), always available if has money
         if (skill.level === 0) {
-          // Check money
-          const cost = skill.baseCost * Math.pow(skill.level + 1, 1.8);
-          if (state.dirtyMoney < cost) return false;
           return true;
         }
 
-        // For level 2+, the skill can continue upgrading (no blocking between levels)
+        // For level 1+, the previous level must be completed (level > 0)
+        // This ensures sequential progression: level 1 → level 2 → level 3, etc.
         if (skill.level > 0) {
-          // Check money
-          const cost = skill.baseCost * Math.pow(skill.level + 1, 1.8);
-          if (state.dirtyMoney < cost) return false;
           return true;
         }
 
