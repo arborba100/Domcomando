@@ -1,436 +1,367 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export interface SkillNode {
   id: string;
   name: string;
+  tree: 'inteligencia' | 'agilidade' | 'ataque' | 'defesa' | 'respeito' | 'vigor';
   level: number;
   maxLevel: number;
-  isLocked: boolean;
-  isAvailable: boolean;
-  icon: string;
+  baseCost: number;
   description: string;
-  cost: number;
-  parentId?: string;
+  icon: string;
+  requires?: string[];
+  effects: string[];
+  position?: { x: number; y: number };
 }
 
-export interface SkillTree {
-  id: string;
-  name: string;
-  attribute: 'inteligencia' | 'agilidade' | 'ataque' | 'defesa' | 'respeito' | 'vigor';
-  nodes: SkillNode[];
-  totalPoints: number;
+export interface SkillTreeState {
+  skills: Record<string, SkillNode>;
+  playerMoney: number;
+  isUpgrading: boolean;
+  
+  // Actions
+  initializeSkills: () => void;
+  upgradeSkill: (skillId: string) => boolean;
+  setPlayerMoney: (money: number) => void;
+  getSkillLevel: (skillId: string) => number;
+  canUpgradeSkill: (skillId: string) => boolean;
+  getUpgradeCost: (skillId: string) => number;
+  getSkillsByTree: (tree: string) => SkillNode[];
+  resetSkills: () => void;
 }
 
-interface SkillTreeState {
-  skillTrees: SkillTree[];
-  playerPoints: number;
-  initializeSkillTrees: () => void;
-  upgradeSkill: (treeId: string, nodeId: string) => boolean;
-  getSkillTree: (treeId: string) => SkillTree | undefined;
-  addPlayerPoints: (amount: number) => void;
-}
-
-const initialSkillTrees: SkillTree[] = [
-  {
-    id: 'inteligencia',
-    name: 'Inteligência',
-    attribute: 'inteligencia',
-    totalPoints: 0,
-    nodes: [
-      {
-        id: 'int-1',
-        name: 'Análise de Risco',
-        level: 0,
-        maxLevel: 10,
-        isLocked: false,
-        isAvailable: true,
-        icon: '🧠',
-        description: 'Melhora a capacidade de análise de operações',
-        cost: 1,
-      },
-      {
-        id: 'int-2',
-        name: 'Negociação',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🤝',
-        description: 'Aumenta efetividade em negociações',
-        cost: 2,
-        parentId: 'int-1',
-      },
-      {
-        id: 'int-3',
-        name: 'Estratégia Avançada',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '♟️',
-        description: 'Planejamento tático superior',
-        cost: 3,
-        parentId: 'int-2',
-      },
-      {
-        id: 'int-4',
-        name: 'Lavagem de Dinheiro',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '💰',
-        description: 'Técnicas de ocultação financeira',
-        cost: 2,
-        parentId: 'int-1',
-      },
-    ],
+const INITIAL_SKILLS: Record<string, SkillNode> = {
+  // INTELIGÊNCIA
+  inteligencia_1: {
+    id: 'inteligencia_1',
+    name: 'Informante da Quebrada I',
+    tree: 'inteligencia',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 500,
+    description: 'Aumenta lucro em investimentos em 5%',
+    icon: 'Brain',
+    effects: ['lucro_investimento_5'],
+    position: { x: 0, y: 0 },
   },
-  {
-    id: 'agilidade',
-    name: 'Agilidade',
-    attribute: 'agilidade',
-    totalPoints: 0,
-    nodes: [
-      {
-        id: 'agi-1',
-        name: 'Reflexos Rápidos',
-        level: 0,
-        maxLevel: 10,
-        isLocked: false,
-        isAvailable: true,
-        icon: '⚡',
-        description: 'Aumenta velocidade de reação',
-        cost: 1,
-      },
-      {
-        id: 'agi-2',
-        name: 'Fuga Tática',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🏃',
-        description: 'Melhora capacidade de evasão',
-        cost: 2,
-        parentId: 'agi-1',
-      },
-      {
-        id: 'agi-3',
-        name: 'Movimento Silencioso',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🤫',
-        description: 'Reduz detecção em operações',
-        cost: 2,
-        parentId: 'agi-1',
-      },
-      {
-        id: 'agi-4',
-        name: 'Maestria de Combate',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🥋',
-        description: 'Domínio completo de técnicas de combate',
-        cost: 3,
-        parentId: 'agi-2',
-      },
-    ],
+  inteligencia_2: {
+    id: 'inteligencia_2',
+    name: 'Escuta Policial II',
+    tree: 'inteligencia',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 1000,
+    description: 'Reduz chance de falha em 10%',
+    icon: 'Ear',
+    requires: ['inteligencia_1'],
+    effects: ['reduz_falha_10'],
+    position: { x: 0, y: 1 },
   },
-  {
-    id: 'ataque',
-    name: 'Ataque',
-    attribute: 'ataque',
-    totalPoints: 0,
-    nodes: [
-      {
-        id: 'atk-1',
-        name: 'Golpe Básico',
-        level: 0,
-        maxLevel: 10,
-        isLocked: false,
-        isAvailable: true,
-        icon: '👊',
-        description: 'Aumenta dano físico básico',
-        cost: 1,
-      },
-      {
-        id: 'atk-2',
-        name: 'Golpe Crítico',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '💥',
-        description: 'Chance de dano crítico',
-        cost: 2,
-        parentId: 'atk-1',
-      },
-      {
-        id: 'atk-3',
-        name: 'Fúria Descontrolada',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🔥',
-        description: 'Dano massivo com risco',
-        cost: 3,
-        parentId: 'atk-2',
-      },
-      {
-        id: 'atk-4',
-        name: 'Armas Especializadas',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🔫',
-        description: 'Proficiência com armas avançadas',
-        cost: 2,
-        parentId: 'atk-1',
-      },
-    ],
-  },
-  {
-    id: 'defesa',
-    name: 'Defesa',
-    attribute: 'defesa',
-    totalPoints: 0,
-    nodes: [
-      {
-        id: 'def-1',
-        name: 'Armadura Básica',
-        level: 0,
-        maxLevel: 10,
-        isLocked: false,
-        isAvailable: true,
-        icon: '🛡️',
-        description: 'Reduz dano recebido',
-        cost: 1,
-      },
-      {
-        id: 'def-2',
-        name: 'Bloqueio Perfeito',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🚫',
-        description: 'Chance de bloquear ataques',
-        cost: 2,
-        parentId: 'def-1',
-      },
-      {
-        id: 'def-3',
-        name: 'Regeneração',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '💚',
-        description: 'Recuperação de vida passiva',
-        cost: 3,
-        parentId: 'def-2',
-      },
-      {
-        id: 'def-4',
-        name: 'Escudo de Aliados',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '👥',
-        description: 'Proteção para o grupo',
-        cost: 2,
-        parentId: 'def-1',
-      },
-    ],
-  },
-  {
-    id: 'respeito',
-    name: 'Respeito',
-    attribute: 'respeito',
-    totalPoints: 0,
-    nodes: [
-      {
-        id: 'res-1',
-        name: 'Presença Intimidadora',
-        level: 0,
-        maxLevel: 10,
-        isLocked: false,
-        isAvailable: true,
-        icon: '👑',
-        description: 'Aumenta influência nas ruas',
-        cost: 1,
-      },
-      {
-        id: 'res-2',
-        name: 'Liderança',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🎖️',
-        description: 'Melhora comando de tropas',
-        cost: 2,
-        parentId: 'res-1',
-      },
-      {
-        id: 'res-3',
-        name: 'Reputação Lendária',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '⭐',
-        description: 'Alcança status de lenda',
-        cost: 3,
-        parentId: 'res-2',
-      },
-      {
-        id: 'res-4',
-        name: 'Conexões Políticas',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🏛️',
-        description: 'Influência em altos escalões',
-        cost: 2,
-        parentId: 'res-1',
-      },
-    ],
-  },
-  {
-    id: 'vigor',
-    name: 'Vigor',
-    attribute: 'vigor',
-    totalPoints: 0,
-    nodes: [
-      {
-        id: 'vig-1',
-        name: 'Resistência Física',
-        level: 0,
-        maxLevel: 10,
-        isLocked: false,
-        isAvailable: true,
-        icon: '💪',
-        description: 'Aumenta vida máxima',
-        cost: 1,
-      },
-      {
-        id: 'vig-2',
-        name: 'Stamina Infinita',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🔋',
-        description: 'Reduz consumo de energia',
-        cost: 2,
-        parentId: 'vig-1',
-      },
-      {
-        id: 'vig-3',
-        name: 'Imunidade Tóxica',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '☠️',
-        description: 'Resistência a venenos',
-        cost: 2,
-        parentId: 'vig-1',
-      },
-      {
-        id: 'vig-4',
-        name: 'Força Sobre-Humana',
-        level: 0,
-        maxLevel: 10,
-        isLocked: true,
-        isAvailable: false,
-        icon: '🦾',
-        description: 'Poder físico extremo',
-        cost: 3,
-        parentId: 'vig-2',
-      },
-    ],
-  },
-];
-
-export const useSkillTreeStore = create<SkillTreeState>((set, get) => ({
-  skillTrees: initialSkillTrees,
-  playerPoints: 50,
-
-  initializeSkillTrees: () => {
-    set({ skillTrees: JSON.parse(JSON.stringify(initialSkillTrees)), playerPoints: 50 });
+  inteligencia_3: {
+    id: 'inteligencia_3',
+    name: 'Infiltração Digital III',
+    tree: 'inteligencia',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 2000,
+    description: 'Desbloqueia golpes mais complexos',
+    icon: 'Cpu',
+    requires: ['inteligencia_2'],
+    effects: ['desbloqueia_golpes_complexos'],
+    position: { x: 0, y: 2 },
   },
 
-  upgradeSkill: (treeId: string, nodeId: string) => {
-    const state = get();
-    const tree = state.skillTrees.find(t => t.id === treeId);
-    if (!tree) return false;
-
-    const node = tree.nodes.find(n => n.id === nodeId);
-    if (!node || !node.isAvailable || node.level >= node.maxLevel) return false;
-
-    if (state.playerPoints < node.cost) return false;
-
-    set(prevState => ({
-      playerPoints: prevState.playerPoints - node.cost,
-      skillTrees: prevState.skillTrees.map(t => {
-        if (t.id !== treeId) return t;
-
-        return {
-          ...t,
-          totalPoints: t.totalPoints + 1,
-          nodes: t.nodes.map(n => {
-            if (n.id !== nodeId) return n;
-
-            const upgraded = { ...n, level: n.level + 1 };
-
-            // Unlock child nodes when parent reaches level 1
-            return upgraded;
-          }),
-        };
-      }),
-    }));
-
-    // Unlock dependent nodes
-    set(prevState => ({
-      skillTrees: prevState.skillTrees.map(t => {
-        if (t.id !== treeId) return t;
-
-        return {
-          ...t,
-          nodes: t.nodes.map(n => {
-            if (n.parentId === nodeId) {
-              const parent = t.nodes.find(p => p.id === nodeId);
-              if (parent && parent.level > 0) {
-                return { ...n, isLocked: false, isAvailable: true };
-              }
-            }
-            return n;
-          }),
-        };
-      }),
-    }));
-
-    return true;
+  // AGILIDADE
+  agilidade_1: {
+    id: 'agilidade_1',
+    name: 'Fuga de Viela I',
+    tree: 'agilidade',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 500,
+    description: 'Reduz tempo de ações em 5%',
+    icon: 'Zap',
+    effects: ['reduz_tempo_5'],
+    position: { x: 1, y: 0 },
+  },
+  agilidade_2: {
+    id: 'agilidade_2',
+    name: 'Direção Perigosa II',
+    tree: 'agilidade',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 1000,
+    description: 'Reduz cooldown em 10%',
+    icon: 'Gauge',
+    requires: ['agilidade_1'],
+    effects: ['reduz_cooldown_10'],
+    position: { x: 1, y: 1 },
+  },
+  agilidade_3: {
+    id: 'agilidade_3',
+    name: 'Reflexo de Rua III',
+    tree: 'agilidade',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 2000,
+    description: 'Melhora fuga em 20%',
+    icon: 'Zap',
+    requires: ['agilidade_2'],
+    effects: ['melhora_fuga_20'],
+    position: { x: 1, y: 2 },
   },
 
-  getSkillTree: (treeId: string) => {
-    return get().skillTrees.find(t => t.id === treeId);
+  // ATAQUE
+  ataque_1: {
+    id: 'ataque_1',
+    name: 'Abordagem Rápida I',
+    tree: 'ataque',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 500,
+    description: 'Aumenta sucesso em golpes em 5%',
+    icon: 'Sword',
+    effects: ['sucesso_golpes_5'],
+    position: { x: 2, y: 0 },
+  },
+  ataque_2: {
+    id: 'ataque_2',
+    name: 'Domínio de Território II',
+    tree: 'ataque',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 1000,
+    description: 'Aumenta dano em conflitos em 10%',
+    icon: 'Flame',
+    requires: ['ataque_1'],
+    effects: ['dano_conflitos_10'],
+    position: { x: 2, y: 1 },
+  },
+  ataque_3: {
+    id: 'ataque_3',
+    name: 'Execução Tática III',
+    tree: 'ataque',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 2000,
+    description: 'Desbloqueia ataques especiais',
+    icon: 'Target',
+    requires: ['ataque_2'],
+    effects: ['desbloqueia_ataques_especiais'],
+    position: { x: 2, y: 2 },
   },
 
-  addPlayerPoints: (amount: number) => {
-    set(prevState => ({
-      playerPoints: prevState.playerPoints + amount,
-    }));
+  // DEFESA
+  defesa_1: {
+    id: 'defesa_1',
+    name: 'Esquema de Fuga I',
+    tree: 'defesa',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 500,
+    description: 'Reduz perdas em falha em 5%',
+    icon: 'Shield',
+    effects: ['reduz_perdas_5'],
+    position: { x: 3, y: 0 },
   },
-}));
+  defesa_2: {
+    id: 'defesa_2',
+    name: 'Caixa Blindado II',
+    tree: 'defesa',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 1000,
+    description: 'Protege dinheiro em 10%',
+    icon: 'Lock',
+    requires: ['defesa_1'],
+    effects: ['protege_dinheiro_10'],
+    position: { x: 3, y: 1 },
+  },
+  defesa_3: {
+    id: 'defesa_3',
+    name: 'Defesa de Base III',
+    tree: 'defesa',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 2000,
+    description: 'Protege ativos em 20%',
+    icon: 'Fortress',
+    requires: ['defesa_2'],
+    effects: ['protege_ativos_20'],
+    position: { x: 3, y: 2 },
+  },
+
+  // RESPEITO
+  respeito_1: {
+    id: 'respeito_1',
+    name: 'Nome na Quebrada I',
+    tree: 'respeito',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 500,
+    description: 'Desbloqueia áreas iniciais',
+    icon: 'Crown',
+    effects: ['desbloqueia_areas_iniciais'],
+    position: { x: 4, y: 0 },
+  },
+  respeito_2: {
+    id: 'respeito_2',
+    name: 'Influência Local II',
+    tree: 'respeito',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 1000,
+    description: 'Libera NPCs especiais',
+    icon: 'Users',
+    requires: ['respeito_1'],
+    effects: ['libera_npcs_especiais'],
+    position: { x: 4, y: 1 },
+  },
+  respeito_3: {
+    id: 'respeito_3',
+    name: 'Domínio Regional III',
+    tree: 'respeito',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 2000,
+    description: 'Aumenta autoridade em 20%',
+    icon: 'Zap',
+    requires: ['respeito_2'],
+    effects: ['autoridade_20'],
+    position: { x: 4, y: 2 },
+  },
+
+  // VIGOR
+  vigor_1: {
+    id: 'vigor_1',
+    name: 'Fôlego de Rua I',
+    tree: 'vigor',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 500,
+    description: 'Aumenta capacidade de ações em 5%',
+    icon: 'Heart',
+    effects: ['capacidade_acoes_5'],
+    position: { x: 5, y: 0 },
+  },
+  vigor_2: {
+    id: 'vigor_2',
+    name: 'Casca Grossa II',
+    tree: 'vigor',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 1000,
+    description: 'Reduz penalidades em 10%',
+    icon: 'Armor',
+    requires: ['vigor_1'],
+    effects: ['reduz_penalidades_10'],
+    position: { x: 5, y: 1 },
+  },
+  vigor_3: {
+    id: 'vigor_3',
+    name: 'Resistência de Guerra III',
+    tree: 'vigor',
+    level: 0,
+    maxLevel: 10,
+    baseCost: 2000,
+    description: 'Melhora recuperação em 20%',
+    icon: 'Zap',
+    requires: ['vigor_2'],
+    effects: ['melhora_recuperacao_20'],
+    position: { x: 5, y: 2 },
+  },
+};
+
+export const useSkillTreeStore = create<SkillTreeState>()(
+  persist(
+    (set, get) => ({
+      skills: INITIAL_SKILLS,
+      playerMoney: 50000,
+      isUpgrading: false,
+
+      initializeSkills: () => {
+        set({ skills: INITIAL_SKILLS, playerMoney: 50000 });
+      },
+
+      setPlayerMoney: (money: number) => {
+        set({ playerMoney: Math.max(0, money) });
+      },
+
+      getSkillLevel: (skillId: string) => {
+        const skill = get().skills[skillId];
+        return skill?.level ?? 0;
+      },
+
+      getUpgradeCost: (skillId: string) => {
+        const skill = get().skills[skillId];
+        if (!skill) return 0;
+        return skill.baseCost * (skill.level + 1);
+      },
+
+      canUpgradeSkill: (skillId: string) => {
+        const state = get();
+        const skill = state.skills[skillId];
+
+        if (!skill) return false;
+        if (skill.level >= skill.maxLevel) return false;
+
+        // Check if requirements are met
+        if (skill.requires && skill.requires.length > 0) {
+          const allRequirementsMet = skill.requires.every((reqId) => {
+            const reqSkill = state.skills[reqId];
+            return reqSkill && reqSkill.level >= reqSkill.maxLevel;
+          });
+          if (!allRequirementsMet) return false;
+        }
+
+        // Check if player has enough money
+        const cost = state.getUpgradeCost(skillId);
+        return state.playerMoney >= cost;
+      },
+
+      upgradeSkill: (skillId: string) => {
+        const state = get();
+
+        if (!state.canUpgradeSkill(skillId)) {
+          return false;
+        }
+
+        if (state.isUpgrading) {
+          return false;
+        }
+
+        set({ isUpgrading: true });
+
+        const skill = state.skills[skillId];
+        const cost = state.getUpgradeCost(skillId);
+
+        // Update skill level
+        set({
+          skills: {
+            ...state.skills,
+            [skillId]: {
+              ...skill,
+              level: skill.level + 1,
+            },
+          },
+          playerMoney: state.playerMoney - cost,
+          isUpgrading: false,
+        });
+
+        return true;
+      },
+
+      getSkillsByTree: (tree: string) => {
+        return Object.values(get().skills).filter((skill) => skill.tree === tree);
+      },
+
+      resetSkills: () => {
+        set({ skills: INITIAL_SKILLS, playerMoney: 50000 });
+      },
+    }),
+    {
+      name: 'skill-tree-storage',
+    }
+  )
+);
