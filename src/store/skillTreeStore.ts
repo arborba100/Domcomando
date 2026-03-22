@@ -306,11 +306,11 @@ export const useSkillTreeStore = create<SkillTreeState>()(
         if (!skill) return false;
         if (skill.level >= skill.maxLevel) return false;
 
-        // Check if requirements are met
+        // Check if requirements are met - only need level > 0, not maxLevel
         if (skill.requires && skill.requires.length > 0) {
           const allRequirementsMet = skill.requires.every((reqId) => {
             const reqSkill = state.skills[reqId];
-            return reqSkill && reqSkill.level >= reqSkill.maxLevel;
+            return reqSkill && reqSkill.level > 0;
           });
           if (!allRequirementsMet) return false;
         }
