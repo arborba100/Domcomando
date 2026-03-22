@@ -141,7 +141,7 @@ export default function HomePage() {
       <div className="relative z-20 flex flex-col min-h-screen">
         <Header />
 
-        <main className="flex-grow flex items-center justify-center px-4 py-12 sm:py-20 pt-24">
+        <main className="flex-grow flex items-center justify-center px-4 py-12 sm:py-20 pt-40 md:pt-32">
           <div className="w-full max-w-[500px] mx-auto relative">
 
             {/* Decorative background glow for the whole block */}
