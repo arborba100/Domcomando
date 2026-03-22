@@ -74,7 +74,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Acesse sistemas digitais',
     effect: '+2% eficiência',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'intel-4': {
     id: 'intel-4',
@@ -88,7 +88,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Construa rede de informações',
     effect: '+1.5% lucro global',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'intel-5': {
     id: 'intel-5',
@@ -102,7 +102,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Planeje operações estratégicas',
     effect: 'Bônus global',
-    isUnlocked: false,
+    isUnlocked: true,
   },
 
   // AGILIDADE
@@ -146,7 +146,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Reações instantâneas',
     effect: '-1.5% cooldown',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'agility-4': {
     id: 'agility-4',
@@ -160,7 +160,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Movimento estratégico',
     effect: '+1% velocidade',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'agility-5': {
     id: 'agility-5',
@@ -174,7 +174,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Velocidade máxima',
     effect: 'Bônus global',
-    isUnlocked: false,
+    isUnlocked: true,
   },
 
   // ATAQUE
@@ -232,7 +232,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Operações sincronizadas',
     effect: '+1% ataque',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'attack-5': {
     id: 'attack-5',
@@ -246,7 +246,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Poder máximo',
     effect: 'Bônus ofensivo',
-    isUnlocked: false,
+    isUnlocked: true,
   },
 
   // DEFESA
@@ -290,7 +290,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Defesa territorial',
     effect: '-1.5% dano',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'defense-4': {
     id: 'defense-4',
@@ -304,7 +304,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Sistemas avançados',
     effect: '+1% resistência',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'defense-5': {
     id: 'defense-5',
@@ -318,7 +318,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Proteção total',
     effect: 'Bônus global defesa',
-    isUnlocked: false,
+    isUnlocked: true,
   },
 
   // RESPEITO
@@ -362,7 +362,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Expanda contatos',
     effect: 'Operações',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'respect-4': {
     id: 'respect-4',
@@ -376,7 +376,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Controle regional',
     effect: 'Acesso mapa',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'respect-5': {
     id: 'respect-5',
@@ -390,7 +390,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Poder supremo',
     effect: 'Conteúdo global',
-    isUnlocked: false,
+    isUnlocked: true,
   },
 
   // VIGOR
@@ -434,7 +434,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Aumente ações',
     effect: '+ações',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'vigor-4': {
     id: 'vigor-4',
@@ -448,7 +448,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Regeneração rápida',
     effect: '+regen',
-    isUnlocked: false,
+    isUnlocked: true,
   },
   'vigor-5': {
     id: 'vigor-5',
@@ -462,7 +462,7 @@ const INITIAL_SKILLS: Record<string, Skill> = {
     upgrading: false,
     description: 'Energia infinita',
     effect: 'Bônus stamina',
-    isUnlocked: false,
+    isUnlocked: true,
   },
 };
 
