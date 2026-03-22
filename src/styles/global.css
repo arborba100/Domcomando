@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import skill animations */
+@import './skill-animations.css';
+
 /* Override font paths to fix loading */
 /* heading - league spartan */
 /* vietnamese */

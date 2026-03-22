@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { SkillUpgradeAnimations, AnimatedConnection, CompletionBackgroundGlow } from '@/components/SkillUpgradeAnimations';
 
 const CATEGORIES = [
   { id: 'Inteligência', label: 'INTELIGÊNCIA', color: '#00eaff', icon: '🧠' },
@@ -40,6 +41,8 @@ export default function InvestmentSkillTreePage() {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const [upgradeTimers, setUpgradeTimers] = useState<Record<string, number>>({});
+  const [completedSkills, setCompletedSkills] = useState<Set<string>>(new Set());
+  const [showCompletionGlow, setShowCompletionGlow] = useState(false);
 
   // Update timers for upgrading skills
   useEffect(() => {
@@ -51,6 +54,11 @@ export default function InvestmentSkillTreePage() {
           newTimers[skill.id] = remaining;
 
           if (remaining === 0) {
+            // Mark skill as completed for animation
+            setCompletedSkills((prev) => new Set(prev).add(skill.id));
+            setShowCompletionGlow(true);
+            setTimeout(() => setShowCompletionGlow(false), 600);
+            
             finalizeUpgrade(skill.id);
           }
         }
@@ -108,6 +116,12 @@ export default function InvestmentSkillTreePage() {
   const handleUpgradeClick = () => {
     if (selectedSkill && canUpgrade(selectedSkill.skill.id)) {
       upgradeSkill(selectedSkill.skill.id);
+      // Trigger upgrade start animation
+      setCompletedSkills((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(selectedSkill.skill.id);
+        return newSet;
+      });
       setSelectedSkill(null);
     }
   };
@@ -170,6 +184,9 @@ export default function InvestmentSkillTreePage() {
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500 rounded-full blur-3xl"></div>
         </div>
+
+        {/* Completion glow background */}
+        <CompletionBackgroundGlow isActive={showCompletionGlow} />
 
         {/* Main content */}
         <div
@@ -272,6 +289,15 @@ export default function InvestmentSkillTreePage() {
                             transition={{ delay: skillIdx * 0.05 }}
                             className="w-full relative group"
                           >
+                            {/* Upgrade animations */}
+                            <SkillUpgradeAnimations
+                              skillId={skill.id}
+                              isUpgrading={isUpgrading}
+                              isComplete={completedSkills.has(skill.id)}
+                              remainingTime={remainingTime}
+                              stateColor={stateColor}
+                            />
+
                             {/* Glow effect */}
                             <div
                               className="absolute inset-0 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity"
@@ -494,6 +520,44 @@ export default function InvestmentSkillTreePage() {
           }
           50% {
             opacity: 1;
+          }
+        }
+
+        @keyframes glow-pulse {
+          0%, 100% {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+          }
+          50% {
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+          }
+        }
+
+        @keyframes breathing {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+        }
+
+        @keyframes energy-flow {
+          0% {
+            stroke-dasharray: 0 100%;
+          }
+          100% {
+            stroke-dasharray: 100% 0;
+          }
+        }
+
+        @keyframes particle-burst {
+          0% {
+            opacity: 1;
+            transform: translate(0, 0) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(var(--tx), var(--ty)) scale(0);
           }
         }
       `}</style>

@@ -1,0 +1,247 @@
+/* Skill Upgrade Animation Styles */
+
+/* Pulsing animations for different states */
+@keyframes skill-pulse-available {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 0 10px rgba(255, 215, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.7), inset 0 0 15px rgba(255, 215, 0, 0.2);
+  }
+}
+
+@keyframes skill-pulse-upgrading {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 234, 255, 0.5), inset 0 0 15px rgba(0, 234, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(0, 234, 255, 0.8), inset 0 0 20px rgba(0, 234, 255, 0.3);
+  }
+}
+
+@keyframes skill-pulse-complete {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), inset 0 0 15px rgba(0, 255, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.7), inset 0 0 20px rgba(0, 255, 0, 0.3);
+  }
+}
+
+/* Loading ring rotation */
+@keyframes loading-ring-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Particle burst effect */
+@keyframes particle-float {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) scale(0);
+  }
+}
+
+/* Flash on completion */
+@keyframes completion-flash {
+  0% {
+    opacity: 1;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+/* Radial glow expansion */
+@keyframes radial-glow {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+/* Energy flow along lines */
+@keyframes energy-flow {
+  0% {
+    stroke-dasharray: 0 100%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: 100% 0;
+    opacity: 0;
+  }
+}
+
+/* Breathing animation for complete state */
+@keyframes breathing {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Smooth scale transition */
+@keyframes scale-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Glow fade in */
+@keyframes glow-fade-in {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* Unlock animation */
+@keyframes unlock-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Pulsing glow for available skills */
+@keyframes glow-pulse-light {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Connection line color transition */
+@keyframes line-color-transition {
+  0% {
+    stroke: #666666;
+  }
+  50% {
+    stroke: #FFD700;
+  }
+  100% {
+    stroke: #00FF00;
+  }
+}
+
+/* Utility classes for animations */
+.skill-available {
+  animation: skill-pulse-available 2.5s ease-in-out infinite;
+}
+
+.skill-upgrading {
+  animation: skill-pulse-upgrading 1.5s ease-in-out infinite;
+}
+
+.skill-complete {
+  animation: skill-pulse-complete 2s ease-in-out infinite;
+}
+
+.loading-ring {
+  animation: loading-ring-spin 2s linear infinite;
+}
+
+.breathing {
+  animation: breathing 2s ease-in-out infinite;
+}
+
+/* Smooth transitions for state changes */
+.skill-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.skill-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Glow effects */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 234, 255, 0.6), inset 0 0 15px rgba(0, 234, 255, 0.2);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6), inset 0 0 15px rgba(0, 255, 0, 0.2);
+}
+
+/* Performance optimizations */
+.animation-gpu {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  @keyframes skill-pulse-available {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    }
+  }
+
+  @keyframes skill-pulse-upgrading {
+    0%, 100% {
+      box-shadow: 0 0 12px rgba(0, 234, 255, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(0, 234, 255, 0.6);
+    }
+  }
+
+  @keyframes skill-pulse-complete {
+    0%, 100% {
+      box-shadow: 0 0 12px rgba(0, 255, 0, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+    }
+  }
+
+  .particle-burst {
+    animation-duration: 0.6s;
+  }
+}
