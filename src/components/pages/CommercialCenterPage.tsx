@@ -395,18 +395,16 @@ export default function CommercialCenterPage() {
     <div className="commercial-grid min-h-screen">
       {/* HEADER */}
       <Header />
-
       {/* BANNER */}
       <div className="w-full pt-[120px] relative z-10">
         <div className="banner-container w-full bg-black flex items-center justify-center">
           <Image
             src="https://static.wixstatic.com/media/50f4bf_fd64ac461d5d41c2a6bc7639af7590ac~mv2.png"
             alt="Centro Comercial"
-            className="h-auto w-auto max-w-full max-h-[600px] object-contain"
+            className="h-auto w-auto max-w-full max-h-[600px] object-contain border border-none"
           />
         </div>
       </div>
-
       {/* OPERATIONS */}
       <div className="w-full px-4 py-12 relative z-10">
         <div className="max-w-[100rem] mx-auto space-y-6">
@@ -429,7 +427,7 @@ export default function CommercialCenterPage() {
               </div>
 
               {/* Content on right */}
-              <div className="commerce-content">
+              <div className="commerce-content border border-none">
                 <div>
                   <h3 className="neon-sign text-lg md:text-xl mb-4">{op.name}</h3>
 
@@ -480,7 +478,6 @@ export default function CommercialCenterPage() {
           ))}
         </div>
       </div>
-
       {/* HISTORY */}
       {completedOps.length > 0 && (
         <div className="w-full px-4 py-12 relative z-10 border-t border-cyan-500">
