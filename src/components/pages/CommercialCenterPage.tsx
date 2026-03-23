@@ -26,43 +26,11 @@ interface CompletedOperation {
 export default function CommercialCenterPage() {
   const [operations, setOperations] = useState<CommerceOperation[]>([
     {
-      id: 'commerce1',
-      name: 'Pizzaria da Mama',
-      value: 1000,
-      tax: 60,
-      duration: 21600, // 6 hours
-      isActive: false,
-    },
-    {
       id: 'commerce2',
       name: 'Administradora de Bens',
       value: 5000,
       tax: 50,
       duration: 18000, // 5 hours
-      isActive: false,
-    },
-    {
-      id: 'commerce3',
-      name: 'Loja de Eletrônicos',
-      value: 3000,
-      tax: 55,
-      duration: 14400, // 4 hours
-      isActive: false,
-    },
-    {
-      id: 'commerce4',
-      name: 'Restaurante Fino',
-      value: 7000,
-      tax: 45,
-      duration: 25200, // 7 hours
-      isActive: false,
-    },
-    {
-      id: 'commerce5',
-      name: 'Boutique de Luxo',
-      value: 10000,
-      tax: 40,
-      duration: 28800, // 8 hours
       isActive: false,
     },
   ]);
@@ -432,6 +400,7 @@ export default function CommercialCenterPage() {
       {/* OPERATIONS */}
       <div className="w-full px-4 py-12 relative z-10">
         <div className="max-w-[100rem] mx-auto space-y-6">
+          {/* Container 1 - Administradora de Bens */}
           {operations.map((op) => (
             <div
               key={op.id}
@@ -442,17 +411,7 @@ export default function CommercialCenterPage() {
               {/* Image on left */}
               <div className="commerce-image">
                 <Image
-                  src={
-                    op.id === 'commerce1' 
-                      ? 'https://static.wixstatic.com/media/50f4bf_232a7af7a7e94e69a4b7e4cd0bebb26f~mv2.png'
-                      : op.id === 'commerce2'
-                      ? 'https://static.wixstatic.com/media/50f4bf_99e20883912b406585ce129ac5b8e885~mv2.png?originWidth=192&originHeight=256'
-                      : op.id === 'commerce3'
-                      ? 'https://static.wixstatic.com/media/50f4bf_232a7af7a7e94e69a4b7e4cd0bebb26f~mv2.png'
-                      : op.id === 'commerce4'
-                      ? 'https://static.wixstatic.com/media/50f4bf_99e20883912b406585ce129ac5b8e885~mv2.png?originWidth=192&originHeight=256'
-                      : 'https://static.wixstatic.com/media/50f4bf_232a7af7a7e94e69a4b7e4cd0bebb26f~mv2.png'
-                  }
+                  src="https://static.wixstatic.com/media/50f4bf_99e20883912b406585ce129ac5b8e885~mv2.png?originWidth=192&originHeight=256"
                   alt={op.name}
                   className="w-full h-full object-cover"
                   width={220}
@@ -510,6 +469,21 @@ export default function CommercialCenterPage() {
               </div>
             </div>
           ))}
+
+          {/* Container 2 - Awaiting Instructions */}
+          <div className="container-neon p-8 min-h-[280px] flex items-center justify-center">
+            <p className="neon-sign text-lg text-center">Aguardando instruções...</p>
+          </div>
+
+          {/* Container 3 - Awaiting Instructions */}
+          <div className="container-neon p-8 min-h-[280px] flex items-center justify-center">
+            <p className="neon-sign text-lg text-center">Aguardando instruções...</p>
+          </div>
+
+          {/* Container 4 - Awaiting Instructions */}
+          <div className="container-neon p-8 min-h-[280px] flex items-center justify-center">
+            <p className="neon-sign text-lg text-center">Aguardando instruções...</p>
+          </div>
         </div>
       </div>
       {/* HISTORY */}
