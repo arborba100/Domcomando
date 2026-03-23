@@ -41,6 +41,30 @@ export default function CommercialCenterPage() {
       duration: 18000, // 5 hours
       isActive: false,
     },
+    {
+      id: 'commerce3',
+      name: 'Loja de Eletrônicos',
+      value: 3000,
+      tax: 55,
+      duration: 14400, // 4 hours
+      isActive: false,
+    },
+    {
+      id: 'commerce4',
+      name: 'Restaurante Fino',
+      value: 7000,
+      tax: 45,
+      duration: 25200, // 7 hours
+      isActive: false,
+    },
+    {
+      id: 'commerce5',
+      name: 'Boutique de Luxo',
+      value: 10000,
+      tax: 40,
+      duration: 28800, // 8 hours
+      isActive: false,
+    },
   ]);
 
   const [completedOps, setCompletedOps] = useState<CompletedOperation[]>([]);
@@ -418,9 +442,17 @@ export default function CommercialCenterPage() {
               {/* Image on left */}
               <div className="commerce-image">
                 <Image
-                  src={op.id === 'commerce1' 
-                    ? 'https://static.wixstatic.com/media/50f4bf_232a7af7a7e94e69a4b7e4cd0bebb26f~mv2.png'
-                    : 'https://static.wixstatic.com/media/50f4bf_99e20883912b406585ce129ac5b8e885~mv2.png?originWidth=192&originHeight=256'}
+                  src={
+                    op.id === 'commerce1' 
+                      ? 'https://static.wixstatic.com/media/50f4bf_232a7af7a7e94e69a4b7e4cd0bebb26f~mv2.png'
+                      : op.id === 'commerce2'
+                      ? 'https://static.wixstatic.com/media/50f4bf_99e20883912b406585ce129ac5b8e885~mv2.png?originWidth=192&originHeight=256'
+                      : op.id === 'commerce3'
+                      ? 'https://static.wixstatic.com/media/50f4bf_232a7af7a7e94e69a4b7e4cd0bebb26f~mv2.png'
+                      : op.id === 'commerce4'
+                      ? 'https://static.wixstatic.com/media/50f4bf_99e20883912b406585ce129ac5b8e885~mv2.png?originWidth=192&originHeight=256'
+                      : 'https://static.wixstatic.com/media/50f4bf_232a7af7a7e94e69a4b7e4cd0bebb26f~mv2.png'
+                  }
                   alt={op.name}
                   className="w-full h-full object-cover"
                   width={220}
