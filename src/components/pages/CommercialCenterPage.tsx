@@ -11,7 +11,7 @@ import {
   BusinessType,
 } from '@/store/commercialCenterStore';
 import { motion } from 'framer-motion';
-import { AlertCircle, Clock, TrendingUp, DollarSign, Zap, Percent } from 'lucide-react';
+import { Clock, TrendingUp, DollarSign, Zap, Percent } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
 import { Players } from '@/entities';
 
@@ -42,12 +42,11 @@ export default function CommercialCenterPage() {
 
   // Get upgrades from store
   const upgrades = commercialStore.upgrades;
-  
-  // Calculate max operations per day
-  const maxOperations = upgrades.operationsPerDay;
-  
-  // Count operations completed today
-  const operationsCompletedToday = commercialStore.getOperationsToday().length;
+
+  // Count active operations per business
+  const getActiveOperationsForBusiness = (businessType: BusinessType): number => {
+    return commercialStore.getActiveOperations().filter(op => op.businessType === businessType).length;
+  };
 
   // Load player data on mount
   useEffect(() => {
@@ -120,20 +119,15 @@ export default function CommercialCenterPage() {
       return;
     }
 
-    if (operationsCompletedToday >= maxOperations) {
-      alert(`Você já fez ${maxOperations} operação(ões) hoje. Volte amanhã!`);
-      return;
-    }
-
     setIsProcessing(true);
 
     try {
       const business = BUSINESSES[selectedBusiness];
-      
+
       // Calculate effective conversion with upgrades
       const effectiveConversion = business.baseConversion + (upgrades.conversionBonus / 100);
       const returnAmount = amount * effectiveConversion;
-      
+
       // Calculate effective tax
       const effectiveTax = Math.max(0, business.baseTax - (upgrades.taxReduction / 100));
       const taxAmount = returnAmount * effectiveTax;
@@ -149,6 +143,7 @@ export default function CommercialCenterPage() {
         risk: business.risk,
         status: 'running',
         date: commercialStore.getTodayDate(),
+        businessId: selectedBusiness,
       };
 
       // Optimistic update
@@ -228,7 +223,7 @@ export default function CommercialCenterPage() {
   };
 
   const isBusinessUnlocked = (business: BusinessType): boolean => {
-    return respeitLevel >= BUSINESSES[business].minRespect;
+    return true; // All businesses are now unlocked
   };
 
   return (
@@ -289,8 +284,8 @@ export default function CommercialCenterPage() {
               <span className="text-slate-300">Nível {respeitLevel}</span>
             </div>
             <div>
-              <span className="text-yellow-400 block text-xs mb-1">Operações Hoje</span>
-              <span className="text-slate-300">{operationsCompletedToday}/{maxOperations}</span>
+              <span className="text-yellow-400 block text-xs mb-1">Operações Ativas</span>
+              <span className="text-slate-300">{operations.length}</span>
             </div>
             <div>
               <span className="text-green-400 block text-xs mb-1">Upgrades</span>
@@ -315,6 +310,7 @@ export default function CommercialCenterPage() {
               ([key, business]) => {
                 const isUnlocked = isBusinessUnlocked(key);
                 const isSelected = selectedBusiness === key;
+                const activeOpsCount = getActiveOperationsForBusiness(key);
 
                 return (
                   <motion.div
@@ -325,7 +321,7 @@ export default function CommercialCenterPage() {
                       isSelected
                         ? 'border-logo-gold bg-gradient-to-br from-slate-800/80 to-slate-900/80 shadow-lg shadow-logo-gold/30'
                         : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'
-                    } ${!isUnlocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    }`}
                   >
                     {/* Background animation */}
                     {isSelected && (
@@ -336,11 +332,10 @@ export default function CommercialCenterPage() {
                       />
                     )}
 
-                    {!isUnlocked && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
-                        <p className="text-sm text-slate-300">
-                          Respeito {business.minRespect} necessário
-                        </p>
+                    {/* Active operations badge */}
+                    {activeOpsCount > 0 && (
+                      <div className="absolute top-2 right-2 bg-blue-600 text-white text-xs font-heading px-2 py-1 rounded">
+                        {activeOpsCount} ativa{activeOpsCount !== 1 ? 's' : ''}
                       </div>
                     )}
 
@@ -431,18 +426,11 @@ export default function CommercialCenterPage() {
 
               <button
                 onClick={handleLaunderMoney}
-                disabled={isProcessing || !inputAmount || operationsCompletedToday >= maxOperations}
+                disabled={isProcessing || !inputAmount}
                 className="w-full bg-gradient-to-r from-logo-gradient-start to-logo-gradient-end hover:from-orange-600 hover:to-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-heading py-3 rounded-lg transition-all"
               >
                 {isProcessing ? 'Processando...' : 'Lavar Dinheiro'}
               </button>
-
-              {operationsCompletedToday >= maxOperations && (
-                <div className="flex items-center gap-2 text-yellow-400 text-sm">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>Limite de operações diárias atingido. Volte amanhã!</span>
-                </div>
-              )}
             </div>
           </motion.div>
         </motion.div>

@@ -11,6 +11,7 @@ export type LaunderingOperation = {
   risk: 'low' | 'medium' | 'high';
   status: 'running' | 'completed';
   date: string; // YYYY-MM-DD
+  businessId?: string; // Identificador único do comércio para operações independentes
 };
 
 export type BusinessType = 'lava-rapido' | 'bar-do-zé' | 'oficina-do-malandro' | 'balada-do-crime' | 'empresa-fantasma';
@@ -33,7 +34,7 @@ export const BUSINESSES = {
     baseConversion: 0.88,
     time: 10 * 60 * 1000, // 10 minutes
     description: 'Bebidas, conversa e dinheiro limpo',
-    minRespect: 5,
+    minRespect: 0,
     emoji: '🍺',
   },
   'oficina-do-malandro': {
@@ -43,7 +44,7 @@ export const BUSINESSES = {
     baseConversion: 1.15,
     time: 20 * 60 * 1000, // 20 minutes
     description: 'Consertos que ninguém pergunta',
-    minRespect: 15,
+    minRespect: 0,
     emoji: '🔧',
   },
   'balada-do-crime': {
@@ -53,7 +54,7 @@ export const BUSINESSES = {
     baseConversion: 1.40,
     time: 30 * 60 * 1000, // 30 minutes
     description: 'Música alta, bebida cara, dinheiro limpo',
-    minRespect: 30,
+    minRespect: 0,
     emoji: '🎉',
   },
   'empresa-fantasma': {
@@ -63,7 +64,7 @@ export const BUSINESSES = {
     baseConversion: 1.90,
     time: 60 * 60 * 1000, // 1 hour
     description: 'Consultoria em operações especiais',
-    minRespect: 50,
+    minRespect: 0,
     emoji: '👻',
   },
 };
