@@ -420,9 +420,9 @@ export default function CommercialCenterPage() {
               {/* Image on left */}
               <div className="commerce-image">
                 <Image
-                  src={op.id === 'commerce2' 
-                    ? 'https://static.wixstatic.com/media/50f4bf_3f0c5ad6d1c6441d94ed6fc35439e37c~mv2.png'
-                    : 'https://static.wixstatic.com/media/50f4bf_78b9614d788c4aac84adc9341b6ea546~mv2.png?originWidth=128&originHeight=128'}
+                  src={op.id === 'commerce1' 
+                    ? 'https://static.wixstatic.com/media/50f4bf_232a7af7a7e94e69a4b7e4cd0bebb26f~mv2.png'
+                    : 'https://static.wixstatic.com/media/50f4bf_3f0c5ad6d1c6441d94ed6fc35439e37c~mv2.png'}
                   alt={op.name}
                   className="w-full h-full object-cover"
                 />
