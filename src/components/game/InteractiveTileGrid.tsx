@@ -17,7 +17,7 @@ interface LuxuryStoreData {
   position: { x: number; z: number };
   gridX: number;
   gridZ: number;
-  size: number; // 4x4 tiles
+  size: number; // 4x2 tiles
   model: THREE.Group | null;
   isClickable: boolean;
 }
@@ -113,7 +113,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     const scene = new THREE.Scene();
     scene.background = null; // Transparent background to show page background
     // Renovated dark layer with enhanced depth and atmosphere
-    scene.fog = new THREE.Fog(0x8faee0, 220,900); // Deeper, more sophisticated dark tone
+    scene.fog = new THREE.Fog(0xaecbff, 300, 1200); // Deeper, more sophisticated dark tone
     sceneRef.current = scene;
 
     // Initialize blocked tiles set
@@ -448,7 +448,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     const gltfLoader = new GLTFLoader();
 
     // Calculate position for 4x4 luxury store (16 tiles) - POSITIONED at tile 10
-    const storeSize = 4; // 4x4 tiles
+    const storeSize = 4; // 2x4 tiles
 
     // Position the store at tile 10
     // Tile 10 in a linear grid corresponds to grid position (10, 0) when counting from left to right
@@ -499,7 +499,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
         const size = bbox.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
 
-        // Scale to fit exactly 4x4 tiles (4 units in world space)
+        // Scale to fit exactly 2x4 tiles (4 units in world space)
         const targetSize = storeSize * tileSize; // 4 units
         const scale = targetSize / maxDim;
         model.scale.set(scale, scale, scale);
@@ -968,7 +968,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
 
     // ===== LOAD CENTRO COMUNITÁRIO 3D MODEL (8 tiles - right margin, next to Centro Comercial) =====
     // Position the centro comunitário next to the centro comercial
-    const centroComunitarioSize = 4; // 4 tiles wide
+    const centroComunitarioSize = -5; // 4 tiles wide
     const centroComunitarioDepth = 2; // 2 tiles deep (8 tiles total)
     const centroComunitarioGridX = 32; // Right margin (same as centro comercial)
     const centroComunitarioGridZ = 5; // Below centro comercial with spacing
