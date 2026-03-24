@@ -67,7 +67,7 @@ emissive: 0x000000 (NO emissive on base)
 - **Color**: Gold (#FFD700)
 - **Intensity**: 1.2
 - **Area**: 8% (fine lines, elegant details)
-- **Placement**: 
+- **Placement**:
   - Entrance frame
   - Logo details
   - Decorative lines
@@ -117,7 +117,7 @@ emissive: 0x000000 (NO emissive on base)
 #### Ambient Light
 ```
 Color: 0x1a2a4a (dark blue)
-Intensity: 0.25 (low for night)
+Intensity: 0.8(low for night)
 Purpose: Base illumination
 ```
 
@@ -263,23 +263,23 @@ Movement: Subtle drift
 ### For Each Building Model
 
 - [ ] **Base Color Preserved**: Original colors intact
-- [ ] **Material Properties**: 
+- [ ] **Material Properties**:
   - [ ] Concrete: metalness 0.1-0.3, roughness 0.7-0.9
   - [ ] Glass: metalness 0.3-0.5, roughness 0.1-0.3
   - [ ] Metal: metalness 0.6-0.9, roughness 0.2-0.5
-- [ ] **Neon Details**: 
+- [ ] **Neon Details**:
   - [ ] Identified specific parts (max 10%)
   - [ ] Applied correct color
   - [ ] Set emissiveIntensity (1-2.5)
-- [ ] **Lighting**: 
+- [ ] **Lighting**:
   - [ ] Main point light positioned
   - [ ] Accent light positioned
   - [ ] Shadows working
-- [ ] **Animation**: 
+- [ ] **Animation**:
   - [ ] Window blinking implemented
   - [ ] Pulsation working
   - [ ] Breathing subtle
-- [ ] **Interaction**: 
+- [ ] **Interaction**:
   - [ ] Hover effect responsive
   - [ ] Click effect working
   - [ ] No color changes on interaction
