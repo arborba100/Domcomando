@@ -144,12 +144,12 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
 
     // ===== LIGHTING - RENOVATED CINEMATIC NIGHT URBAN =====
     // Enhanced dark ambient light for sophisticated night atmosphere
-    const ambientLight = new THREE.AmbientLight(0xfffff, 2.2);
+    const ambientLight = new THREE.AmbientLight(0xfffff, 3.4);
     scene.add(ambientLight);
 
     // Directional light for dramatic shadows with enhanced contrast
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
-    directionalLight.position.set(gridTotalWidth / 2 + 30, maxDim * 0.9, gridTotalHeight / 2 + 20);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 4.2);
+    directionalLight.position.set(30, 60, 30);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 4096;
     directionalLight.shadow.mapSize.height = 4096;
@@ -162,13 +162,13 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     scene.add(directionalLight);
 
     // Warm fill light (orange/gold) - enhanced for depth
-    const fillLight = new THREE.DirectionalLight(0xFF6B35, 0.45);
-    fillLight.position.set(gridTotalWidth / 2 - 40, maxDim * 0.7, gridTotalHeight / 2 - 30);
+    const fillLight = new THREE.DirectionalLight(0xFfF1b3, 2.6);
+    fillLight.position.set(-20, 25, -20);
     scene.add(fillLight);
 
     // Rim light for edge definition - enhanced neon glow
-    const rimLight = new THREE.DirectionalLight(0x00EAFF, 0.5);
-    rimLight.position.set(gridTotalWidth / 2, maxDim * 0.6, gridTotalHeight / 2 - 60);
+    const rimLight = new THREE.DirectionalLight(0xaee8ff, 1.8);
+    rimLight.position.set(0, 20, -50);
     scene.add(rimLight);
 
     // Initialize AAA 3D Visual System
