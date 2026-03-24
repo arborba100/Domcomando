@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Chrome, ShieldCheck, Eye, Play, AlertTriangle } from 'lucide-react';
+import { Chrome, ShieldCheck, Eye, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const VIDEO_BG = 'https://video.wixstatic.com/video/50f4bf_570bf5fe87734b1cb3523fd958acce0e/720p/mp4/file.mp4';
@@ -90,16 +90,16 @@ export default function CinemaIntro() {
             <div className="grid w-full max-w-4xl grid-cols-1 md:grid-cols-2 border border-white/10 bg-black/80">
 
               {/* ESQUERDA */}
-              <div className="hidden md:flex flex-col justify-between bg-red-700 p-8">
+              <div className="hidden md:flex flex-col justify-between bg-gradient-to-b from-blue-600 to-blue-700 p-8">
                 <div>
-                  <AlertTriangle size={40} className="text-black mb-4" />
-                  <h2 className="text-4xl font-black uppercase text-black">
-                    Acesso Restrito
+                  <Eye size={40} className="text-white mb-4" />
+                  <h2 className="text-4xl font-black uppercase text-white">
+                    Modo Visitante
                   </h2>
                 </div>
 
-                <p className="text-xs font-bold uppercase text-black/60">
-                  Todas as ações estão sendo monitoradas.
+                <p className="text-xs font-bold uppercase text-white/70">
+                  Navegue como visitante. Faça login para salvar seu progresso.
                 </p>
               </div>
 
