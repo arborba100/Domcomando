@@ -393,36 +393,26 @@ export default function Multiplayer3DMap() {
       color: 0x1a4d2e,
     });
 
-    // Create Commercial Centers at specific tiles
-    // Tiles 40, 80, 120, 160 correspond to specific grid positions
-    const commercialCenterPositions = [
-      { tileId: 40, name: 'Centro Comercial 1' },
-      { tileId: 80, name: 'Centro Comercial 2' },
-      { tileId: 120, name: 'Centro Comercial 3' },
-      { tileId: 160, name: 'Centro Comercial 4' },
-    ];
+    // Create single Commercial Center at tile 40
+    const commercialCenterTile = 40;
+    const ccX = commercialCenterTile % GRID_SIZE;
+    const ccZ = Math.floor(commercialCenterTile / GRID_SIZE);
 
-    commercialCenterPositions.forEach((cc) => {
-      // Convert tile ID to grid coordinates
-      const x = cc.tileId % GRID_SIZE;
-      const z = Math.floor(cc.tileId / GRID_SIZE);
+    const commercialMesh = createCommercialCenterMesh(
+      { x: ccX, z: ccZ },
+      0xFF6B35, // Orange-red color
+      'Centro Comercial'
+    );
+    scene.add(commercialMesh);
 
-      const commercialMesh = createCommercialCenterMesh(
-        { x, z },
-        0xFF6B35, // Orange-red color
-        cc.name
-      );
-      scene.add(commercialMesh);
-
-      buildingsRef.current.set(cc.tileId.toString(), {
-        id: cc.tileId.toString(),
-        name: cc.name,
-        type: 'business',
-        position: { x, z },
-        mesh: commercialMesh,
-        color: 0xFF6B35,
-        routePath: '/centro-comercial',
-      });
+    buildingsRef.current.set(commercialCenterTile.toString(), {
+      id: commercialCenterTile.toString(),
+      name: 'Centro Comercial',
+      type: 'business',
+      position: { x: ccX, z: ccZ },
+      mesh: commercialMesh,
+      color: 0xFF6B35,
+      routePath: '/centro-comercial',
     });
 
     // Create bribery zone buildings
