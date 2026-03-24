@@ -112,7 +112,8 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     // ===== SCENE SETUP - NIGHT URBAN ATMOSPHERE =====
     const scene = new THREE.Scene();
     scene.background = null; // Transparent background to show page background
-    scene.fog = new THREE.Fog(0x0a0f1a, 120, 250); // Enhanced fog for depth
+    // Renovated dark layer with enhanced depth and atmosphere
+    scene.fog = new THREE.Fog(0x0d1117, 100, 280); // Deeper, more sophisticated dark tone
     sceneRef.current = scene;
 
     // Initialize blocked tiles set
@@ -141,13 +142,13 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     rendererRef.current = renderer;
     containerRef.current.appendChild(renderer.domElement);
 
-    // ===== LIGHTING - CINEMATIC NIGHT URBAN =====
-    // Dark ambient light for night atmosphere
-    const ambientLight = new THREE.AmbientLight(0x1a2a4a, 0.25);
+    // ===== LIGHTING - RENOVATED CINEMATIC NIGHT URBAN =====
+    // Enhanced dark ambient light for sophisticated night atmosphere
+    const ambientLight = new THREE.AmbientLight(0x1a2a4a, 0.3);
     scene.add(ambientLight);
 
-    // Directional light for dramatic shadows
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    // Directional light for dramatic shadows with enhanced contrast
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
     directionalLight.position.set(gridTotalWidth / 2 + 30, maxDim * 0.9, gridTotalHeight / 2 + 20);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 4096;
@@ -160,13 +161,13 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     directionalLight.shadow.bias = -0.0001;
     scene.add(directionalLight);
 
-    // Warm fill light (orange/gold)
-    const fillLight = new THREE.DirectionalLight(0xFF6B35, 0.35);
+    // Warm fill light (orange/gold) - enhanced for depth
+    const fillLight = new THREE.DirectionalLight(0xFF6B35, 0.45);
     fillLight.position.set(gridTotalWidth / 2 - 40, maxDim * 0.7, gridTotalHeight / 2 - 30);
     scene.add(fillLight);
 
-    // Rim light for edge definition
-    const rimLight = new THREE.DirectionalLight(0x00EAFF, 0.4);
+    // Rim light for edge definition - enhanced neon glow
+    const rimLight = new THREE.DirectionalLight(0x00EAFF, 0.5);
     rimLight.position.set(gridTotalWidth / 2, maxDim * 0.6, gridTotalHeight / 2 - 60);
     scene.add(rimLight);
 
