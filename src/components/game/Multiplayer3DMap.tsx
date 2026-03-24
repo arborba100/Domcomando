@@ -393,28 +393,6 @@ export default function Multiplayer3DMap() {
       color: 0x1a4d2e,
     });
 
-    // Create single Commercial Center at tile 40
-    const commercialCenterTile = 40;
-    const ccX = commercialCenterTile % GRID_SIZE;
-    const ccZ = Math.floor(commercialCenterTile / GRID_SIZE);
-
-    const commercialMesh = createCommercialCenterMesh(
-      { x: ccX, z: ccZ },
-      0xFF6B35, // Orange-red color
-      'Centro Comercial'
-    );
-    scene.add(commercialMesh);
-
-    buildingsRef.current.set(commercialCenterTile.toString(), {
-      id: commercialCenterTile.toString(),
-      name: 'Centro Comercial',
-      type: 'business',
-      position: { x: ccX, z: ccZ },
-      mesh: commercialMesh,
-      color: 0xFF6B35,
-      routePath: '/centro-comercial',
-    });
-
     // Create bribery zone buildings
     BRIBERY_ZONES.forEach((zone) => {
       const buildingMesh = createBuildingMesh(
@@ -450,104 +428,6 @@ export default function Multiplayer3DMap() {
         routePath: routeMap[zone.npcType],
       });
     });
-  };
-
-  // Create a commercial center mesh (larger building)
-  const createCommercialCenterMesh = (
-    position: { x: number; z: number },
-    color: number,
-    name: string
-  ): THREE.Group => {
-    const group = new THREE.Group();
-    (group as any).buildingData = {
-      name,
-      type: 'business',
-      position,
-      color,
-    };
-
-    // PLATFORM BASE - larger for commercial center (6x6 tiles)
-    const platformGeometry = new THREE.BoxGeometry(6, 0.5, 6);
-    const platformMaterial = new THREE.MeshStandardMaterial({ 
-      color: 0x555555,
-      roughness: 0.6,
-      metalness: 0.3,
-    });
-    const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-    platform.position.y = 0.25;
-    platform.castShadow = true;
-    platform.receiveShadow = true;
-    group.add(platform);
-
-    // Base (sits ON the platform)
-    const baseGeometry = new THREE.BoxGeometry(5.5, 0.3, 5.5);
-    const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
-    const base = new THREE.Mesh(baseGeometry, baseMaterial);
-    base.position.y = 0.65;
-    base.castShadow = true;
-    base.receiveShadow = true;
-    group.add(base);
-
-    // Main structure (larger - commercial center)
-    const structureGeometry = new THREE.BoxGeometry(5.5, 3.5, 5.5);
-    const structureMaterial = new THREE.MeshStandardMaterial({
-      color,
-      emissive: color,
-      emissiveIntensity: 0.3,
-    });
-    const structure = new THREE.Mesh(structureGeometry, structureMaterial);
-    structure.position.y = 2.4;
-    structure.castShadow = true;
-    structure.receiveShadow = true;
-    group.add(structure);
-
-    // Roof
-    const roofGeometry = new THREE.ConeGeometry(3.2, 1.5, 4);
-    const roofMaterial = new THREE.MeshStandardMaterial({ color: 0xd2691e });
-    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-    roof.position.y = 4.65;
-    roof.rotation.y = Math.PI / 4;
-    roof.castShadow = true;
-    roof.receiveShadow = true;
-    group.add(roof);
-
-    // Main entrance door (larger)
-    const doorGeometry = new THREE.BoxGeometry(1.2, 2.5, 0.1);
-    const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
-    const door = new THREE.Mesh(doorGeometry, doorMaterial);
-    door.position.set(0, 2.4 + 1, 2.8); // Front center
-    door.castShadow = true;
-    group.add(door);
-
-    // Multiple windows on front
-    for (let i = 0; i < 3; i++) {
-      const windowGeometry = new THREE.BoxGeometry(0.6, 0.6, 0.05);
-      const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x87CEEB });
-      const window = new THREE.Mesh(windowGeometry, windowMaterial);
-      window.position.set(-1.2 + i * 1.2, 2.4 + 1.8, 2.8); // Front
-      window.castShadow = true;
-      group.add(window);
-    }
-
-    // Windows on sides
-    for (let i = 0; i < 2; i++) {
-      const windowGeometry = new THREE.BoxGeometry(0.6, 0.6, 0.05);
-      const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x87CEEB });
-      const window = new THREE.Mesh(windowGeometry, windowMaterial);
-      window.position.set(2.8, 2.4 + 1.2 + i * 1.2, -0.6 + i * 1.2); // Right side
-      window.rotation.y = Math.PI / 2;
-      window.castShadow = true;
-      group.add(window);
-    }
-
-    // Position group at the tile center
-    group.position.set(
-      (position.x + 0.5) * TILE_SIZE,
-      0,
-      (position.z + 0.5) * TILE_SIZE
-    );
-
-    return group;
   };
 
   // Create a building mesh

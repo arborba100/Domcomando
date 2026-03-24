@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useSelectedTilesStore } from '@/store/selectedTilesStore';
 
 interface CommerceOperation {
   id: string;
@@ -27,9 +26,6 @@ interface CompletedOperation {
 }
 
 export default function CommercialCenterPage() {
-  const selectedTiles = useSelectedTilesStore((state) => state.selectedTiles);
-  const averagePosition = useSelectedTilesStore((state) => state.getAveragePosition());
-
   const [operations, setOperations] = useState<CommerceOperation[]>([
     {
       id: 'commerce2',
@@ -393,27 +389,6 @@ export default function CommercialCenterPage() {
       <div className="w-full pt-[120px] px-4 relative z-10">
         <div className="max-w-[100rem] mx-auto mb-8">
           <h1 className="neon-sign text-4xl md:text-5xl text-center">Bem-vindo ao Complexo</h1>
-          {/* Display selected tiles info */}
-          {selectedTiles.length > 0 && (
-            <div className="mt-6 p-4 border-2 border-cyan-500 rounded-lg bg-cyan-500/10">
-              <p className="text-cyan-300 text-center font-paragraph">
-                <span className="font-bold">{selectedTiles.length}</span> tile(s) selecionado(s)
-                {averagePosition && (
-                  <span className="block text-sm mt-2">
-                    Posição média: X: {Math.round(averagePosition.x)}, Z: {Math.round(averagePosition.y)}
-                    <br />
-                    <span className="text-xs text-cyan-400">Grid: 0-100 (X e Z)</span>
-                  </span>
-                )}
-              </p>
-            </div>
-          )}
-          {/* Grid info */}
-          <div className="mt-4 p-3 border border-cyan-500/50 rounded bg-cyan-500/5 text-center">
-            <p className="text-cyan-300 text-sm font-paragraph">
-              Centro Comercial posicionado em: <span className="font-bold">Tiles 40, 80, 120, 160 (Centro: X: 60, Z: 40)</span>
-            </p>
-          </div>
         </div>
       </div>
 

@@ -35,7 +35,7 @@ export const CentroComercial3D = ({
         // Create a group for the centro comercial
         const group = new THREE.Group();
 
-        // Use the position prop passed from parent component
+        // Position at center of platform
         group.position.set(position.x, 0, position.z);
 
         // Calculate bounding box to determine proper scale
@@ -43,8 +43,8 @@ export const CentroComercial3D = ({
         const modelSize = bbox.getSize(new THREE.Vector3());
         const maxDim = Math.max(modelSize.x, modelSize.y, modelSize.z);
 
-        // Scale to fit 4 tiles (2x2 format) - approximately 20 units in world space
-        const targetSize = size * 2; // 20 units for 4 tiles
+        // Scale to fit exactly 8 tiles (2x4 or 4x2 format)
+        const targetSize = size * 1; // 8 units in world space
         const scale = targetSize / maxDim;
         model.scale.set(scale, scale, scale);
         originalScaleRef.current = scale;
