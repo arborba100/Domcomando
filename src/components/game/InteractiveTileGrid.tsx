@@ -144,7 +144,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
 
     // ===== LIGHTING - RENOVATED CINEMATIC NIGHT URBAN =====
     // Enhanced dark ambient light for sophisticated night atmosphere
-    const ambientLight = new THREE.AmbientLight(0x1a2a4a, 0.3);
+    const ambientLight = new THREE.AmbientLight(0xfffff, 2.2);
     scene.add(ambientLight);
 
     // Directional light for dramatic shadows with enhanced contrast
