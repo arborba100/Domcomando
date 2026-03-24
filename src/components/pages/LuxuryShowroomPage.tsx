@@ -374,10 +374,7 @@ export default function LuxuryShowroomPage() {
               <p className="mt-4 max-w-xl text-sm text-white/74 sm:text-base">
                 Luxo, provocação e presença. Aqui você não compra só peça. Você compra o jeito que o mundo vai te enxergar.
               </p>
-              <div className="mt-6 rounded-3xl border p-4 backdrop-blur-md" style={{ borderColor: theme.accentSoft, background: 'rgba(0,0,0,.28)' }}>
-                <p className="text-[11px] uppercase tracking-[0.35em] text-white/48">Dinheiro limpo disponível</p>
 
-              </div>
             </div>
             {/* RIGHT - PLAYER INFO & STATUS */}
 
