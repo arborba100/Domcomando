@@ -70,7 +70,7 @@ export default function LuxuryNPC({ onNPCLoaded }: LuxuryNPCProps) {
         const npc = gltf.scene;
         // Position at center, slightly behind counter area
         npc.position.set(0, 0, 0.5);
-        // Scale appropriately for full body visibility
+        // Scale visibilityvisibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibilityibility
         npc.scale.set(1.85, 1.85, 1.85);visibvisibvisibvisibilibilitbilit
 
         // Enable shadows on all meshes and optimize materials
