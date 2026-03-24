@@ -794,7 +794,7 @@ const InteractiveTileGrid: React.FC<InteractiveTileGridProps> = (
     // Position the delegacia at tile 5
     const delegaciaSize = 2; // 2 tiles wide
     const delegaciaDepth = 4; // 4 tiles deep
-    
+
     // Tile 5 is at row 0, col 5 in the grid (40 columns × 20 rows)
     const delegaciaGridX = 5; // Column 5
     const delegaciaGridZ = 0; // Row 0
