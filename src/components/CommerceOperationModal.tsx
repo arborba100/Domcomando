@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Clock3, ShieldDollar, Landmark, BadgeDollarSign, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ComercioKey, COMERCIOS_CONFIG, calcularValorLavagem, calcularTempoLavagem, calcularTaxaAplicada } from '@/types/comercios';
+import {
+  ComercioKey,
+  COMERCIOS_CONFIG,
+  calcularValorLavagem,
+  calcularTempoLavagem,
+  calcularTaxaAplicada,
+} from '@/types/comercios';
 import { ComercioData } from '@/types/comercios';
 
 interface CommerceOperationModalProps {
@@ -30,51 +36,43 @@ export default function CommerceOperationModal({
   const [isCompleting, setIsCompleting] = useState(false);
   const [error, setError] = useState<string>('');
 
-  // Timer effect
   useEffect(() => {
-    if (!isOpen || !commerceData?.emAndamento || !commerceData?.horarioFim) {
-      return;
-    }
+    if (!isOpen || !commerceData?.emAndamento || !commerceData?.horarioFim) return;
 
     const updateTimer = () => {
       const remaining = Math.max(0, commerceData.horarioFim! - Date.now());
       setTimeLeft(Math.ceil(remaining / 1000));
-
-      if (remaining <= 0) {
-        setTimeLeft(0);
-      }
     };
 
     updateTimer();
-    const interval = setInterval(updateTimer, 100);
-
+    const interval = setInterval(updateTimer, 250);
     return () => clearInterval(interval);
   }, [isOpen, commerceData?.emAndamento, commerceData?.horarioFim]);
 
-  if (!isOpen || !commerceId || !commerceData) {
-    return null;
-  }
+  if (!isOpen || !commerceId || !commerceData) return null;
 
   const config = COMERCIOS_CONFIG[commerceId];
   const valorLavagem = calcularValorLavagem(commerceId, commerceData.nivelNegocio);
   const tempoLavagem = calcularTempoLavagem(commerceId, commerceData.nivelNegocio);
   const taxaAplicada = calcularTaxaAplicada(commerceId, commerceData.nivelTaxa);
+  const descontoEfetivo = COMERCIOS_CONFIG[commerceId].taxaBase - taxaAplicada;
   const cleanMoneyGanho = Math.floor(valorLavagem * (taxaAplicada / 100));
 
-  // Verificar se já foi usado hoje
   const hoje = new Date().toDateString();
   const jaUsouHoje = commerceData.ultimaDataUso === hoje;
 
-  // Verificar status
   let status = 'Disponível';
-  let statusColor = 'text-green-400';
+  let statusColor = 'text-emerald-400';
+  let statusBg = 'from-emerald-500/20 to-emerald-300/10 border-emerald-400/40';
 
   if (commerceData.emAndamento) {
     status = 'Lavagem em andamento';
-    statusColor = 'text-yellow-400';
+    statusColor = 'text-amber-300';
+    statusBg = 'from-amber-500/20 to-orange-300/10 border-amber-400/40';
   } else if (jaUsouHoje && !commerceData.emAndamento) {
     status = 'Limite diário atingido';
-    statusColor = 'text-red-400';
+    statusColor = 'text-red-300';
+    statusBg = 'from-red-500/20 to-red-300/10 border-red-400/40';
   }
 
   const canStart =
@@ -83,8 +81,8 @@ export default function CommerceOperationModal({
     dirtyMoney >= valorLavagem;
 
   const canComplete =
-    commerceData.emAndamento &&
-    commerceData.horarioFim &&
+    !!commerceData.emAndamento &&
+    !!commerceData.horarioFim &&
     Date.now() >= commerceData.horarioFim;
 
   const handleStartClick = async () => {
@@ -116,12 +114,8 @@ export default function CommerceOperationModal({
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
 
-    if (hours > 0) {
-      return `${hours}h ${minutes}m ${secs}s`;
-    }
-    if (minutes > 0) {
-      return `${minutes}m ${secs}s`;
-    }
+    if (hours > 0) return `${hours}h ${minutes}m ${secs}s`;
+    if (minutes > 0) return `${minutes}m ${secs}s`;
     return `${secs}s`;
   };
 
@@ -132,155 +126,166 @@ export default function CommerceOperationModal({
     }).format(value);
   };
 
+  const StatCard = ({
+    icon,
+    title,
+    value,
+    valueClass = 'text-cyan-200',
+  }: {
+    icon: React.ReactNode;
+    title: string;
+    value: string;
+    valueClass?: string;
+  }) => (
+    <div className="rounded-2xl border border-cyan-400/20 bg-slate-950/60 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-slate-400">
+        {icon}
+        <span>{title}</span>
+      </div>
+      <div className={`mt-3 text-lg md:text-xl font-black ${valueClass}`}>
+        {value}
+      </div>
+    </div>
+  );
+
   return (
     <>
-      {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/80 z-40 backdrop-blur-sm"
+        className="fixed inset-0 z-40 bg-black/85 backdrop-blur-md"
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-2xl bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-2 border-cyan-400 rounded-lg shadow-2xl overflow-hidden">
-          {/* Header */}
-          <div className="relative bg-gradient-to-r from-cyan-900/50 to-purple-900/50 border-b border-cyan-400/50 px-6 py-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-cyan-300 font-heading">{config.nome}</h2>
-              <p className={`text-sm mt-1 font-paragraph ${statusColor}`}>{status}</p>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6">
+        <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-cyan-400/30 bg-[linear-gradient(180deg,rgba(6,12,24,0.98)_0%,rgba(12,20,36,0.98)_100%)] shadow-[0_0_60px_rgba(0,240,255,0.18)]">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,240,255,0.08),transparent_35%),radial-gradient(circle_at_bottom,rgba(157,0,255,0.08),transparent_35%)]" />
+
+          <div className="relative border-b border-cyan-400/20 bg-black/20 px-5 py-4 md:px-8 md:py-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.28em] text-cyan-400/70">
+                  Operação de lavagem
+                </p>
+                <h2 className="mt-2 text-2xl md:text-3xl font-black uppercase tracking-wide text-cyan-200">
+                  {config.nome}
+                </h2>
+
+                <div className={`mt-3 inline-flex items-center gap-2 rounded-full border bg-gradient-to-r px-3 py-1 text-xs font-bold uppercase tracking-wider ${statusBg} ${statusColor}`}>
+                  {commerceData.emAndamento ? (
+                    <Clock3 className="h-4 w-4" />
+                  ) : jaUsouHoje ? (
+                    <AlertTriangle className="h-4 w-4" />
+                  ) : (
+                    <CheckCircle2 className="h-4 w-4" />
+                  )}
+                  <span>{status}</span>
+                </div>
+              </div>
+
+              <button
+                onClick={onClose}
+                className="rounded-full border border-cyan-400/20 bg-slate-900/70 p-2 text-cyan-300 transition hover:bg-slate-800 hover:text-cyan-100"
+                aria-label="Fechar modal"
+              >
+                <X size={22} />
+              </button>
             </div>
-            <button
-              onClick={onClose}
-              className="text-cyan-300 hover:text-cyan-100 transition-colors"
-              aria-label="Fechar modal"
-            >
-              <X size={28} />
-            </button>
           </div>
 
-          {/* Content */}
-          <div className="px-6 py-6 space-y-6">
-            {/* Error message */}
+          <div className="relative px-5 py-5 md:px-8 md:py-7">
             {error && (
-              <div className="bg-red-900/30 border border-red-500 text-red-300 px-4 py-3 rounded">
+              <div className="mb-5 rounded-2xl border border-red-500/40 bg-red-950/40 px-4 py-3 text-sm font-medium text-red-200">
                 {error}
               </div>
             )}
 
-            {/* Operation Details Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* Valor de Lavagem */}
-              <div className="bg-slate-700/50 border border-cyan-400/30 rounded p-4">
-                <p className="text-xs text-gray-400 font-paragraph uppercase tracking-wider">
-                  Valor de Lavagem
-                </p>
-                <p className="text-xl font-bold text-cyan-300 mt-2 font-heading">
-                  {formatCurrency(valorLavagem)}
-                </p>
-              </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <StatCard
+                icon={<BadgeDollarSign className="h-4 w-4" />}
+                title="Valor de lavagem"
+                value={formatCurrency(valorLavagem)}
+                valueClass="text-cyan-200"
+              />
 
-              {/* Taxa Base */}
-              <div className="bg-slate-700/50 border border-cyan-400/30 rounded p-4">
-                <p className="text-xs text-gray-400 font-paragraph uppercase tracking-wider">
-                  Taxa Base
-                </p>
-                <p className="text-xl font-bold text-cyan-300 mt-2 font-heading">
-                  {COMERCIOS_CONFIG[commerceId].taxaBase}%
-                </p>
-              </div>
+              <StatCard
+                icon={<Clock3 className="h-4 w-4" />}
+                title="Tempo da operação"
+                value={formatTime(Math.floor(tempoLavagem / 1000))}
+                valueClass="text-sky-200"
+              />
 
-              {/* Tempo de Operação */}
-              <div className="bg-slate-700/50 border border-cyan-400/30 rounded p-4">
-                <p className="text-xs text-gray-400 font-paragraph uppercase tracking-wider">
-                  Tempo de Operação
-                </p>
-                <p className="text-xl font-bold text-cyan-300 mt-2 font-heading">
-                  {formatTime(Math.floor(tempoLavagem / 1000))}
-                </p>
-              </div>
+              <StatCard
+                icon={<ShieldDollar className="h-4 w-4" />}
+                title="Taxa base"
+                value={`${COMERCIOS_CONFIG[commerceId].taxaBase}%`}
+                valueClass="text-orange-300"
+              />
 
-              {/* Desconto de Eficiência */}
-              <div className="bg-slate-700/50 border border-cyan-400/30 rounded p-4">
-                <p className="text-xs text-gray-400 font-paragraph uppercase tracking-wider">
-                  Desconto de Eficiência
-                </p>
-                <p className="text-xl font-bold text-green-400 mt-2 font-heading">
-                  -{(COMERCIOS_CONFIG[commerceId].taxaBase - taxaAplicada).toFixed(1)}%
-                </p>
-              </div>
+              <StatCard
+                icon={<Landmark className="h-4 w-4" />}
+                title="Desconto de eficiência"
+                value={`-${descontoEfetivo.toFixed(1)}%`}
+                valueClass="text-emerald-300"
+              />
 
-              {/* Taxa Final */}
-              <div className="bg-slate-700/50 border border-cyan-400/30 rounded p-4">
-                <p className="text-xs text-gray-400 font-paragraph uppercase tracking-wider">
-                  Taxa Final
-                </p>
-                <p className="text-xl font-bold text-yellow-400 mt-2 font-heading">
-                  {taxaAplicada.toFixed(1)}%
-                </p>
-              </div>
+              <StatCard
+                icon={<ShieldDollar className="h-4 w-4" />}
+                title="Taxa final"
+                value={`${taxaAplicada.toFixed(1)}%`}
+                valueClass="text-yellow-300"
+              />
 
-              {/* Dinheiro Limpo Recebido */}
-              <div className="bg-slate-700/50 border border-cyan-400/30 rounded p-4">
-                <p className="text-xs text-gray-400 font-paragraph uppercase tracking-wider">
-                  Dinheiro Limpo Recebido
-                </p>
-                <p className="text-xl font-bold text-green-400 mt-2 font-heading">
-                  {formatCurrency(cleanMoneyGanho)}
-                </p>
-              </div>
+              <StatCard
+                icon={<BadgeDollarSign className="h-4 w-4" />}
+                title="Dinheiro limpo recebido"
+                value={formatCurrency(cleanMoneyGanho)}
+                valueClass="text-emerald-400"
+              />
             </div>
 
-            {/* Timer - shown when operation is in progress */}
             {commerceData.emAndamento && timeLeft > 0 && (
-              <div className="bg-gradient-to-r from-purple-900/50 to-cyan-900/50 border border-purple-400/50 rounded p-4 text-center">
-                <p className="text-xs text-gray-400 font-paragraph uppercase tracking-wider mb-2">
-                  Tempo Restante
+              <div className="mt-6 rounded-3xl border border-purple-400/30 bg-gradient-to-r from-purple-950/40 to-cyan-950/30 p-5 text-center shadow-[0_0_30px_rgba(168,85,247,0.15)]">
+                <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">
+                  Tempo restante
                 </p>
-                <p className="text-3xl font-bold text-purple-300 font-heading font-mono">
+                <p className="mt-3 text-3xl md:text-4xl font-black text-purple-300 font-mono">
                   {formatTime(timeLeft)}
                 </p>
               </div>
             )}
 
-            {/* Completion message */}
             {commerceData.emAndamento && timeLeft === 0 && (
-              <div className="bg-gradient-to-r from-green-900/50 to-cyan-900/50 border border-green-400/50 rounded p-4 text-center">
-                <p className="text-lg font-bold text-green-300 font-heading">
-                  ✓ Operação Concluída!
+              <div className="mt-6 rounded-3xl border border-emerald-400/30 bg-gradient-to-r from-emerald-950/40 to-cyan-950/30 p-5 text-center shadow-[0_0_30px_rgba(16,185,129,0.12)]">
+                <p className="text-xl font-black uppercase text-emerald-300">
+                  Operação concluída
                 </p>
-                <p className="text-sm text-green-200 mt-2 font-paragraph">
-                  Clique em "Finalizar Lavagem" para receber o dinheiro limpo
+                <p className="mt-2 text-sm text-emerald-100/80">
+                  Clique em <strong>Finalizar Lavagem</strong> para receber o dinheiro limpo.
                 </p>
               </div>
             )}
 
-            {/* Current Money Status */}
-            <div className="grid grid-cols-2 gap-4 border-t border-cyan-400/30 pt-4">
-              <div className="bg-slate-700/50 border border-cyan-400/30 rounded p-4">
-                <p className="text-xs text-gray-400 font-paragraph uppercase tracking-wider">
-                  Dinheiro Sujo Disponível
-                </p>
-                <p className="text-lg font-bold text-green-400 mt-2 font-heading">
-                  {formatCurrency(dirtyMoney)}
-                </p>
-              </div>
-              <div className="bg-slate-700/50 border border-cyan-400/30 rounded p-4">
-                <p className="text-xs text-gray-400 font-paragraph uppercase tracking-wider">
-                  Dinheiro Limpo Total
-                </p>
-                <p className="text-lg font-bold text-yellow-400 mt-2 font-heading">
-                  {formatCurrency(cleanMoney)}
-                </p>
-              </div>
+            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <StatCard
+                icon={<BadgeDollarSign className="h-4 w-4" />}
+                title="Dinheiro sujo disponível"
+                value={formatCurrency(dirtyMoney)}
+                valueClass="text-red-300"
+              />
+
+              <StatCard
+                icon={<BadgeDollarSign className="h-4 w-4" />}
+                title="Dinheiro limpo total"
+                value={formatCurrency(cleanMoney)}
+                valueClass="text-emerald-400"
+              />
             </div>
           </div>
 
-          {/* Footer - Buttons */}
-          <div className="bg-slate-900/50 border-t border-cyan-400/30 px-6 py-4 flex gap-3 justify-end">
+          <div className="relative flex flex-col-reverse gap-3 border-t border-cyan-400/20 bg-black/20 px-5 py-4 md:flex-row md:justify-end md:px-8">
             <Button
               onClick={onClose}
               variant="outline"
-              className="border-cyan-400/50 text-cyan-300 hover:bg-cyan-400/10"
+              className="border-cyan-400/40 bg-transparent text-cyan-200 hover:bg-cyan-500/10 hover:text-cyan-100"
             >
               Fechar
             </Button>
@@ -289,7 +294,7 @@ export default function CommerceOperationModal({
               <Button
                 onClick={handleCompleteClick}
                 disabled={isCompleting}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold"
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black uppercase tracking-wide hover:from-emerald-400 hover:to-emerald-500"
               >
                 {isCompleting ? 'Finalizando...' : 'Finalizar Lavagem'}
               </Button>
@@ -297,14 +302,14 @@ export default function CommerceOperationModal({
               <Button
                 onClick={handleStartClick}
                 disabled={isStarting}
-                className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold"
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black uppercase tracking-wide hover:from-cyan-400 hover:to-blue-500"
               >
                 {isStarting ? 'Iniciando...' : 'Iniciar Lavagem'}
               </Button>
             ) : (
               <Button
                 disabled
-                className="bg-gray-600 text-gray-300 cursor-not-allowed"
+                className="bg-slate-700 text-slate-300 cursor-not-allowed font-bold uppercase tracking-wide"
               >
                 {jaUsouHoje ? 'Limite Diário Atingido' : 'Indisponível'}
               </Button>
