@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-interface PlayerState {
+interface PlayerData {
   playerId: string | null;
   playerName: string;
   level: number;
@@ -9,7 +9,9 @@ interface PlayerState {
   profilePicture: string | null;
   barracoLevel: number;
   playerMoney: number;
-  
+}
+
+interface PlayerState extends PlayerData {
   setPlayerId: (id: string) => void;
   setPlayerName: (name: string) => void;
   setLevel: (level: number) => void;
@@ -20,7 +22,7 @@ interface PlayerState {
   setPlayerMoney: (money: number) => void;
   addPlayerMoney: (amount: number) => void;
   
-  loadPlayerData: (data: Partial<PlayerState>) => void;
+  loadPlayerData: (data: Partial<PlayerData>) => void;
   resetPlayer: () => void;
 }
 
