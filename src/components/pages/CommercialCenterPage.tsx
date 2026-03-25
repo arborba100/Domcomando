@@ -59,8 +59,36 @@ export default function CommercialCenterPage() {
     const loadPlayerData = async () => {
       if (!member?._id) return;
       try {
-        const player = await BaseCrudService.getById<Players>('players', member._id);
-        if (player) {
+        let player = await BaseCrudService.getById<Players>('players', member._id);
+        
+        // Se o jogador não existe, criar um novo
+        if (!player) {
+          console.log('📝 Criando novo jogador para:', member._id);
+          const initialComerciosData = {
+            pizzaria: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+            admBens: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+            lavanderia: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+            academia: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+            templo: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+          };
+          
+          const newPlayer: Players = {
+            _id: member._id,
+            playerName: member.profile?.nickname || 'Jogador',
+            cleanMoney: 0,
+            dirtyMoney: 1000,
+            level: 1,
+            progress: 0,
+            comercios: JSON.stringify(initialComerciosData),
+            isGuest: false,
+            profilePicture: member.profile?.photo?.url,
+          };
+          
+          await BaseCrudService.create('players', newPlayer);
+          setPlayerData(newPlayer);
+          setComercios(initialComerciosData);
+          console.log('✅ Jogador criado com sucesso');
+        } else {
           setPlayerData(player);
           const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
           if (!comerciosData) {
@@ -186,8 +214,11 @@ export default function CommercialCenterPage() {
   };
 
   const handleStartOperation = async (comercioKey: ComercioKey) => {
-    if (!member?._id || !playerData) {
-      throw new Error('Dados do jogador não encontrados');
+    if (!member?._id) {
+      throw new Error('Usuário não autenticado');
+    }
+    if (!playerData) {
+      throw new Error('Carregando dados do jogador...');
     }
     try {
       console.log('🚀 Iniciando lavagem para:', comercioKey);
@@ -223,7 +254,7 @@ export default function CommercialCenterPage() {
 
   const handleCompleteOperation = async (comercioKey: ComercioKey) => {
     if (!member?._id) {
-      throw new Error('Dados do jogador não encontrados');
+      throw new Error('Usuário não autenticado');
     }
     try {
       console.log('🏁 Finalizando lavagem para:', comercioKey);
