@@ -13,6 +13,20 @@ import { Players } from '@/entities';
 import CommercialCenterHotspots from '@/components/CommercialCenterHotspots';
 import CommerceOperationModal from '@/components/CommerceOperationModal';
 
+// Helper function to safely parse comercios data
+const safeParseComercios = (comerciosData: any): Comercios | null => {
+  if (!comerciosData) return null;
+  try {
+    if (typeof comerciosData === 'string') {
+      return JSON.parse(comerciosData);
+    }
+    return comerciosData;
+  } catch (error) {
+    console.error('Erro ao fazer parse de comercios:', error);
+    return null;
+  }
+};
+
 interface CommerceOperation {
   id: string;
   name: string;
@@ -90,7 +104,7 @@ export default function CommercialCenterPage() {
           console.log('✅ Jogador criado com sucesso');
         } else {
           setPlayerData(player);
-          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          const comerciosData = player.comercios ? safeParseComercios(player.comercios) : null;
           if (!comerciosData) {
             console.warn('⚠️ Comercios não encontrados, inicializando...');
             const initialComerciosData = {
@@ -127,7 +141,7 @@ export default function CommercialCenterPage() {
         const player = await BaseCrudService.getById<Players>('players', member._id);
         if (player) {
           setPlayerData(player);
-          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          const comerciosData = player.comercios ? safeParseComercios(player.comercios) : null;
           setComercios(comerciosData);
         }
       } catch (error) {
