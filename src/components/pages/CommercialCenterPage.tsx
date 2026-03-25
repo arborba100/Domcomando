@@ -463,7 +463,7 @@ export default function CommercialCenterPage() {
       {/* BANNER */}
       <div className="w-full relative z-10">
         <div className="banner-container w-full flex items-center justify-center relative px-4">
-          <div className="relative w-full max-w-[1100px] mx-auto">
+          <div className="relative w-full max-w-[1100px] mx-auto z-0">
             <Image
               src="https://static.wixstatic.com/media/50f4bf_fd64ac461d5d41c2a6bc7639af7590ac~mv2.png"
               alt="Centro Comercial"
