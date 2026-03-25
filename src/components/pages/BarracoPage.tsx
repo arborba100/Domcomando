@@ -192,7 +192,7 @@ export default function BarracoPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
         <Header />
-        <div className="pt-[160px] flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
             <p className="text-foreground">Carregando Barraco...</p>
@@ -207,7 +207,7 @@ export default function BarracoPage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
         <Header />
-        <div className="pt-[160px] flex items-center justify-center min-h-[60vh]">
+        <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <p className="text-foreground text-xl mb-4">{error || 'Jogador não encontrado'}</p>
             <button
@@ -234,7 +234,7 @@ export default function BarracoPage() {
         />
       )}
 
-      <main className="max-w-[100rem] mx-auto px-4 pt-[160px] pb-12">
+      <main className="max-w-[100rem] mx-auto px-4 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}

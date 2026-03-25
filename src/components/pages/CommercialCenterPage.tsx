@@ -380,7 +380,7 @@ const handleStartOperation = async (comercioKey: ComercioKey) => {
     <div className="commercial-grid min-h-screen flex flex-col">
       <Header />
 
-      <div className="w-full pt-[92px] md:pt-[100px] px-4 relative z-10">
+      <div className="w-full px-4 relative z-10">
         <div className="max-w-[100rem] mx-auto mb-8">
           <div className="panel-glass rounded-2xl px-6 py-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div>
