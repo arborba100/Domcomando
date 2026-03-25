@@ -14,8 +14,8 @@ const mockMember = {
     nickname: 'TestUser',
     title: 'Player',
   },
-  _createdDate: new Date(),
-  _updatedDate: new Date(),
+  _createdDate: new Date().toISOString(),
+  _updatedDate: new Date().toISOString(),
 };
 
 export const GET: APIRoute = async ({ request }) => {
