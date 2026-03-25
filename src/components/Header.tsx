@@ -5,20 +5,15 @@ import { useCleanMoneyStore } from "@/store/cleanMoneyStore";
 import { usePlayerStore } from "@/store/playerStore";
 import { useSpinVault } from "@/hooks/useSpinVault";
 import { useNavigate } from "react-router-dom";
-import { useMember } from "@/integrations";
-import { LogOut } from "lucide-react";
 import { usePlayerInitialization } from "@/hooks/usePlayerInitialization";
-import { BaseCrudService } from "@/integrations";
-import { Players } from "@/entities";
 
 const LOGO_SRC = "https://static.wixstatic.com/media/50f4bf_01590cb08b7048babbfed83e2830a27c~mv2.png";
 
 export default function Header() {
   const { dirtyMoney, setDirtyMoney } = useDirtyMoneyStore();
   const { cleanMoney, setCleanMoney } = useCleanMoneyStore();
-  const { playerName, setPlayerName, resetPlayer, level } = usePlayerStore();
+  const { playerName, setPlayerName, level } = usePlayerStore();
   const { spins, timeUntilNextGain, formatTime } = useSpinVault();
-  const { actions, member } = useMember();
   const navigate = useNavigate();
   
   // Inicializar dados do jogador
@@ -37,35 +32,6 @@ export default function Header() {
     if (savedName) setPlayerName(savedName);
     if (savedAvatar) setAvatarUrl(savedAvatar);
   }, []);
-
-  // Sincronizar dados do jogador com os stores
-  useEffect(() => {
-    const syncPlayerData = async () => {
-      if (!member?._id) return;
-      try {
-        const player = await BaseCrudService.getById<Players>('players', member._id);
-        if (player) {
-          setDirtyMoney(player.dirtyMoney || 0);
-          setCleanMoney(player.cleanMoney || 0);
-        }
-      } catch (error) {
-        console.error('Erro ao sincronizar dados do jogador:', error);
-      }
-    };
-
-    // Sincronizar imediatamente e depois a cada 2 segundos
-    syncPlayerData();
-    const interval = setInterval(syncPlayerData, 2000);
-
-    return () => clearInterval(interval);
-  }, [member?._id, setDirtyMoney, setCleanMoney]);
-
-  const handleLogout = async () => {
-    localStorage.clear();
-    resetPlayer();
-    if (member) await actions.logout();
-    navigate("/");
-  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -148,14 +114,6 @@ export default function Header() {
             </div>
 
           </div>
-
-          {/* LOGOUT */}
-          <button
-            onClick={handleLogout}
-            className="ml-4 text-red-500 hover:text-red-700"
-          >
-            <LogOut />
-          </button>
 
         </div>
       </div>

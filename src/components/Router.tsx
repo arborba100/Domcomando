@@ -25,6 +25,7 @@ const ResetLuxuryPage = lazy(() => import('@/components/pages/ResetLuxuryPage'))
 const ResetInvestmentPage = lazy(() => import('@/components/pages/ResetInvestmentPage'));
 const InvestmentSkillTreePage = lazy(() => import('@/components/pages/InvestmentSkillTreePage'));
 const CommercialCenterPage = lazy(() => import('@/components/pages/CommercialCenterPage'));
+const ProfilePage = lazy(() => import('@/components/pages/ProfilePage'));
 {/* ... keep existing code (other lazy imports) ... */}
 
 
@@ -184,6 +185,13 @@ const router = createBrowserRouter([
         element: <CommercialCenterPage />,
         routeMetadata: {
           pageIdentifier: 'centro-comercial',
+        },
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />,
+        routeMetadata: {
+          pageIdentifier: 'profile',
         },
       },
 

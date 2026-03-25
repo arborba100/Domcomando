@@ -1,34 +1,16 @@
-import { useMember } from '@/integrations';
-import { MemberProtectedRoute } from '@/components/ui/member-protected-route';
-
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
 import { Image } from '@/components/ui/image';
-import { Mail, User, Calendar, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Mail, User, Calendar } from 'lucide-react';
 
-function ProfilePageContent() {
-  const { member, actions } = useMember();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    try {
-      await actions.logout();
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
-  const memberName = member?.contact?.firstName || member?.profile?.nickname || 'Jogador';
-  const memberEmail = member?.loginEmail || 'Email não disponível';
-  const memberPhoto = member?.profile?.photo?.url || 'https://static.wixstatic.com/media/50f4bf_a888df3d639f415b853110e459edba8c~mv2.png?originWidth=128&originHeight=128';
-  const createdDate = member?._createdDate ? new Date(member._createdDate).toLocaleDateString('pt-BR') : 'Data não disponível';
+export default function ProfilePage() {
+  const memberName = 'Jogador';
+  const memberEmail = 'jogador@complexo.com';
+  const memberPhoto = 'https://static.wixstatic.com/media/50f4bf_a888df3d639f415b853110e459edba8c~mv2.png?originWidth=128&originHeight=128';
+  const createdDate = new Date().toLocaleDateString('pt-BR');
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-
-
       <main className="flex-1 w-full max-w-[120rem] mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -96,21 +78,21 @@ function ProfilePageContent() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="font-paragraph text-foreground/70">Email Verificado:</span>
+                  <span className="font-paragraph text-foreground/70">Acesso:</span>
                   <span className="font-heading text-sm font-bold text-green-400">
-                    ✓ Sim
+                    ✓ Irrestrito
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="font-paragraph text-foreground/70">Tipo de Login:</span>
+                  <span className="font-paragraph text-foreground/70">Tipo:</span>
                   <span className="font-heading text-sm font-bold text-secondary">
-                    Google OAuth
+                    Público
                   </span>
                 </div>
               </div>
             </motion.div>
 
-            {/* Account Actions */}
+            {/* Account Info */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -118,19 +100,27 @@ function ProfilePageContent() {
               className="bg-background/50 backdrop-blur-sm border border-secondary/30 rounded-lg p-6"
             >
               <h2 className="font-heading text-xl font-bold text-foreground mb-4">
-                Ações
+                Informações
               </h2>
               <div className="space-y-3">
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-logo-gradient-start hover:bg-orange-600 text-white font-heading rounded-lg transition-colors"
-                >
-                  <LogOut className="w-5 h-5" />
-                  Sair da Conta
-                </button>
-                <p className="font-paragraph text-xs text-foreground/50 text-center">
-                  Você será desconectado e redirecionado para a página de login
-                </p>
+                <div className="flex justify-between items-center">
+                  <span className="font-paragraph text-foreground/70">Nível:</span>
+                  <span className="font-heading text-sm font-bold text-secondary">
+                    1
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-paragraph text-foreground/70">Experiência:</span>
+                  <span className="font-heading text-sm font-bold text-secondary">
+                    0 XP
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-paragraph text-foreground/70">Progresso:</span>
+                  <span className="font-heading text-sm font-bold text-secondary">
+                    0%
+                  </span>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -147,13 +137,13 @@ function ProfilePageContent() {
             </h2>
             <div className="space-y-3 font-paragraph text-foreground/70">
               <p>
-                Sua conta está conectada ao Wix Members e sincronizada com o sistema de jogo multiplayer.
+                Acesso irrestrito ao sistema de jogo multiplayer.
               </p>
               <p>
-                Todos os seus dados de progresso e estatísticas são salvos automaticamente na nuvem.
+                Todos os seus dados de progresso e estatísticas são salvos automaticamente.
               </p>
               <p className="text-xs">
-                ID do Membro: <span className="text-foreground/50 font-mono">{member?.loginEmail}</span>
+                Status: <span className="text-foreground/50 font-mono">Ativo e Irrestrito</span>
               </p>
             </div>
           </motion.div>
@@ -162,13 +152,5 @@ function ProfilePageContent() {
 
       <Footer />
     </div>
-  );
-}
-
-export default function ProfilePage() {
-  return (
-    <MemberProtectedRoute messageToSignIn="Faça login para acessar seu perfil">
-      <ProfilePageContent />
-    </MemberProtectedRoute>
   );
 }
