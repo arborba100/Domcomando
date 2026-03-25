@@ -1,17 +1,21 @@
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import { motion } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import { Mail, User, Calendar } from 'lucide-react';
+import { useMember } from '@/integrations';
 
 export default function ProfilePage() {
-  const memberName = 'Jogador';
-  const memberEmail = 'jogador@complexo.com';
-  const memberPhoto = 'https://static.wixstatic.com/media/50f4bf_a888df3d639f415b853110e459edba8c~mv2.png?originWidth=128&originHeight=128';
-  const createdDate = new Date().toLocaleDateString('pt-BR');
+  const { member } = useMember();
+  const memberName = member?.profile?.nickname || member?.contact?.firstName || 'Jogador';
+  const memberEmail = member?.loginEmail || 'jogador@complexo.com';
+  const memberPhoto = member?.profile?.photo?.url || 'https://static.wixstatic.com/media/50f4bf_a888df3d639f415b853110e459edba8c~mv2.png?originWidth=128&originHeight=128';
+  const createdDate = member?._createdDate ? new Date(member._createdDate).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <main className="flex-1 w-full max-w-[120rem] mx-auto px-4 py-8">
+      <Header />
+      <main className="flex-1 w-full max-w-[120rem] mx-auto px-4 py-8 mt-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -30,6 +34,7 @@ export default function ProfilePage() {
                     src={memberPhoto}
                     alt={memberName}
                     width={120}
+                    height={120}
                     className="w-full h-full object-cover"
                   />
                 </div>

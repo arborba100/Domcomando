@@ -79,6 +79,7 @@ export default function Header() {
                   width={90}
                   height={36}
                   className="object-contain drop-shadow-[0_0_10px_rgba(255,200,0,0.16)]"
+                  loading="eager"
                 />
               </div>
 
@@ -95,6 +96,8 @@ export default function Header() {
                         <div className="relative w-[50px] h-[50px] rounded-full overflow-hidden border-[2px] border-yellow-500 shadow-[0_0_14px_rgba(255,200,0,0.20)]">
                           <Image
                             src={avatarUrl}
+                            width={50}
+                            height={50}
                             className="w-full h-full object-cover"
                             alt="Avatar do jogador"
                           />
