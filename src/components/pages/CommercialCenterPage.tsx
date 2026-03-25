@@ -11,6 +11,7 @@ import ComercioCard from '@/components/ComercioCard';
 import { BaseCrudService } from '@/integrations';
 import { Players } from '@/entities';
 import CommercialCenterHotspots from '@/components/CommercialCenterHotspots';
+import CommerceOperationModal from '@/components/CommerceOperationModal';
 
 interface CommerceOperation {
   id: string;
@@ -49,6 +50,9 @@ export default function CommercialCenterPage() {
   ]);
 
   const [completedOps, setCompletedOps] = useState<CompletedOperation[]>([]);
+
+  // Modal state
+  const [activeCommerceModal, setActiveCommerceModal] = useState<ComercioKey | null>(null);
 
   // Carregar dados do jogador
   useEffect(() => {
@@ -151,11 +155,54 @@ export default function CommercialCenterPage() {
     };
 
     const comercioKey = commerceKeyMap[commerceId];
-    if (comercioKey && comercios) {
-      // Trigger the commerce card action
-      // This can be expanded to show a modal or navigate to commerce details
-      console.log(`Abrindo modal para: ${comercioKey}`);
-      // You can add modal logic here
+    if (comercioKey) {
+      setActiveCommerceModal(comercioKey);
+    }
+  };
+
+  const closeCommerceModal = () => {
+    setActiveCommerceModal(null);
+  };
+
+  const handleStartOperation = async (comercioKey: ComercioKey) => {
+    if (!member?._id || !playerData) return;
+    try {
+      const resultado = await comerciosService.iniciarLavagem(
+        member._id,
+        comercioKey,
+        playerData.dirtyMoney || 0
+      );
+      if (resultado.sucesso) {
+        const player = await BaseCrudService.getById<Players>('players', member._id);
+        if (player) {
+          setPlayerData(player);
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          setComercios(comerciosData);
+        }
+      } else {
+        throw new Error(resultado.mensagem);
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleCompleteOperation = async (comercioKey: ComercioKey) => {
+    if (!member?._id) return;
+    try {
+      const resultado = await comerciosService.finalizarLavagem(member._id, comercioKey);
+      if (resultado.sucesso) {
+        const player = await BaseCrudService.getById<Players>('players', member._id);
+        if (player) {
+          setPlayerData(player);
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          setComercios(comerciosData);
+        }
+      } else {
+        throw new Error(resultado.mensagem);
+      }
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -425,6 +472,7 @@ export default function CommercialCenterPage() {
           <CommercialCenterHotspots onCommerceClick={openCommerceModal} />
         </div>
       </div>
+
       {/* PLAYER INFO */}
       {playerData && (
         <div className="w-full px-4 py-6 relative z-10 border-b border-cyan-500/30">
@@ -464,6 +512,7 @@ export default function CommercialCenterPage() {
           )}
         </div>
       </div>
+
       {/* HISTORY */}
       {completedOps.length > 0 && (
         <div className="w-full px-4 py-12 relative z-10 border-t border-cyan-500">
@@ -494,6 +543,19 @@ export default function CommercialCenterPage() {
           </div>
         </div>
       )}
+
+      {/* Commerce Operation Modal */}
+      <CommerceOperationModal
+        isOpen={activeCommerceModal !== null}
+        commerceId={activeCommerceModal}
+        commerceData={activeCommerceModal && comercios ? comercios[activeCommerceModal] : null}
+        dirtyMoney={playerData?.dirtyMoney || 0}
+        cleanMoney={playerData?.cleanMoney || 0}
+        onClose={closeCommerceModal}
+        onStartOperation={handleStartOperation}
+        onCompleteOperation={handleCompleteOperation}
+      />
+
       <Footer />
     </div>
   );
