@@ -186,14 +186,24 @@ export default function CommercialCenterPage() {
   };
 
   const handleStartOperation = async (comercioKey: ComercioKey) => {
-    if (!member?._id || !playerData) return;
+    if (!member?._id || !playerData) {
+      throw new Error('Dados do jogador não encontrados');
+    }
     try {
+      console.log('🚀 Iniciando lavagem para:', comercioKey);
+      console.log('💰 Dinheiro sujo disponível:', playerData.dirtyMoney);
+      
       const resultado = await comerciosService.iniciarLavagem(
         member._id,
         comercioKey,
         playerData.dirtyMoney || 0
       );
+      
+      console.log('📊 Resultado da operação:', resultado);
+      
       if (resultado.sucesso) {
+        console.log('✅ Lavagem iniciada com sucesso');
+        // Atualizar dados do jogador
         const player = await BaseCrudService.getById<Players>('players', member._id);
         if (player) {
           setPlayerData(player);
@@ -202,18 +212,29 @@ export default function CommercialCenterPage() {
           closeCommerceModal();
         }
       } else {
+        console.error('❌ Erro ao iniciar lavagem:', resultado.mensagem);
         throw new Error(resultado.mensagem);
       }
     } catch (error) {
+      console.error('💥 Erro na operação:', error);
       throw error;
     }
   };
 
   const handleCompleteOperation = async (comercioKey: ComercioKey) => {
-    if (!member?._id) return;
+    if (!member?._id) {
+      throw new Error('Dados do jogador não encontrados');
+    }
     try {
+      console.log('🏁 Finalizando lavagem para:', comercioKey);
+      
       const resultado = await comerciosService.finalizarLavagem(member._id, comercioKey);
+      
+      console.log('📊 Resultado da finalização:', resultado);
+      
       if (resultado.sucesso) {
+        console.log('✅ Lavagem finalizada com sucesso. Dinheiro limpo ganho:', resultado.cleanMoneyGanho);
+        // Atualizar dados do jogador
         const player = await BaseCrudService.getById<Players>('players', member._id);
         if (player) {
           setPlayerData(player);
@@ -222,9 +243,11 @@ export default function CommercialCenterPage() {
           closeCommerceModal();
         }
       } else {
+        console.error('❌ Erro ao finalizar lavagem:', resultado.mensagem);
         throw new Error(resultado.mensagem);
       }
     } catch (error) {
+      console.error('💥 Erro na operação:', error);
       throw error;
     }
   };

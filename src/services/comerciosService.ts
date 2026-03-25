@@ -32,8 +32,11 @@ export const comerciosService = {
 
   async iniciarLavagem(playerId: string, comercioKey: ComercioKey, dirtyMoney: number): Promise<{ sucesso: boolean; mensagem: string }> {
     try {
+      console.log('🔍 [iniciarLavagem] Iniciando para:', { playerId, comercioKey, dirtyMoney });
+      
       const player = await BaseCrudService.getById<Players>('players', playerId);
       if (!player) {
+        console.error('❌ [iniciarLavagem] Jogador não encontrado');
         return { sucesso: false, mensagem: 'Jogador não encontrado' };
       }
 
@@ -42,18 +45,21 @@ export const comerciosService = {
 
       // Verificar se já está em andamento
       if (comercio.emAndamento) {
+        console.warn('⚠️ [iniciarLavagem] Comércio já está em operação');
         return { sucesso: false, mensagem: 'Este comércio já está em operação' };
       }
 
       // Verificar bloqueio diário
       const hoje = new Date().toDateString();
       if (comercio.ultimaDataUso === hoje) {
+        console.warn('⚠️ [iniciarLavagem] Limite diário já atingido');
         return { sucesso: false, mensagem: 'Você já usou este comércio hoje. Tente novamente amanhã.' };
       }
 
       // Verificar dirty money
       const valorLavagem = calcularValorLavagem(comercioKey, comercio.nivelNegocio);
       if (dirtyMoney < valorLavagem) {
+        console.warn('⚠️ [iniciarLavagem] Dinheiro sujo insuficiente:', { dirtyMoney, valorLavagem });
         return { sucesso: false, mensagem: `Você precisa de ${valorLavagem} de dinheiro sujo. Você tem ${dirtyMoney}.` };
       }
 
@@ -61,6 +67,8 @@ export const comerciosService = {
       const tempoLavagem = calcularTempoLavagem(comercioKey, comercio.nivelNegocio);
       const taxaAplicada = calcularTaxaAplicada(comercioKey, comercio.nivelTaxa);
       const horarioFim = Date.now() + tempoLavagem;
+
+      console.log('📊 [iniciarLavagem] Calculado:', { tempoLavagem, taxaAplicada, horarioFim });
 
       // Atualizar comércio
       comercios[comercioKey] = {
@@ -75,6 +83,8 @@ export const comerciosService = {
       // Atualizar dirty money
       const novosDirtyMoney = dirtyMoney - valorLavagem;
 
+      console.log('💾 [iniciarLavagem] Salvando no banco:', { novosDirtyMoney });
+
       await BaseCrudService.update<Players>('players', {
         _id: playerId,
         comercios: JSON.stringify(comercios),
@@ -85,17 +95,21 @@ export const comerciosService = {
       const dirtyMoneyStore = useDirtyMoneyStore.getState();
       dirtyMoneyStore.setDirtyMoney(novosDirtyMoney);
 
+      console.log('✅ [iniciarLavagem] Lavagem iniciada com sucesso');
       return { sucesso: true, mensagem: 'Lavagem iniciada com sucesso' };
     } catch (error) {
-      console.error('Erro ao iniciar lavagem:', error);
+      console.error('💥 [iniciarLavagem] Erro:', error);
       return { sucesso: false, mensagem: 'Erro ao iniciar lavagem' };
     }
   },
 
   async finalizarLavagem(playerId: string, comercioKey: ComercioKey): Promise<{ sucesso: boolean; cleanMoneyGanho: number; mensagem: string }> {
     try {
+      console.log('🔍 [finalizarLavagem] Finalizando para:', { playerId, comercioKey });
+      
       const player = await BaseCrudService.getById<Players>('players', playerId);
       if (!player) {
+        console.error('❌ [finalizarLavagem] Jogador não encontrado');
         return { sucesso: false, cleanMoneyGanho: 0, mensagem: 'Jogador não encontrado' };
       }
 
@@ -103,16 +117,20 @@ export const comerciosService = {
       const comercio = comercios[comercioKey];
 
       if (!comercio.emAndamento) {
+        console.warn('⚠️ [finalizarLavagem] Comércio não está em operação');
         return { sucesso: false, cleanMoneyGanho: 0, mensagem: 'Este comércio não está em operação' };
       }
 
       if (!comercio.horarioFim || Date.now() < comercio.horarioFim) {
         const tempoRestante = comercio.horarioFim ? Math.ceil((comercio.horarioFim - Date.now()) / 1000) : 0;
+        console.warn('⚠️ [finalizarLavagem] Operação ainda não concluída:', { tempoRestante });
         return { sucesso: false, cleanMoneyGanho: 0, mensagem: `Faltam ${tempoRestante} segundos para finalizar` };
       }
 
       // Calcular clean money ganho
       const cleanMoneyGanho = Math.floor(comercio.valorAtual * (comercio.taxaAplicada / 100));
+
+      console.log('💰 [finalizarLavagem] Clean money ganho:', cleanMoneyGanho);
 
       // Atualizar comércio
       comercios[comercioKey] = {
@@ -126,6 +144,8 @@ export const comerciosService = {
       // Atualizar clean money
       const novoCleanMoney = (player.cleanMoney || 0) + cleanMoneyGanho;
 
+      console.log('💾 [finalizarLavagem] Salvando no banco:', { novoCleanMoney });
+
       await BaseCrudService.update<Players>('players', {
         _id: playerId,
         comercios: JSON.stringify(comercios),
@@ -136,9 +156,10 @@ export const comerciosService = {
       const cleanMoneyStore = useCleanMoneyStore.getState();
       cleanMoneyStore.setCleanMoney(novoCleanMoney);
 
+      console.log('✅ [finalizarLavagem] Lavagem finalizada com sucesso');
       return { sucesso: true, cleanMoneyGanho, mensagem: 'Lavagem finalizada com sucesso' };
     } catch (error) {
-      console.error('Erro ao finalizar lavagem:', error);
+      console.error('💥 [finalizarLavagem] Erro:', error);
       return { sucesso: false, cleanMoneyGanho: 0, mensagem: 'Erro ao finalizar lavagem' };
     }
   },

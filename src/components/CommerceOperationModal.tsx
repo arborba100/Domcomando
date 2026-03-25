@@ -95,24 +95,34 @@ export default function CommerceOperationModal({
     Date.now() >= commerceData.horarioFim;
 
   const handleStartClick = async () => {
+    console.log('🎯 Botão "Iniciar Lavagem" clicado para:', commerceId);
     setError('');
     setIsStarting(true);
     try {
+      console.log('📞 Chamando onStartOperation...');
       await onStartOperation(commerceId);
+      console.log('✅ onStartOperation completado com sucesso');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao iniciar lavagem');
+      const errorMsg = err instanceof Error ? err.message : 'Erro ao iniciar lavagem';
+      console.error('❌ Erro ao iniciar lavagem:', errorMsg);
+      setError(errorMsg);
     } finally {
       setIsStarting(false);
     }
   };
 
   const handleCompleteClick = async () => {
+    console.log('🏁 Botão "Finalizar Lavagem" clicado para:', commerceId);
     setError('');
     setIsCompleting(true);
     try {
+      console.log('📞 Chamando onCompleteOperation...');
       await onCompleteOperation(commerceId);
+      console.log('✅ onCompleteOperation completado com sucesso');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao finalizar lavagem');
+      const errorMsg = err instanceof Error ? err.message : 'Erro ao finalizar lavagem';
+      console.error('❌ Erro ao finalizar lavagem:', errorMsg);
+      setError(errorMsg);
     } finally {
       setIsCompleting(false);
     }
