@@ -8,6 +8,12 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SkillUpgradeAnimations, AnimatedConnection, CompletionBackgroundGlow } from '@/components/SkillUpgradeAnimations';
+import { useMember } from '@/integrations';
+import { BaseCrudService } from '@/integrations';
+import { Players } from '@/entities';
+import { Comercios, COMERCIOS_KEYS, ComercioKey } from '@/types/comercios';
+import ComerciosUpgradePanel from '@/components/ComerciosUpgradePanel';
+import { comerciosService } from '@/services/comerciosService';
 
 const CATEGORIES = [
   { id: 'Inteligência', label: 'INTELIGÊNCIA', color: '#00eaff', icon: '🧠' },
@@ -16,6 +22,7 @@ const CATEGORIES = [
   { id: 'Defesa', label: 'DEFESA', color: '#00FF00', icon: '🛡️' },
   { id: 'Respeito', label: 'RESPEITO', color: '#FF69B4', icon: '👑' },
   { id: 'Vigor', label: 'VIGOR', color: '#FF0000', icon: '❤️' },
+  { id: 'Negócios', label: 'NEGÓCIOS', color: '#9d00ff', icon: '💼' },
 ];
 
 type SkillModalData = {
@@ -38,6 +45,7 @@ export default function InvestmentSkillTreePage() {
   } = useInvestmentSkillTreeStore();
   
   const { dirtyMoney } = useDirtyMoneyStore();
+  const { member } = useMember();
 
   const [selectedSkill, setSelectedSkill] = useState<SkillModalData | null>(null);
   const [scale, setScale] = useState(1);
@@ -46,6 +54,79 @@ export default function InvestmentSkillTreePage() {
   const [upgradeTimers, setUpgradeTimers] = useState<Record<string, number>>({});
   const [completedSkills, setCompletedSkills] = useState<Set<string>>(new Set());
   const [showCompletionGlow, setShowCompletionGlow] = useState(false);
+  const [activeTab, setActiveTab] = useState<'skills' | 'negocios'>('skills');
+  const [playerData, setPlayerData] = useState<Players | null>(null);
+  const [comercios, setComercios] = useState<Comercios | null>(null);
+  const [isLoadingComercios, setIsLoadingComercios] = useState(false);
+
+  // Carregar dados de comércios
+  useEffect(() => {
+    const loadComercios = async () => {
+      if (!member?._id || activeTab !== 'negocios') return;
+      setIsLoadingComercios(true);
+      try {
+        const player = await BaseCrudService.getById<Players>('players', member._id);
+        if (player) {
+          setPlayerData(player);
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          setComercios(comerciosData);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar comércios:', error);
+      } finally {
+        setIsLoadingComercios(false);
+      }
+    };
+    loadComercios();
+  }, [member?._id, activeTab]);
+
+  const handleUpgradeCapacidade = async (comercioKey: ComercioKey) => {
+    if (!member?._id || !playerData) return;
+    try {
+      const resultado = await comerciosService.upgradeCapacidade(
+        member._id,
+        comercioKey,
+        playerData.cleanMoney || 0
+      );
+      if (resultado.sucesso) {
+        const player = await BaseCrudService.getById<Players>('players', member._id);
+        if (player) {
+          setPlayerData(player);
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          setComercios(comerciosData);
+        }
+      } else {
+        alert(resultado.mensagem);
+      }
+    } catch (error) {
+      console.error('Erro ao fazer upgrade:', error);
+      alert('Erro ao fazer upgrade');
+    }
+  };
+
+  const handleUpgradeEficiencia = async (comercioKey: ComercioKey) => {
+    if (!member?._id || !playerData) return;
+    try {
+      const resultado = await comerciosService.upgradeEficiencia(
+        member._id,
+        comercioKey,
+        playerData.cleanMoney || 0
+      );
+      if (resultado.sucesso) {
+        const player = await BaseCrudService.getById<Players>('players', member._id);
+        if (player) {
+          setPlayerData(player);
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          setComercios(comerciosData);
+        }
+      } else {
+        alert(resultado.mensagem);
+      }
+    } catch (error) {
+      console.error('Erro ao fazer upgrade:', error);
+      alert('Erro ao fazer upgrade');
+    }
+  };
 
   // Update timers for upgrading skills
   useEffect(() => {
@@ -191,22 +272,47 @@ export default function InvestmentSkillTreePage() {
         {/* Completion glow background */}
         <CompletionBackgroundGlow isActive={showCompletionGlow} />
 
-        {/* Main content */}
-        <div
-          ref={containerRef}
-          className="relative w-full min-h-screen flex items-center justify-center overflow-hidden"
-          onWheel={handleWheel}
-          onMouseDown={handleMouseDown}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <motion.div
-            style={{
-              scale,
-              x: pan.x,
-              y: pan.y,
-            }}
-            className="w-full max-w-7xl"
+        {/* Tab Navigation */}
+        <div className="relative z-20 flex justify-center gap-4 pt-8 px-4">
+          <button
+            onClick={() => setActiveTab('skills')}
+            className={`px-6 py-2 rounded-lg font-heading font-bold transition-all ${
+              activeTab === 'skills'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white'
+                : 'bg-slate-800 text-cyan-300 hover:bg-slate-700'
+            }`}
           >
+            Habilidades
+          </button>
+          <button
+            onClick={() => setActiveTab('negocios')}
+            className={`px-6 py-2 rounded-lg font-heading font-bold transition-all ${
+              activeTab === 'negocios'
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                : 'bg-slate-800 text-purple-300 hover:bg-slate-700'
+            }`}
+          >
+            Negócios
+          </button>
+        </div>
+
+        {/* Main content */}
+        {activeTab === 'skills' ? (
+          <div
+            ref={containerRef}
+            className="relative w-full min-h-screen flex items-center justify-center overflow-hidden"
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            <motion.div
+              style={{
+                scale,
+                x: pan.x,
+                y: pan.y,
+              }}
+              className="w-full max-w-7xl"
+            >
             {/* SVG Connections */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 0 }}>
               <defs>
@@ -373,7 +479,75 @@ export default function InvestmentSkillTreePage() {
               </motion.div>
             </div>
           </motion.div>
-        </div>
+            </div>
+        ) : (
+          /* Negócios Tab */
+          <div className="relative w-full min-h-screen flex items-center justify-center overflow-auto py-12 px-4">
+            <div className="w-full max-w-7xl">
+              {/* Header */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center mb-12"
+              >
+                <h1 className="font-heading text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 mb-4">
+                  CENTRO DE NEGÓCIOS
+                </h1>
+                <p className="text-purple-300 text-lg font-paragraph">
+                  Gerencie seus comércios de lavagem de dinheiro
+                </p>
+              </motion.div>
+
+              {/* Player Info */}
+              {playerData && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex justify-center items-center gap-8 mb-12"
+                >
+                  <div className="bg-black/60 border border-green-400/50 rounded-lg px-8 py-4 backdrop-blur-sm">
+                    <p className="text-green-400 font-paragraph text-sm">Dinheiro Sujo</p>
+                    <p className="text-2xl font-bold text-green-300 font-heading">
+                      ${playerData.dirtyMoney || 0}
+                    </p>
+                  </div>
+                  <div className="bg-black/60 border border-yellow-400/50 rounded-lg px-8 py-4 backdrop-blur-sm">
+                    <p className="text-yellow-400 font-paragraph text-sm">Dinheiro Limpo</p>
+                    <p className="text-2xl font-bold text-yellow-300 font-heading">
+                      ${playerData.cleanMoney || 0}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Comercios Grid */}
+              {isLoadingComercios ? (
+                <div className="text-center text-purple-300">Carregando negócios...</div>
+              ) : comercios ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {COMERCIOS_KEYS.map((key, idx) => (
+                    <motion.div
+                      key={key}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.1 }}
+                    >
+                      <ComerciosUpgradePanel
+                        comercioKey={key}
+                        data={comercios[key]}
+                        cleanMoney={playerData?.cleanMoney || 0}
+                        onUpgradeCapacidade={() => handleUpgradeCapacidade(key)}
+                        onUpgradeEficiencia={() => handleUpgradeEficiencia(key)}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-purple-300">Erro ao carregar negócios</div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Skill Modal */}

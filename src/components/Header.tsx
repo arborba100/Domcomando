@@ -7,6 +7,7 @@ import { useSpinVault } from "@/hooks/useSpinVault";
 import { useNavigate } from "react-router-dom";
 import { useMember } from "@/integrations";
 import { LogOut } from "lucide-react";
+import { usePlayerInitialization } from "@/hooks/usePlayerInitialization";
 
 const LOGO_SRC = "https://static.wixstatic.com/media/50f4bf_01590cb08b7048babbfed83e2830a27c~mv2.png";
 
@@ -17,6 +18,9 @@ export default function Header() {
   const { spins, timeUntilNextGain, formatTime } = useSpinVault();
   const { actions, member } = useMember();
   const navigate = useNavigate();
+  
+  // Inicializar dados do jogador
+  usePlayerInitialization();
 
   const [avatarUrl, setAvatarUrl] = useState(
     "https://static.wixstatic.com/media/50f4bf_a888df3d639f415b853110e459edba8c~mv2.png"

@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useMember } from '@/integrations';
+import { comerciosService } from '@/services/comerciosService';
+import { Comercios, COMERCIOS_KEYS, ComercioKey } from '@/types/comercios';
+import ComercioCard from '@/components/ComercioCard';
+import { BaseCrudService } from '@/integrations';
+import { Players } from '@/entities';
 
 interface CommerceOperation {
   id: string;
@@ -26,6 +32,10 @@ interface CompletedOperation {
 }
 
 export default function CommercialCenterPage() {
+  const { member } = useMember();
+  const [comercios, setComercios] = useState<Comercios | null>(null);
+  const [playerData, setPlayerData] = useState<Players | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [operations, setOperations] = useState<CommerceOperation[]>([
     {
       id: 'commerce2',
@@ -39,96 +49,87 @@ export default function CommercialCenterPage() {
 
   const [completedOps, setCompletedOps] = useState<CompletedOperation[]>([]);
 
-  // Load state from localStorage on mount
+  // Carregar dados do jogador
   useEffect(() => {
-    const savedState = localStorage.getItem('commerceState');
-    if (savedState) {
+    const loadPlayerData = async () => {
+      if (!member?._id) return;
       try {
-        const state = JSON.parse(savedState);
-        setOperations(state.operations || []);
-        setCompletedOps(state.completedOps || []);
-      } catch (e) {
-        console.error('Failed to load state:', e);
+        const player = await BaseCrudService.getById<Players>('players', member._id);
+        if (player) {
+          setPlayerData(player);
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          setComercios(comerciosData);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados do jogador:', error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }, []);
+    };
+    loadPlayerData();
+  }, [member?._id]);
 
-  // Save state to localStorage
+  // Atualizar dados periodicamente
   useEffect(() => {
-    localStorage.setItem(
-      'commerceState',
-      JSON.stringify({ operations, completedOps })
-    );
-  }, [operations, completedOps]);
-
-  // Timer effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setOperations((prevOps) =>
-        prevOps.map((op) => {
-          if (!op.isActive || !op.startTime) return op;
-
-          const elapsed = Date.now() - op.startTime;
-          const timeLeft = Math.max(0, op.duration * 1000 - elapsed);
-          const progress = ((op.duration * 1000 - timeLeft) / (op.duration * 1000)) * 100;
-
-          // Operation completed
-          if (timeLeft === 0) {
-            const cleanValue = Math.floor(op.value * (op.tax / 100));
-            const profit = cleanValue;
-
-            setCompletedOps((prev) => [
-              ...prev,
-              {
-                id: op.id,
-                name: op.name,
-                cleanValue,
-                profit,
-                date: new Date().toLocaleString('pt-BR'),
-              },
-            ]);
-
-            return { ...op, isActive: false, timeLeft: 0, progress: 100 };
-          }
-
-          return {
-            ...op,
-            timeLeft: Math.ceil(timeLeft / 1000),
-            progress,
-          };
-        })
-      );
-    }, 1000);
+    const interval = setInterval(async () => {
+      if (!member?._id) return;
+      try {
+        const player = await BaseCrudService.getById<Players>('players', member._id);
+        if (player) {
+          setPlayerData(player);
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          setComercios(comerciosData);
+        }
+      } catch (error) {
+        console.error('Erro ao atualizar dados:', error);
+      }
+    }, 5000); // Atualizar a cada 5 segundos
 
     return () => clearInterval(interval);
-  }, []);
+  }, [member?._id]);
 
-  const handleStartOperation = (opId: string) => {
-    setOperations((prevOps) =>
-      prevOps.map((op) => {
-        if (op.id === opId && !op.isActive) {
-          return {
-            ...op,
-            isActive: true,
-            startTime: Date.now(),
-            timeLeft: op.duration,
-            progress: 0,
-          };
+  const handleIniciarLavagem = async (comercioKey: ComercioKey) => {
+    if (!member?._id || !playerData) return;
+    try {
+      const resultado = await comerciosService.iniciarLavagem(
+        member._id,
+        comercioKey,
+        playerData.dirtyMoney || 0
+      );
+      if (resultado.sucesso) {
+        const player = await BaseCrudService.getById<Players>('players', member._id);
+        if (player) {
+          setPlayerData(player);
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          setComercios(comerciosData);
         }
-        return op;
-      })
-    );
+      } else {
+        alert(resultado.mensagem);
+      }
+    } catch (error) {
+      console.error('Erro ao iniciar lavagem:', error);
+      alert('Erro ao iniciar lavagem');
+    }
   };
 
-  const formatTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600)
-      .toString()
-      .padStart(2, '0');
-    const m = Math.floor((seconds % 3600) / 60)
-      .toString()
-      .padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${h}:${m}:${s}`;
+  const handleFinalizarLavagem = async (comercioKey: ComercioKey) => {
+    if (!member?._id) return;
+    try {
+      const resultado = await comerciosService.finalizarLavagem(member._id, comercioKey);
+      if (resultado.sucesso) {
+        const player = await BaseCrudService.getById<Players>('players', member._id);
+        if (player) {
+          setPlayerData(player);
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          setComercios(comerciosData);
+        }
+      } else {
+        alert(resultado.mensagem);
+      }
+    } catch (error) {
+      console.error('Erro ao finalizar lavagem:', error);
+      alert('Erro ao finalizar lavagem');
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -402,93 +403,43 @@ export default function CommercialCenterPage() {
           />
         </div>
       </div>
+      {/* PLAYER INFO */}
+      {playerData && (
+        <div className="w-full px-4 py-6 relative z-10 border-b border-cyan-500/30">
+          <div className="max-w-[100rem] mx-auto flex justify-between items-center">
+            <div className="text-cyan-300">
+              <span className="text-sm text-gray-400">Dinheiro Sujo:</span>
+              <span className="ml-2 font-bold text-green-400">${playerData.dirtyMoney || 0}</span>
+            </div>
+            <div className="text-cyan-300">
+              <span className="text-sm text-gray-400">Dinheiro Limpo:</span>
+              <span className="ml-2 font-bold text-yellow-400">${playerData.cleanMoney || 0}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* OPERATIONS */}
       <div className="w-full px-4 py-12 relative z-10 mt-[20%]">
-        <div className="max-w-[100rem] mx-auto space-y-6">
-          {/* Container 1 - Administradora de Bens */}
-          {operations.map((op) => (
-            <div
-              key={op.id}
-              className={`container-neon commerce-card ${
-                op.isActive ? 'active' : ''
-              } ${completedOps.some((c) => c.id === op.id) ? 'completed' : ''}`}
-            >
-              {/* Image on left */}
-              <div className="commerce-image">
-                <Image
-                  src="https://static.wixstatic.com/media/50f4bf_cbb8816f8c7c4767a24851c30377a5aa~mv2.png"
-                  alt={op.name}
-                  className="w-full h-full object-cover"
-                  width={220}
-                  height={280}
+        <div className="max-w-[100rem] mx-auto">
+          {isLoading ? (
+            <div className="text-center text-cyan-300">Carregando comércios...</div>
+          ) : comercios ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {COMERCIOS_KEYS.map((key) => (
+                <ComercioCard
+                  key={key}
+                  comercioKey={key}
+                  data={comercios[key]}
+                  onIniciar={() => handleIniciarLavagem(key)}
+                  onFinalizar={() => handleFinalizarLavagem(key)}
+                  dirtyMoney={playerData?.dirtyMoney || 0}
                 />
-              </div>
-
-              {/* Content on right */}
-              <div className="commerce-content border border-none">
-                <div>
-                  <h3 className="neon-sign text-lg md:text-xl mb-4">{op.name}</h3>
-
-                  <div className="space-y-2 text-sm md:text-base text-cyan-300 mb-4">
-                    <div className="flex justify-between">
-                      <span>Valor:</span>
-                      <span className="font-bold">{formatCurrency(op.value)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Taxa:</span>
-                      <span className="font-bold">{op.tax}%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Tempo:</span>
-                      <span className="font-bold">
-                        {op.isActive && op.timeLeft !== undefined
-                          ? formatTime(op.timeLeft)
-                          : `${Math.floor(op.duration / 3600)}h`}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Progress bar */}
-                  {op.isActive && (
-                    <div className="progress-bar">
-                      <div
-                        className="progress-fill"
-                        style={{ width: `${op.progress || 0}%` }}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Button */}
-                <Button
-                  onClick={() => handleStartOperation(op.id)}
-                  disabled={op.isActive || completedOps.some((c) => c.id === op.id)}
-                  className="mt-4 w-full bg-cyan-500 hover:bg-cyan-600 text-black font-bold py-2 px-4 rounded transition-all"
-                >
-                  {op.isActive
-                    ? 'Em Progresso...'
-                    : completedOps.some((c) => c.id === op.id)
-                    ? 'Concluído'
-                    : 'Iniciar'}
-                </Button>
-              </div>
+              ))}
             </div>
-          ))}
-
-          {/* Container 2 - Awaiting Instructions */}
-          <div className="container-neon p-8 min-h-[280px] flex items-center justify-center">
-            <p className="neon-sign text-lg text-center">Aguardando instruções...</p>
-          </div>
-
-          {/* Container 3 - Awaiting Instructions */}
-          <div className="container-neon p-8 min-h-[280px] flex items-center justify-center">
-            <p className="neon-sign text-lg text-center">Aguardando instruções...</p>
-          </div>
-
-          {/* Container 4 - Awaiting Instructions */}
-          <div className="container-neon p-8 min-h-[280px] flex items-center justify-center">
-            <p className="neon-sign text-lg text-center">Aguardando instruções...</p>
-          </div>
+          ) : (
+            <div className="text-center text-cyan-300">Erro ao carregar comércios</div>
+          )}
         </div>
       </div>
       {/* HISTORY */}

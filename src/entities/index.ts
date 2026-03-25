@@ -124,6 +124,8 @@ export interface Players {
   _updatedDate?: Date;
   /** @wixFieldType number */
   cleanMoney?: number;
+  /** @wixFieldType text */
+  comercios?: string;
   /** @wixFieldType date */
   updatedAt?: Date | string;
   /** @wixFieldType number */
