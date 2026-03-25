@@ -157,6 +157,18 @@ export default function MoneyLaunderingPage() {
                   currentRate={business.initialRate || 10}
                   currentMaxValue={player?.dirtyMoney || 0}
                   currentTimeMultiplier={1}
+                  onOperationComplete={() => {
+                    // Reload player data after operation completes
+                    const loadUpdatedPlayer = async () => {
+                      try {
+                        const updated = await BaseCrudService.getById<Players>('players', member._id);
+                        if (updated) setPlayer(updated);
+                      } catch (err) {
+                        console.error('Erro ao recarregar dados do jogador:', err);
+                      }
+                    };
+                    loadUpdatedPlayer();
+                  }}
                 />
               ))}
             </div>
