@@ -1,26 +1,33 @@
 import { CrudServiceOptions, CrudServiceResult } from '@/integrations/cms/types';
 
 /**
- * BaseCrudService - Mock implementation for local development
- * In production, this would connect to Wix CMS collections
+ * BaseCrudService - Real Wix CMS integration
+ * Connects to actual Wix collections via API
  */
 export class BaseCrudService {
-  private static store: Map<string, any[]> = new Map();
+  private static readonly API_BASE = '/api/cms';
 
   static async create<T extends { _id: string }>(
     collectionId: string,
     itemData: T,
     multiRefs?: Record<string, string[]>
   ): Promise<T> {
-    if (!this.store.has(collectionId)) {
-      this.store.set(collectionId, []);
+    try {
+      const response = await fetch(`${this.API_BASE}/collections/${collectionId}/items`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemData, multiRefs }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create item: ${response.statusText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('BaseCrudService.create error:', error);
+      throw error;
     }
-    
-    const collection = this.store.get(collectionId)!;
-    const item = { ...itemData, ...multiRefs };
-    collection.push(item);
-    
-    return item;
   }
 
   static async getAll<T>(
@@ -28,22 +35,31 @@ export class BaseCrudService {
     refs?: { singleRef?: string[]; multiRef?: string[] },
     options?: { limit?: number; skip?: number }
   ): Promise<CrudServiceResult<T>> {
-    const collection = this.store.get(collectionId) || [];
-    const limit = options?.limit || 50;
-    const skip = options?.skip || 0;
-    
-    const items = collection.slice(skip, skip + limit) as T[];
-    const totalCount = collection.length;
-    const hasNext = skip + limit < totalCount;
-    
-    return {
-      items,
-      totalCount,
-      hasNext,
-      currentPage: Math.floor(skip / limit),
-      pageSize: limit,
-      nextSkip: hasNext ? skip + limit : null,
-    };
+    try {
+      const limit = options?.limit || 50;
+      const skip = options?.skip || 0;
+      
+      const params = new URLSearchParams({
+        limit: String(limit),
+        skip: String(skip),
+        ...(refs?.singleRef && { singleRef: refs.singleRef.join(',') }),
+        ...(refs?.multiRef && { multiRef: refs.multiRef.join(',') }),
+      });
+
+      const response = await fetch(
+        `${this.API_BASE}/collections/${collectionId}/items?${params}`,
+        { method: 'GET' }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch items: ${response.statusText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('BaseCrudService.getAll error:', error);
+      throw error;
+    }
   }
 
   static async getById<T>(
@@ -51,31 +67,72 @@ export class BaseCrudService {
     itemId: string,
     refs?: { singleRef?: string[]; multiRef?: string[] }
   ): Promise<T | null> {
-    const collection = this.store.get(collectionId) || [];
-    return collection.find((item: any) => item._id === itemId) || null;
+    try {
+      const params = new URLSearchParams({
+        ...(refs?.singleRef && { singleRef: refs.singleRef.join(',') }),
+        ...(refs?.multiRef && { multiRef: refs.multiRef.join(',') }),
+      });
+
+      const response = await fetch(
+        `${this.API_BASE}/collections/${collectionId}/items/${itemId}?${params}`,
+        { method: 'GET' }
+      );
+
+      if (response.status === 404) {
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch item: ${response.statusText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('BaseCrudService.getById error:', error);
+      throw error;
+    }
   }
 
   static async update<T extends { _id: string }>(
     collectionId: string,
     itemData: Partial<T> & { _id: string }
   ): Promise<T> {
-    const collection = this.store.get(collectionId) || [];
-    const index = collection.findIndex((item: any) => item._id === itemData._id);
-    
-    if (index === -1) {
-      throw new Error(`Item with id ${itemData._id} not found`);
+    try {
+      const { _id, ...data } = itemData;
+      
+      const response = await fetch(
+        `${this.API_BASE}/collections/${collectionId}/items/${_id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to update item: ${response.statusText}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error('BaseCrudService.update error:', error);
+      throw error;
     }
-    
-    collection[index] = { ...collection[index], ...itemData };
-    return collection[index];
   }
 
   static async delete<T>(collectionId: string, itemId: string): Promise<void> {
-    const collection = this.store.get(collectionId) || [];
-    const index = collection.findIndex((item: any) => item._id === itemId);
-    
-    if (index !== -1) {
-      collection.splice(index, 1);
+    try {
+      const response = await fetch(
+        `${this.API_BASE}/collections/${collectionId}/items/${itemId}`,
+        { method: 'DELETE' }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete item: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('BaseCrudService.delete error:', error);
+      throw error;
     }
   }
 
@@ -84,16 +141,22 @@ export class BaseCrudService {
     itemId: string,
     refs: Record<string, string[]>
   ): Promise<void> {
-    const collection = this.store.get(collectionId) || [];
-    const item = collection.find((i: any) => i._id === itemId);
-    
-    if (item) {
-      Object.entries(refs).forEach(([key, values]) => {
-        if (!item[key]) {
-          item[key] = [];
+    try {
+      const response = await fetch(
+        `${this.API_BASE}/collections/${collectionId}/items/${itemId}/references/add`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(refs),
         }
-        item[key] = [...new Set([...item[key], ...values])];
-      });
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to add references: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('BaseCrudService.addReferences error:', error);
+      throw error;
     }
   }
 
@@ -102,15 +165,22 @@ export class BaseCrudService {
     itemId: string,
     refs: Record<string, string[]>
   ): Promise<void> {
-    const collection = this.store.get(collectionId) || [];
-    const item = collection.find((i: any) => i._id === itemId);
-    
-    if (item) {
-      Object.entries(refs).forEach(([key, values]) => {
-        if (item[key]) {
-          item[key] = item[key].filter((v: string) => !values.includes(v));
+    try {
+      const response = await fetch(
+        `${this.API_BASE}/collections/${collectionId}/items/${itemId}/references/remove`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(refs),
         }
-      });
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to remove references: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('BaseCrudService.removeReferences error:', error);
+      throw error;
     }
   }
 }

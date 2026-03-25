@@ -7,14 +7,14 @@ export function MemberProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Load member from localStorage on mount
+    // Load member from Wix API on mount
     const loadMember = async () => {
       try {
-        const storedMember = localStorage.getItem('wix_member');
-        if (storedMember) {
-          const parsedMember = JSON.parse(storedMember);
-          setMember(parsedMember);
-          setIsAuthenticated(!!parsedMember._id);
+        const response = await fetch('/api/auth/member');
+        if (response.ok) {
+          const memberData = await response.json();
+          setMember(memberData);
+          setIsAuthenticated(!!memberData._id);
         }
       } catch (error) {
         console.error('Failed to load member:', error);
@@ -30,11 +30,11 @@ export function MemberProvider({ children }: { children: ReactNode }) {
     loadCurrentMember: async () => {
       setIsLoading(true);
       try {
-        const storedMember = localStorage.getItem('wix_member');
-        if (storedMember) {
-          const parsedMember = JSON.parse(storedMember);
-          setMember(parsedMember);
-          setIsAuthenticated(!!parsedMember._id);
+        const response = await fetch('/api/auth/member');
+        if (response.ok) {
+          const memberData = await response.json();
+          setMember(memberData);
+          setIsAuthenticated(!!memberData._id);
         }
       } catch (error) {
         console.error('Failed to load member:', error);
@@ -50,13 +50,11 @@ export function MemberProvider({ children }: { children: ReactNode }) {
       // Clear member and redirect to logout API
       setMember(null);
       setIsAuthenticated(false);
-      localStorage.removeItem('wix_member');
       window.location.href = '/api/auth/logout';
     },
     clearMember: () => {
       setMember(null);
       setIsAuthenticated(false);
-      localStorage.removeItem('wix_member');
     },
   };
 
