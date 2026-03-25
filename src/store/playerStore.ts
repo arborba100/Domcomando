@@ -9,6 +9,9 @@ interface PlayerState {
   profilePicture: string | null;
   barracoLevel: number;
 
+  // compatibilidade temporária
+  playerMoney: number;
+
   setPlayerId: (id: string) => void;
   setPlayerName: (name: string) => void;
   setLevel: (level: number) => void;
@@ -17,6 +20,10 @@ interface PlayerState {
   setProfilePicture: (url: string | null) => void;
   setBarracoLevel: (level: number) => void;
 
+  // compatibilidade temporária
+  setPlayerMoney: (money: number) => void;
+  addPlayerMoney: (amount: number) => void;
+
   loadPlayerData: (data: Partial<PlayerState>) => void;
   resetPlayer: () => void;
 }
@@ -24,11 +31,14 @@ interface PlayerState {
 export const usePlayerStore = create<PlayerState>((set) => ({
   playerId: null,
   playerName: 'COMANDANTE',
-  level: 10,
+  level: 1,
   progress: 0,
   isGuest: false,
   profilePicture: null,
   barracoLevel: 1,
+
+  // compatibilidade temporária
+  playerMoney: 0,
 
   setPlayerId: (id) => set({ playerId: id }),
   setPlayerName: (name) => set({ playerName: name }),
@@ -37,6 +47,10 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   setIsGuest: (isGuest) => set({ isGuest }),
   setProfilePicture: (url) => set({ profilePicture: url }),
   setBarracoLevel: (level) => set({ barracoLevel: Math.max(1, level) }),
+
+  setPlayerMoney: (money) => set({ playerMoney: Math.max(0, money) }),
+  addPlayerMoney: (amount) =>
+    set((state) => ({ playerMoney: Math.max(0, state.playerMoney + amount) })),
 
   loadPlayerData: (data) => set(data),
 
@@ -49,5 +63,6 @@ export const usePlayerStore = create<PlayerState>((set) => ({
       isGuest: false,
       profilePicture: null,
       barracoLevel: 1,
+      playerMoney: 0,
     }),
 }));
