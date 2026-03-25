@@ -63,7 +63,24 @@ export default function CommercialCenterPage() {
         if (player) {
           setPlayerData(player);
           const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
-          setComercios(comerciosData);
+          if (!comerciosData) {
+            console.warn('⚠️ Comercios não encontrados, inicializando...');
+            const initialComerciosData = {
+              pizzaria: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+              admBens: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+              lavanderia: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+              academia: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+              templo: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
+            };
+            setComercios(initialComerciosData);
+            // Salvar no banco de dados
+            await BaseCrudService.update<Players>('players', {
+              _id: member._id,
+              comercios: JSON.stringify(initialComerciosData),
+            });
+          } else {
+            setComercios(comerciosData);
+          }
         }
       } catch (error) {
         console.error('Erro ao carregar dados do jogador:', error);
