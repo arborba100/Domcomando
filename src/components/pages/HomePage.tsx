@@ -7,7 +7,7 @@ import { usePlayerInitialization } from '@/hooks/usePlayerInitialization';
 
 const VIDEO_BG = 'https://video.wixstatic.com/video/50f4bf_570bf5fe87734b1cb3523fd958acce0e/720p/mp4/file.mp4';
 
-export default function CinemaIntro() {
+export default function HomePage() {
   const navigate = useNavigate();
   const [stage, setStage] = useState<'intro' | 'login'>('intro');
   const [textIndex, setTextIndex] = useState(0);
