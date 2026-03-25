@@ -14,6 +14,7 @@ import CommerceOperationModal from '@/components/CommerceOperationModal';
 import { useDirtyMoneyStore } from '@/store/dirtyMoneyStore';
 import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
 import { usePlayerStore } from '@/store/playerStore';
+import { Building2, Landmark, Sparkles } from 'lucide-react';
 
 interface CommerceOperation {
   id: string;
@@ -83,13 +84,16 @@ const INITIAL_COMERCIOS_DATA: Comercios = {
   },
 };
 
+const TEST_DIRTY_MONEY = 1000000000;
+const TEST_CLEAN_MONEY = 0;
+
 export default function CommercialCenterPage() {
   const { member } = useMember();
 
   const [comercios, setComercios] = useState<Comercios | null>(null);
   const [playerData, setPlayerData] = useState<Players | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [operations, setOperations] = useState<CommerceOperation[]>([
+  const [operations] = useState<CommerceOperation[]>([
     {
       id: 'commerce2',
       name: 'Administradora de Bens',
@@ -99,7 +103,7 @@ export default function CommercialCenterPage() {
       isActive: false,
     },
   ]);
-  const [completedOps, setCompletedOps] = useState<CompletedOperation[]>([]);
+  const [completedOps] = useState<CompletedOperation[]>([]);
   const [activeCommerceModal, setActiveCommerceModal] = useState<ComercioKey | null>(null);
 
   const { dirtyMoney, setDirtyMoney } = useDirtyMoneyStore();
@@ -116,20 +120,30 @@ export default function CommercialCenterPage() {
     setPlayerName(player.playerName || 'Jogador');
   };
 
-  const getResolvedPlayerId = () => member?._id || 'guest-player';
+  const getResolvedPlayerId = () =>
+    member?._id || localStorage.getItem('currentPlayerId') || '';
 
   useEffect(() => {
     const loadPlayerData = async () => {
       try {
         const playerId = getResolvedPlayerId();
+
+        if (!playerId) {
+          console.warn('Nenhum playerId disponível');
+          setIsLoading(false);
+          return;
+        }
+
+        localStorage.setItem('currentPlayerId', playerId);
+
         let player = await BaseCrudService.getById<Players>('players', playerId);
 
         if (!player) {
           const newPlayer: Players = {
             _id: playerId,
             playerName: member?.profile?.nickname || 'Jogador',
-            cleanMoney: 0,
-            dirtyMoney: 1000,
+            cleanMoney: TEST_CLEAN_MONEY,
+            dirtyMoney: TEST_DIRTY_MONEY,
             level: 1,
             progress: 0,
             comercios: JSON.stringify(INITIAL_COMERCIOS_DATA),
@@ -142,21 +156,41 @@ export default function CommercialCenterPage() {
           setComercios(INITIAL_COMERCIOS_DATA);
           syncPlayerToStores(newPlayer);
         } else {
+          let needsUpdate = false;
+          const updatePayload: Partial<Players> & { _id: string } = {
+            _id: playerId,
+          };
+
+          if (!player.comercios) {
+            updatePayload.comercios = JSON.stringify(INITIAL_COMERCIOS_DATA);
+            needsUpdate = true;
+          }
+
+          if (player.dirtyMoney !== TEST_DIRTY_MONEY) {
+            updatePayload.dirtyMoney = TEST_DIRTY_MONEY;
+            needsUpdate = true;
+          }
+
+          if (player.cleanMoney !== TEST_CLEAN_MONEY) {
+            updatePayload.cleanMoney = TEST_CLEAN_MONEY;
+            needsUpdate = true;
+          }
+
+          if (needsUpdate) {
+            await BaseCrudService.update<Players>('players', updatePayload);
+            player = await BaseCrudService.getById<Players>('players', playerId);
+          }
+
+          if (!player) {
+            setIsLoading(false);
+            return;
+          }
+
           setPlayerData(player);
           syncPlayerToStores(player);
 
-          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
-
-          if (!comerciosData) {
-            setComercios(INITIAL_COMERCIOS_DATA);
-
-            await BaseCrudService.update<Players>('players', {
-              _id: playerId,
-              comercios: JSON.stringify(INITIAL_COMERCIOS_DATA),
-            });
-          } else {
-            setComercios(comerciosData);
-          }
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : INITIAL_COMERCIOS_DATA;
+          setComercios(comerciosData);
         }
       } catch (error) {
         console.error('Erro ao carregar dados do jogador:', error);
@@ -171,6 +205,7 @@ export default function CommercialCenterPage() {
   useEffect(() => {
     const interval = setInterval(async () => {
       const playerId = getResolvedPlayerId();
+      if (!playerId) return;
 
       try {
         const player = await BaseCrudService.getById<Players>('players', playerId);
@@ -179,7 +214,7 @@ export default function CommercialCenterPage() {
           setPlayerData(player);
           syncPlayerToStores(player);
 
-          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : INITIAL_COMERCIOS_DATA;
           setComercios(comerciosData);
         }
       } catch (error) {
@@ -207,7 +242,7 @@ export default function CommercialCenterPage() {
           setPlayerData(player);
           syncPlayerToStores(player);
 
-          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : INITIAL_COMERCIOS_DATA;
           setComercios(comerciosData);
         }
       } else {
@@ -232,7 +267,7 @@ export default function CommercialCenterPage() {
           setPlayerData(player);
           syncPlayerToStores(player);
 
-          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : INITIAL_COMERCIOS_DATA;
           setComercios(comerciosData);
         }
       } else {
@@ -288,7 +323,7 @@ export default function CommercialCenterPage() {
           setPlayerData(player);
           syncPlayerToStores(player);
 
-          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : INITIAL_COMERCIOS_DATA;
           setComercios(comerciosData);
           closeCommerceModal();
         }
@@ -314,7 +349,7 @@ export default function CommercialCenterPage() {
           setPlayerData(player);
           syncPlayerToStores(player);
 
-          const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
+          const comerciosData = player.comercios ? JSON.parse(player.comercios) : INITIAL_COMERCIOS_DATA;
           setComercios(comerciosData);
           closeCommerceModal();
         }
@@ -332,7 +367,7 @@ export default function CommercialCenterPage() {
     style.textContent = `
       @keyframes gridMove {
         from { background-position: 0 0; }
-        to { background-position: 100px 100px; }
+        to { background-position: 120px 120px; }
       }
 
       @keyframes pulse {
@@ -341,26 +376,14 @@ export default function CommercialCenterPage() {
             0 0 10px #00f0ff,
             0 0 20px #00f0ff,
             0 0 30px #00f0ff;
-          opacity: 0.9;
+          opacity: 0.92;
         }
         to {
           text-shadow:
-            0 0 20px #00f0ff,
-            0 0 40px #00f0ff,
-            0 0 80px #00f0ff,
-            0 0 120px #00f0ff;
+            0 0 18px #00f0ff,
+            0 0 38px #00f0ff,
+            0 0 70px #00f0ff;
           opacity: 1;
-        }
-      }
-
-      @keyframes neonBorder {
-        0%, 100% {
-          border-color: #00f0ff;
-          box-shadow: 0 0 10px #00f0ff, inset 0 0 10px rgba(0, 240, 255, 0.1);
-        }
-        50% {
-          border-color: #9d00ff;
-          box-shadow: 0 0 20px #9d00ff, inset 0 0 15px rgba(157, 0, 255, 0.15);
         }
       }
 
@@ -370,15 +393,17 @@ export default function CommercialCenterPage() {
           0 0 5px #00f0ff,
           0 0 10px #00f0ff,
           0 0 20px #00f0ff,
-          0 0 40px #00f0ff,
-          0 0 80px #00f0ff;
+          0 0 40px #00f0ff;
         animation: pulse 3s infinite alternate;
         font-weight: 700;
         letter-spacing: 2px;
       }
 
       .commercial-grid {
-        background: linear-gradient(to bottom, #0a0015, #000814);
+        background:
+          radial-gradient(circle at top, rgba(0,240,255,0.08), transparent 24%),
+          radial-gradient(circle at bottom right, rgba(157,0,255,0.10), transparent 22%),
+          linear-gradient(to bottom, #070012, #05040f 35%, #000814 100%);
         position: relative;
         overflow: hidden;
       }
@@ -390,23 +415,34 @@ export default function CommercialCenterPage() {
         background: repeating-linear-gradient(
           45deg,
           transparent,
-          transparent 10px,
-          rgba(0, 240, 255, 0.03) 10px,
-          rgba(0, 240, 255, 0.03) 20px
+          transparent 12px,
+          rgba(0, 240, 255, 0.025) 12px,
+          rgba(0, 240, 255, 0.025) 24px
         );
-        animation: gridMove 60s linear infinite;
+        animation: gridMove 70s linear infinite;
         pointer-events: none;
       }
 
       .banner-container {
         position: relative;
         overflow: hidden;
-        border-bottom: 3px solid #00f0ff;
-        box-shadow: 0 0 30px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.1);
-        min-height: 600px;
+        border: 1px solid rgba(0,240,255,0.28);
+        border-radius: 24px;
+        box-shadow:
+          0 0 30px rgba(0, 240, 255, 0.18),
+          inset 0 0 20px rgba(0, 240, 255, 0.08);
+        min-height: 620px;
         display: flex;
-        align-items: flex-end;
+        align-items: center;
         justify-content: center;
+        background: linear-gradient(180deg, rgba(0,0,0,0.20), rgba(0,0,0,0.35));
+      }
+
+      .panel-glass {
+        border: 1px solid rgba(0,240,255,0.22);
+        background: rgba(8, 16, 35, 0.55);
+        backdrop-filter: blur(12px);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
       }
 
       .history-table {
@@ -419,12 +455,12 @@ export default function CommercialCenterPage() {
       .history-table td {
         padding: 0.75rem;
         text-align: left;
-        border-bottom: 1px solid #00f0ff;
-        color: #00f0ff;
+        border-bottom: 1px solid rgba(0,240,255,0.28);
+        color: #9fe7ff;
       }
 
       .history-table th {
-        background: rgba(0, 240, 255, 0.1);
+        background: rgba(0, 240, 255, 0.08);
         font-weight: bold;
       }
 
@@ -444,42 +480,82 @@ export default function CommercialCenterPage() {
     <div className="commercial-grid min-h-screen flex flex-col">
       <Header />
 
-      <div className="w-full pt-[120px] px-4 relative z-10">
+      {/* TÍTULO */}
+      <div className="w-full pt-[105px] md:pt-[112px] px-4 relative z-10">
         <div className="max-w-[100rem] mx-auto mb-8">
-          <h1 className="neon-sign text-4xl md:text-5xl text-center">Bem-vindo ao Complexo</h1>
-        </div>
-      </div>
+          <div className="panel-glass rounded-2xl px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h1 className="neon-sign text-3xl md:text-5xl text-center md:text-left">
+                CENTRO COMERCIAL
+              </h1>
+              <p className="text-cyan-100/80 mt-2 text-sm md:text-base text-center md:text-left">
+                Operações de lavagem, expansão dos negócios e movimentação financeira do complexo.
+              </p>
+            </div>
 
-      <div className="w-full relative z-10">
-        <div className="banner-container w-full flex items-center justify-center relative px-4">
-          <div className="relative w-full max-w-[1100px] mx-auto z-0">
-            <Image
-              src="https://static.wixstatic.com/media/50f4bf_fd64ac461d5d41c2a6bc7639af7590ac~mv2.png"
-              alt="Centro Comercial"
-              className="block h-auto w-full max-h-[600px] object-contain border-none"
-            />
-            <CommercialCenterHotspots onCommerceClick={openCommerceModal} />
+            <div className="flex items-center gap-3 text-cyan-200">
+              <div className="panel-glass rounded-xl px-4 py-3 flex items-center gap-2">
+                <Building2 className="w-4 h-4" />
+                <span className="text-sm font-semibold">5 comércios ativos</span>
+              </div>
+              <div className="panel-glass rounded-xl px-4 py-3 flex items-center gap-2">
+                <Landmark className="w-4 h-4" />
+                <span className="text-sm font-semibold">Lavagem estratégica</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="w-full px-4 py-6 relative z-10 border-b border-cyan-500/30">
-        <div className="max-w-[100rem] mx-auto flex justify-between items-center">
-          <div className="text-cyan-300">
-            <span className="text-sm text-gray-400">Dinheiro Sujo:</span>
-            <span className="ml-2 font-bold text-green-400">{formatCurrency(dirtyMoney)}</span>
-          </div>
-          <div className="text-cyan-300">
-            <span className="text-sm text-gray-400">Dinheiro Limpo:</span>
-            <span className="ml-2 font-bold text-yellow-400">{formatCurrency(cleanMoney)}</span>
+      {/* BANNER */}
+      <div className="w-full relative z-10 px-4">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="banner-container w-full relative">
+            <div className="absolute top-4 left-4 z-20 panel-glass rounded-xl px-3 py-2 flex items-center gap-2 text-cyan-100 text-xs md:text-sm">
+              <Sparkles className="w-4 h-4 text-cyan-300" />
+              Clique nas placas do prédio para abrir cada operação
+            </div>
+
+            <div className="relative w-full max-w-[1100px] mx-auto z-0 px-4">
+              <Image
+                src="https://static.wixstatic.com/media/50f4bf_fd64ac461d5d41c2a6bc7639af7590ac~mv2.png"
+                alt="Centro Comercial"
+                className="block h-auto w-full max-h-[600px] object-contain border-none"
+              />
+              <CommercialCenterHotspots onCommerceClick={openCommerceModal} />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="w-full px-4 py-12 relative z-10">
+      {/* PAINEL FINANCEIRO */}
+      <div className="w-full px-4 py-6 relative z-10">
+        <div className="max-w-[100rem] mx-auto">
+          <div className="panel-glass rounded-2xl px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-xl bg-black/20 border border-white/5 px-4 py-4">
+              <span className="text-xs uppercase tracking-[0.18em] text-slate-400">Dinheiro Sujo</span>
+              <div className="mt-2 text-2xl font-black text-green-400">
+                {formatCurrency(dirtyMoney)}
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-black/20 border border-white/5 px-4 py-4">
+              <span className="text-xs uppercase tracking-[0.18em] text-slate-400">Dinheiro Limpo</span>
+              <div className="mt-2 text-2xl font-black text-yellow-400">
+                {formatCurrency(cleanMoney)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CARDS */}
+      <div className="w-full px-4 py-10 relative z-10">
         <div className="max-w-[100rem] mx-auto">
           {isLoading ? (
-            <div className="text-center text-cyan-300">Carregando comércios...</div>
+            <div className="panel-glass rounded-2xl px-6 py-12 text-center text-cyan-300">
+              Carregando comércios...
+            </div>
           ) : comercios ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {COMERCIOS_KEYS.map((key) => (
@@ -494,14 +570,17 @@ export default function CommercialCenterPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center text-cyan-300">Erro ao carregar comércios</div>
+            <div className="panel-glass rounded-2xl px-6 py-12 text-center text-cyan-300">
+              Erro ao carregar comércios
+            </div>
           )}
         </div>
       </div>
 
+      {/* HISTÓRICO */}
       {completedOps.length > 0 && (
-        <div className="w-full px-4 py-12 relative z-10 border-t border-cyan-500">
-          <div className="max-w-[100rem] mx-auto">
+        <div className="w-full px-4 py-10 relative z-10">
+          <div className="max-w-[100rem] mx-auto panel-glass rounded-2xl p-6">
             <h2 className="neon-sign text-2xl mb-6">Histórico de Operações</h2>
             <table className="history-table">
               <thead>
@@ -529,6 +608,7 @@ export default function CommercialCenterPage() {
         </div>
       )}
 
+      {/* MODAL */}
       {activeCommerceModal && (
         <CommerceOperationModal
           isOpen={true}
@@ -552,9 +632,10 @@ export default function CommercialCenterPage() {
         />
       )}
 
+      {/* BOTÃO TESTE */}
       <Button
         onClick={() => setActiveCommerceModal('pizzaria')}
-        className="fixed bottom-10 right-10 z-[9999] bg-orange-500 hover:bg-orange-600 text-white font-bold"
+        className="fixed bottom-10 right-10 z-[9999] bg-orange-500 hover:bg-orange-600 text-white font-bold shadow-[0_0_24px_rgba(255,120,0,0.35)]"
       >
         TESTAR MODAL
       </Button>
