@@ -21,6 +21,29 @@ export interface Background {
 
 
 /**
+ * Collection ID: businessupgrades
+ * Interface for BusinessUpgrades
+ */
+export interface BusinessUpgrades {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  upgradeName?: string;
+  /** @wixFieldType number */
+  cost?: number;
+  /** @wixFieldType number */
+  launderingRateEffect?: number;
+  /** @wixFieldType number */
+  baseTimeEffect?: number;
+  /** @wixFieldType number */
+  maxValueEffect?: number;
+  /** @wixFieldType text */
+  description?: string;
+}
+
+
+/**
  * Collection ID: itensdeluxo
  * Interface for ItensdeLuxo
  */
@@ -40,6 +63,27 @@ export interface ItensdeLuxo {
   imageUrl?: string;
   /** @wixFieldType text */
   category?: string;
+}
+
+
+/**
+ * Collection ID: moneylaunderingbusinesses
+ * Interface for MoneyLaunderingBusinesses
+ */
+export interface MoneyLaunderingBusinesses {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** @wixFieldType text */
+  businessName?: string;
+  /** @wixFieldType number */
+  initialValue?: number;
+  /** @wixFieldType number */
+  initialRate?: number;
+  /** @wixFieldType number */
+  baseTime?: number;
+  /** @wixFieldType image - Contains image URL, render with <Image> component, NOT as text */
+  businessImage?: string;
 }
 
 
