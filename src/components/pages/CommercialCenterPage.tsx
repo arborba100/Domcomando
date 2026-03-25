@@ -85,6 +85,10 @@ function safeParseComercios(raw?: string | null): Comercios {
   }
 }
 
+function getResolvedPlayerId(member: any): string | null {
+  return member?._id || localStorage.getItem('currentPlayerId') || null;
+}
+
 export default function CommercialCenterPage() {
   const { member } = useMember();
 
@@ -99,7 +103,7 @@ export default function CommercialCenterPage() {
   const { cleanMoney, setCleanMoney } = useCleanMoneyStore();
   const { setLevel, setPlayerId, setPlayerName } = usePlayerStore();
 
-  const playerId = member?._id ?? null;
+  const playerId = getResolvedPlayerId(member);
 
   const syncPlayerToStores = (player: Players) => {
     setDirtyMoney(player.dirtyMoney || 0);
@@ -145,21 +149,25 @@ export default function CommercialCenterPage() {
 
   useEffect(() => {
     const loadPlayerData = async () => {
-      if (!playerId) {
-        setPageError('Faça login para acessar o Centro Comercial.');
+      const resolvedPlayerId = getResolvedPlayerId(member);
+      
+      if (!resolvedPlayerId) {
         setIsLoading(false);
         return;
       }
+
+      // Salvar playerId resolvido no localStorage
+      localStorage.setItem('currentPlayerId', resolvedPlayerId);
 
       try {
         setIsLoading(true);
         setPageError(null);
 
-        let player = await BaseCrudService.getById<Players>('players', playerId);
+        let player = await BaseCrudService.getById<Players>('players', resolvedPlayerId);
 
         if (!player) {
           const newPlayer: Players = {
-            _id: playerId,
+            _id: resolvedPlayerId,
             playerName: member?.profile?.nickname || 'Jogador',
             cleanMoney: 1000000000,
             dirtyMoney: 1000000000,
@@ -174,11 +182,11 @@ export default function CommercialCenterPage() {
           player = newPlayer;
         } else if (!player.comercios) {
           await BaseCrudService.update<Players>('players', {
-            _id: playerId,
+            _id: resolvedPlayerId,
             comercios: JSON.stringify(INITIAL_COMERCIOS_DATA),
           });
 
-          player = await BaseCrudService.getById<Players>('players', playerId);
+          player = await BaseCrudService.getById<Players>('players', resolvedPlayerId);
           if (!player) throw new Error('Falha ao atualizar comércios do jogador.');
         }
 
@@ -211,11 +219,12 @@ export default function CommercialCenterPage() {
   }, [playerId]);
 
   const handleIniciarLavagem = async (comercioKey: ComercioKey) => {
-    if (!playerId) return;
+    const resolvedPlayerId = getResolvedPlayerId(member);
+    if (!resolvedPlayerId) return;
 
     try {
       const resultado = await comerciosService.iniciarLavagem(
-        playerId,
+        resolvedPlayerId,
         comercioKey,
         dirtyMoney
       );
@@ -233,10 +242,11 @@ export default function CommercialCenterPage() {
   };
 
   const handleFinalizarLavagem = async (comercioKey: ComercioKey) => {
-    if (!playerId) return;
+    const resolvedPlayerId = getResolvedPlayerId(member);
+    if (!resolvedPlayerId) return;
 
     try {
-      const resultado = await comerciosService.finalizarLavagem(playerId, comercioKey);
+      const resultado = await comerciosService.finalizarLavagem(resolvedPlayerId, comercioKey);
 
       if (!resultado.sucesso) {
         alert(resultado.mensagem);
@@ -250,7 +260,7 @@ export default function CommercialCenterPage() {
     }
   };
 
-const handleStartOperation = async (comercioKey: ComercioKey) => {
+  const handleStartOperation = async (comercioKey: ComercioKey) => {
     await handleIniciarLavagem(comercioKey);
     closeCommerceModal();
   };
