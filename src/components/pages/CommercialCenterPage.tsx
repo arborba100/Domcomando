@@ -10,6 +10,7 @@ import { Comercios, COMERCIOS_KEYS, ComercioKey } from '@/types/comercios';
 import ComercioCard from '@/components/ComercioCard';
 import { BaseCrudService } from '@/integrations';
 import { Players } from '@/entities';
+import CommercialCenterHotspots from '@/components/CommercialCenterHotspots';
 
 interface CommerceOperation {
   id: string;
@@ -137,6 +138,25 @@ export default function CommercialCenterPage() {
       style: 'currency',
       currency: 'BRL',
     }).format(value);
+  };
+
+  const openCommerceModal = (commerceId: string) => {
+    // Map commerce IDs to ComercioKey
+    const commerceKeyMap: { [key: string]: ComercioKey } = {
+      pizzaria: 'pizzaria',
+      admBens: 'admBens',
+      templo: 'templo',
+      academia: 'academia',
+      lavanderia: 'lavanderia',
+    };
+
+    const comercioKey = commerceKeyMap[commerceId];
+    if (comercioKey && comercios) {
+      // Trigger the commerce card action
+      // This can be expanded to show a modal or navigate to commerce details
+      console.log(`Abrindo modal para: ${comercioKey}`);
+      // You can add modal logic here
+    }
   };
 
   useEffect(() => {
@@ -395,12 +415,14 @@ export default function CommercialCenterPage() {
 
       {/* BANNER */}
       <div className="w-full relative z-10">
-        <div className="banner-container w-full flex items-center justify-center">
+        <div className="banner-container w-full flex items-center justify-center relative">
           <Image
             src="https://static.wixstatic.com/media/50f4bf_fd64ac461d5d41c2a6bc7639af7590ac~mv2.png"
             alt="Centro Comercial"
             className="h-auto w-auto max-w-full max-h-[600px] object-contain border border-none"
           />
+          {/* Hotspots overlay */}
+          <CommercialCenterHotspots onCommerceClick={openCommerceModal} />
         </div>
       </div>
       {/* PLAYER INFO */}
