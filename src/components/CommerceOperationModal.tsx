@@ -9,6 +9,8 @@ import {
   calcularTaxaAplicada,
 } from '@/types/comercios';
 import { ComercioData } from '@/types/comercios';
+import { useDirtyMoneyStore } from '@/store/dirtyMoneyStore';
+import { useCleanMoneyStore } from '@/store/cleanMoneyStore';
 
 interface CommerceOperationModalProps {
   isOpen: boolean;
@@ -25,12 +27,19 @@ export default function CommerceOperationModal({
   isOpen,
   commerceId,
   commerceData,
-  dirtyMoney,
-  cleanMoney,
+  dirtyMoney: propDirtyMoney,
+  cleanMoney: propCleanMoney,
   onClose,
   onStartOperation,
   onCompleteOperation,
 }: CommerceOperationModalProps) {
+  const { dirtyMoney: storeDirtyMoney } = useDirtyMoneyStore();
+  const { cleanMoney: storeCleanMoney } = useCleanMoneyStore();
+  
+  // Usar valores dos stores em tempo real
+  const dirtyMoney = storeDirtyMoney;
+  const cleanMoney = storeCleanMoney;
+  
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isStarting, setIsStarting] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
