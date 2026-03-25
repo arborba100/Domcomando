@@ -1,5 +1,5 @@
 import { Image } from '@/components/ui/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -72,21 +72,34 @@ const INITIAL_COMERCIOS_DATA: Comercios = {
   },
 };
 
-const TEST_DIRTY_MONEY = 1000000000;
-const TEST_CLEAN_MONEY = 1000000000;
+function safeParseComercios(raw?: string | null): Comercios {
+  if (!raw) return INITIAL_COMERCIOS_DATA;
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      ...INITIAL_COMERCIOS_DATA,
+      ...parsed,
+    };
+  } catch {
+    return INITIAL_COMERCIOS_DATA;
+  }
+}
 
 export default function CommercialCenterPage() {
   const { member } = useMember();
 
-  const [comercios, setComercios] = useState<Comercios | null>(null);
+  const [comercios, setComercios] = useState<Comercios>(INITIAL_COMERCIOS_DATA);
   const [playerData, setPlayerData] = useState<Players | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [completedOps] = useState<CompletedOperation[]>([]);
   const [activeCommerceModal, setActiveCommerceModal] = useState<ComercioKey | null>(null);
+  const [pageError, setPageError] = useState<string | null>(null);
+  const [completedOps] = useState<CompletedOperation[]>([]);
 
   const { dirtyMoney, setDirtyMoney } = useDirtyMoneyStore();
   const { cleanMoney, setCleanMoney } = useCleanMoneyStore();
   const { setLevel, setPlayerId, setPlayerName } = usePlayerStore();
+
+  const playerId = member?._id ?? null;
 
   const syncPlayerToStores = (player: Players) => {
     setDirtyMoney(player.dirtyMoney || 0);
@@ -96,168 +109,14 @@ export default function CommercialCenterPage() {
     setPlayerName(player.playerName || 'Jogador');
   };
 
-  useEffect(() => {
-    const load = async () => {
-      if (!member?._id) {
-        setIsLoading(false);
-        return;
-      }
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value || 0);
 
-      try {
-        const playerId = member._id;
-
-        let player = await BaseCrudService.getById<Players>('players', playerId);
-
-        if (!player) {
-          player = {
-            _id: playerId,
-            playerName: member.profile?.nickname || 'Jogador',
-            cleanMoney: TEST_CLEAN_MONEY,
-            dirtyMoney: TEST_DIRTY_MONEY,
-            level: 1,
-            progress: 0,
-            comercios: JSON.stringify(INITIAL_COMERCIOS_DATA),
-            isGuest: false,
-            profilePicture: member.profile?.photo?.url,
-          };
-
-          await BaseCrudService.create('players', player);
-        } else {
-          const payload: Partial<Players> & { _id: string } = { _id: playerId };
-          let needsUpdate = false;
-
-          if (player.dirtyMoney !== TEST_DIRTY_MONEY) {
-            payload.dirtyMoney = TEST_DIRTY_MONEY;
-            needsUpdate = true;
-          }
-
-          if (player.cleanMoney !== TEST_CLEAN_MONEY) {
-            payload.cleanMoney = TEST_CLEAN_MONEY;
-            needsUpdate = true;
-          }
-
-          if (!player.comercios) {
-            payload.comercios = JSON.stringify(INITIAL_COMERCIOS_DATA);
-            needsUpdate = true;
-          }
-
-          if (needsUpdate) {
-            await BaseCrudService.update<Players>('players', payload);
-            const refreshed = await BaseCrudService.getById<Players>('players', playerId);
-            if (refreshed) player = refreshed;
-          }
-        }
-
-        setPlayerData(player);
-        syncPlayerToStores(player);
-
-        const parsed = player.comercios
-          ? JSON.parse(player.comercios)
-          : INITIAL_COMERCIOS_DATA;
-setComercios(parsed);
-      } catch (error) {
-        console.error('Erro ao carregar dados do jogador:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    load();
-  }, [member?._id]);
-
-  useEffect(() => {
-    if (!member?._id) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const player = await BaseCrudService.getById<Players>('players', member._id);
-
-        if (player) {
-          setPlayerData(player);
-          syncPlayerToStores(player);
-
-          const parsed = player.comercios
-            ? JSON.parse(player.comercios)
-            : INITIAL_COMERCIOS_DATA;
-
-          setComercios(parsed);
-        }
-      } catch (error) {
-        console.error('Erro ao atualizar dados:', error);
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [member?._id]);
-
-  const handleIniciarLavagem = async (key: ComercioKey) => {
-    if (!member?._id) return;
-
-    try {
-      const result = await comerciosService.iniciarLavagem(member._id, key, dirtyMoney);
-
-      if (!result.sucesso) {
-        alert(result.mensagem);
-        return;
-      }
-
-      const updatedPlayer = await BaseCrudService.getById<Players>('players', member._id);
-      if (updatedPlayer) {
-        setPlayerData(updatedPlayer);
-        syncPlayerToStores(updatedPlayer);
-
-        const parsed = updatedPlayer.comercios
-          ? JSON.parse(updatedPlayer.comercios)
-          : INITIAL_COMERCIOS_DATA;
-
-        setComercios(parsed);
-      }
-    } catch (error) {
-      console.error('Erro ao iniciar lavagem:', error);
-      alert('Erro ao iniciar lavagem');
-    }
-  };
-
-  const handleFinalizarLavagem = async (key: ComercioKey) => {
-    if (!member?._id) return;
-
-    try {
-      const result = await comerciosService.finalizarLavagem(member._id, key);
-
-      if (!result.sucesso) {
-        alert(result.mensagem);
-        return;
-      }
-
-      const updatedPlayer = await BaseCrudService.getById<Players>('players', member._id);
-      if (updatedPlayer) {
-        setPlayerData(updatedPlayer);
-        syncPlayerToStores(updatedPlayer);
-
-        const parsed = updatedPlayer.comercios
-          ? JSON.parse(updatedPlayer.comercios)
-          : INITIAL_COMERCIOS_DATA;
-
-        setComercios(parsed);
-      }
-    } catch (error) {
-      console.error('Erro ao finalizar lavagem:', error);
-      alert('Erro ao finalizar lavagem');
-    }
-  };
-
-  const handleStartOperation = async (key: ComercioKey) => {
-    await handleIniciarLavagem(key);
-    setActiveCommerceModal(null);
-  };
-
-  const handleCompleteOperation = async (key: ComercioKey) => {
-    await handleFinalizarLavagem(key);
-    setActiveCommerceModal(null);
-  };
-
-  const openCommerceModal = (id: string) => {
-    const map: Record<string, ComercioKey> = {
+  const openCommerceModal = (commerceId: string) => {
+    const commerceKeyMap: Record<string, ComercioKey> = {
       pizzaria: 'pizzaria',
       admBens: 'admBens',
       templo: 'templo',
@@ -265,16 +124,146 @@ setComercios(parsed);
       lavanderia: 'lavanderia',
     };
 
-    if (map[id]) setActiveCommerceModal(map[id]);
+    const comercioKey = commerceKeyMap[commerceId];
+    if (comercioKey) setActiveCommerceModal(comercioKey);
   };
 
-  const closeCommerceModal = () => setActiveCommerceModal(null);
+  const closeCommerceModal = () => {
+    setActiveCommerceModal(null);
+  };
 
-  const formatCurrency = (v: number) =>
-    new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(v);
+  const refreshPlayer = async () => {
+    if (!playerId) return;
+
+    const player = await BaseCrudService.getById<Players>('players', playerId);
+    if (!player) throw new Error('Jogador não encontrado.');
+
+    setPlayerData(player);
+    syncPlayerToStores(player);
+    setComercios(safeParseComercios(player.comercios));
+  };
+
+  useEffect(() => {
+    const loadPlayerData = async () => {
+      if (!playerId) {
+        setPageError('Faça login para acessar o Centro Comercial.');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setPageError(null);
+
+        let player = await BaseCrudService.getById<Players>('players', playerId);
+
+        if (!player) {
+          const newPlayer: Players = {
+            _id: playerId,
+            playerName: member?.profile?.nickname || 'Jogador',
+            cleanMoney: 1000000000,
+            dirtyMoney: 1000000000,
+            level: 1,
+            progress: 0,
+            comercios: JSON.stringify(INITIAL_COMERCIOS_DATA),
+            isGuest: false,
+            profilePicture: member?.profile?.photo?.url,
+          };
+
+          await BaseCrudService.create('players', newPlayer);
+          player = newPlayer;
+        } else if (!player.comercios) {
+          await BaseCrudService.update<Players>('players', {
+            _id: playerId,
+            comercios: JSON.stringify(INITIAL_COMERCIOS_DATA),
+          });
+
+          player = await BaseCrudService.getById<Players>('players', playerId);
+          if (!player) throw new Error('Falha ao atualizar comércios do jogador.');
+        }
+
+        setPlayerData(player);
+        syncPlayerToStores(player);
+        setComercios(safeParseComercios(player.comercios));
+      } catch (error) {
+        console.error('Erro ao carregar dados do jogador:', error);
+        setPageError('Não foi possível carregar o Centro Comercial.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadPlayerData();
+  }, [playerId, member?.profile?.nickname, member?.profile?.photo?.url]);
+
+  useEffect(() => {
+    if (!playerId) return;
+
+    const interval = setInterval(async () => {
+      try {
+        await refreshPlayer();
+      } catch (error) {
+        console.error('Erro ao atualizar dados:', error);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [playerId]);
+
+  const handleIniciarLavagem = async (comercioKey: ComercioKey) => {
+    if (!playerId) return;
+
+    try {
+      const resultado = await comerciosService.iniciarLavagem(
+        playerId,
+        comercioKey,
+        dirtyMoney
+      );
+
+      if (!resultado.sucesso) {
+        alert(resultado.mensagem);
+        return;
+      }
+
+      await refreshPlayer();
+    } catch (error) {
+      console.error('Erro ao iniciar lavagem:', error);
+      alert('Erro ao iniciar lavagem');
+    }
+  };
+
+  const handleFinalizarLavagem = async (comercioKey: ComercioKey) => {
+    if (!playerId) return;
+
+    try {
+      const resultado = await comerciosService.finalizarLavagem(playerId, comercioKey);
+
+      if (!resultado.sucesso) {
+        alert(resultado.mensagem);
+        return;
+      }
+
+      await refreshPlayer();
+    } catch (error) {
+      console.error('Erro ao finalizar lavagem:', error);
+      alert('Erro ao finalizar lavagem');
+    }
+  };
+
+const handleStartOperation = async (comercioKey: ComercioKey) => {
+    await handleIniciarLavagem(comercioKey);
+    closeCommerceModal();
+  };
+
+  const handleCompleteOperation = async (comercioKey: ComercioKey) => {
+    await handleFinalizarLavagem(comercioKey);
+    closeCommerceModal();
+  };
+
+  const activeCommerceData = useMemo(() => {
+    if (!activeCommerceModal) return null;
+    return comercios?.[activeCommerceModal] || null;
+  }, [activeCommerceModal, comercios]);
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -382,6 +371,7 @@ setComercios(parsed);
         background: rgba(0, 240, 255, 0.05);
       }
     `;
+
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
   }, []);
@@ -396,7 +386,7 @@ setComercios(parsed);
             <div>
               <h1 className="neon-sign text-3xl md:text-5xl">
                 CENTRO COMERCIAL
- </h1>
+              </h1>
               <p className="text-cyan-100/80 mt-2 text-sm md:text-base">
                 Administração dos comércios usados para lavagem de dinheiro, expansão operacional e retorno financeiro.
               </p>
@@ -422,7 +412,6 @@ setComercios(parsed);
         </div>
       </div>
 
-      {/* BANNER */}
       <div className="w-full relative z-10 px-4">
         <div className="max-w-[1200px] mx-auto">
           <div className="banner-container w-full relative">
@@ -443,7 +432,6 @@ setComercios(parsed);
         </div>
       </div>
 
-      {/* PAINEL FINANCEIRO */}
       <div className="w-full px-4 py-6 relative z-10">
         <div className="max-w-[100rem] mx-auto grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="panel-glass rounded-2xl px-5 py-5">
@@ -463,7 +451,7 @@ setComercios(parsed);
           <div className="panel-glass rounded-2xl px-5 py-5">
             <span className="text-xs uppercase tracking-[0.18em] text-slate-400">Status</span>
             <div className="mt-2 text-lg font-black text-cyan-300">
-              {isLoading ? 'Carregando' : 'Operacional'}
+              {isLoading ? 'Carregando' : pageError ? 'Erro' : 'Operacional'}
             </div>
           </div>
 
@@ -476,7 +464,6 @@ setComercios(parsed);
         </div>
       </div>
 
-      {/* INFORMAÇÕES EXTRAS */}
       <div className="w-full px-4 py-2 relative z-10">
         <div className="max-w-[100rem] mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="panel-glass rounded-2xl px-5 py-4">
@@ -511,14 +498,17 @@ setComercios(parsed);
         </div>
       </div>
 
-      {/* CARDS */}
       <div className="w-full px-4 py-10 relative z-10">
         <div className="max-w-[100rem] mx-auto">
-          {isLoading ? (
+          {pageError ? (
+            <div className="panel-glass rounded-2xl px-6 py-12 text-center text-red-300">
+              {pageError}
+            </div>
+          ) : isLoading ? (
             <div className="panel-glass rounded-2xl px-6 py-12 text-center text-cyan-300">
               Carregando comércios...
             </div>
-          ) : comercios ? (
+          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {COMERCIOS_KEYS.map((key) => (
                 <ComercioCard
@@ -531,16 +521,11 @@ setComercios(parsed);
                 />
               ))}
             </div>
-          ) : (
-            <div className="panel-glass rounded-2xl px-6 py-12 text-center text-cyan-300">
-              Erro ao carregar comércios
-            </div>
           )}
         </div>
       </div>
 
-      {/* HISTÓRICO */}
-      {completedOps.length > 0 && (
+{completedOps.length > 0 && (
         <div className="w-full px-4 py-10 relative z-10">
           <div className="max-w-[100rem] mx-auto panel-glass rounded-2xl p-6">
             <h2 className="neon-sign text-2xl mb-6">Histórico de Operações</h2>
@@ -570,22 +555,11 @@ setComercios(parsed);
         </div>
       )}
 
-      {/* MODAL */}
-      {activeCommerceModal && (
+      {activeCommerceModal && activeCommerceData && (
         <CommerceOperationModal
           isOpen={true}
           commerceId={activeCommerceModal}
-          commerceData={
-            comercios?.[activeCommerceModal] || {
-              nivelNegocio: 1,
-              nivelTaxa: 1,
-              emAndamento: false,
-              ultimaDataUso: '',
-              horarioFim: null,
-              valorAtual: 0,
-              taxaAplicada: 0,
-            }
-          }
+          commerceData={activeCommerceData}
           dirtyMoney={dirtyMoney}
           cleanMoney={cleanMoney}
           onClose={closeCommerceModal}
@@ -594,7 +568,6 @@ setComercios(parsed);
         />
       )}
 
-{/* BOTÃO TESTE */}
       <Button
         onClick={() => setActiveCommerceModal('pizzaria')}
         className="fixed bottom-10 right-10 z-[9999] bg-orange-500 hover:bg-orange-600 text-white font-bold shadow-[0_0_24px_rgba(255,120,0,0.35)]"
@@ -606,4 +579,3 @@ setComercios(parsed);
     </div>
   );
 }
-
