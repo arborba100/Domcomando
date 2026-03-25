@@ -6,7 +6,6 @@ import { usePlayerStore } from "@/store/playerStore";
 import { useSpinVault } from "@/hooks/useSpinVault";
 import { useNavigate } from "react-router-dom";
 import { usePlayerInitialization } from "@/hooks/usePlayerInitialization";
-import { useMember } from "@/integrations";
 import { Droplet } from "lucide-react";
 
 const LOGO_SRC = "https://static.wixstatic.com/media/50f4bf_01590cb08b7048babbfed83e2830a27c~mv2.png";
@@ -17,7 +16,6 @@ export default function Header() {
   const { playerName, setPlayerName, level } = usePlayerStore();
   const { spins, timeUntilNextGain, formatTime } = useSpinVault();
   const navigate = useNavigate();
-  const { member } = useMember();
   
   // Inicializar dados do jogador
   usePlayerInitialization();
@@ -93,17 +91,15 @@ export default function Header() {
 
             </div>
 
-            {/* Lavagem Button - Only show if authenticated */}
-            {member?._id && (
-              <button
-                onClick={() => navigate('/money-laundering')}
-                className="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-4 py-2 rounded-lg text-white font-semibold transition-all text-sm"
-                title="Operações de Lavagem"
-              >
-                <Droplet className="w-4 h-4" />
-                Lavagem
-              </button>
-            )}
+            {/* Lavagem Button */}
+            <button
+              onClick={() => navigate('/money-laundering')}
+              className="flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-4 py-2 rounded-lg text-white font-semibold transition-all text-sm"
+              title="Operações de Lavagem"
+            >
+              <Droplet className="w-4 h-4" />
+              Lavagem
+            </button>
           </div>
 
           {/* 🔥 DIREITA - TIMER */}
