@@ -36,9 +36,9 @@ export default function CommerceOperationModal({
   const { dirtyMoney: storeDirtyMoney } = useDirtyMoneyStore();
   const { cleanMoney: storeCleanMoney } = useCleanMoneyStore();
   
-  // Usar valores dos stores em tempo real
-  const dirtyMoney = storeDirtyMoney;
-  const cleanMoney = storeCleanMoney;
+  // Usar valores das props (que vêm do jogador) como prioridade, fallback para stores
+  const dirtyMoney = propDirtyMoney || storeDirtyMoney;
+  const cleanMoney = propCleanMoney || storeCleanMoney;
   
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isStarting, setIsStarting] = useState(false);

@@ -199,6 +199,7 @@ export default function CommercialCenterPage() {
           setPlayerData(player);
           const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
           setComercios(comerciosData);
+          closeCommerceModal();
         }
       } else {
         throw new Error(resultado.mensagem);
@@ -218,6 +219,7 @@ export default function CommercialCenterPage() {
           setPlayerData(player);
           const comerciosData = player.comercios ? JSON.parse(player.comercios) : null;
           setComercios(comerciosData);
+          closeCommerceModal();
         }
       } else {
         throw new Error(resultado.mensagem);
