@@ -50,9 +50,8 @@ export default function BarracoPage() {
     }
   }, [isAuthenticated, isAuthLoading, navigate]);
 
-  // Get player ID from member or localStorage
+  // Get player ID from localStorage or URL
   const getPlayerId = () => {
-    if (member?._id) return member._id;
     const urlParams = new URLSearchParams(window.location.search);
     const idFromUrl = urlParams.get('playerId');
     if (idFromUrl) return idFromUrl;
@@ -61,21 +60,16 @@ export default function BarracoPage() {
 
   useEffect(() => {
     // Skip if already initialized or not authenticated
-    if (initRef.current || !isAuthenticated || !member?._id) return;
+    if (initRef.current || !isAuthenticated) return;
     initRef.current = true;
 
     loadPlayerData();
-  }, [isAuthenticated, member?._id]);
+  }, [isAuthenticated]);
 
   const loadPlayerData = async () => {
     try {
       setLoading(true);
       let playerId = getPlayerId();
-      
-      // If no player ID, try to get from member
-      if (!playerId && member?._id) {
-        playerId = member._id;
-      }
 
       // If still no player ID, try to get the first player from the collection
       if (!playerId) {
@@ -411,8 +405,8 @@ export default function BarracoPage() {
                   </div>
                   <div className="flex justify-between text-foreground">
                     <span>Dinheiro Limpo Disponível:</span>
-                    <span className={`font-bold ${cleanMoney >= evolutionCost ? 'text-green-400' : 'text-red-400'}`}>
-                      R$ {cleanMoney.toLocaleString('pt-BR')}
+                    <span className={`font-bold ${(player.cleanMoney || 0) >= evolutionCost ? 'text-green-400' : 'text-red-400'}`}>
+                      R$ {(player.cleanMoney || 0).toLocaleString('pt-BR')}
                     </span>
                   </div>
                   {!allItemsAtLevel && (

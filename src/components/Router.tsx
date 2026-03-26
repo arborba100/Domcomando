@@ -50,7 +50,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <LuxuryShowroomPage />,
+        element: <HomePage />,
         routeMetadata: {
           pageIdentifier: 'home',
         },
