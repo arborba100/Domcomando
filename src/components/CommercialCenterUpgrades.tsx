@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCommercialCenterStore } from '@/store/commercialCenterStore';
-import { usePlayerStore } from '@/store/playerStore';
+import { useMember } from '@/integrations';
 import { motion } from 'framer-motion';
 import { Percent, TrendingUp, Users, DollarSign } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
@@ -20,8 +20,28 @@ interface UpgradeOption {
 
 export default function CommercialCenterUpgrades() {
   const commercialStore = useCommercialCenterStore();
-  const playerStore = usePlayerStore();
-  const [dirtyMoney, setDirtyMoney] = useState(playerStore.dirtyMoney || 0);
+  const { member } = useMember();
+  const [dirtyMoney, setDirtyMoney] = useState(0);
+  const [playerData, setPlayerData] = useState<Players | null>(null);
+
+  // Carregar dados do jogador usando playerId único (member._id)
+  useEffect(() => {
+    if (!member?._id) return;
+
+    const loadPlayerData = async () => {
+      try {
+        const playerId = member._id;
+        const player = await BaseCrudService.getById<Players>('players', playerId);
+        if (player) {
+          setPlayerData(player);
+          setDirtyMoney(player.dirtyMoney || 0);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados do jogador:', error);
+      }
+    };
+    loadPlayerData();
+  }, [member?._id]);
 
   const upgrades: UpgradeOption[] = [
     {
@@ -36,16 +56,19 @@ export default function CommercialCenterUpgrades() {
           alert('Dinheiro sujo insuficiente');
           return;
         }
+        if (!member?._id || !playerData) return;
+
         const newDirtyMoney = dirtyMoney - 5000;
         setDirtyMoney(newDirtyMoney);
         commercialStore.upgradeTaxReduction(1);
         
-        const playerId = playerStore.playerId;
-        if (playerId) {
+        try {
           await BaseCrudService.update<Players>('players', {
-            _id: playerId,
+            _id: member._id,
             dirtyMoney: newDirtyMoney,
           });
+        } catch (error) {
+          console.error('Erro ao atualizar dinheiro sujo:', error);
         }
       },
       currentLevel: commercialStore.upgrades.taxReduction,
@@ -63,16 +86,19 @@ export default function CommercialCenterUpgrades() {
           alert('Dinheiro sujo insuficiente');
           return;
         }
+        if (!member?._id || !playerData) return;
+
         const newDirtyMoney = dirtyMoney - 7500;
         setDirtyMoney(newDirtyMoney);
         commercialStore.upgradeConversionBonus(0.5);
         
-        const playerId = playerStore.playerId;
-        if (playerId) {
+        try {
           await BaseCrudService.update<Players>('players', {
-            _id: playerId,
+            _id: member._id,
             dirtyMoney: newDirtyMoney,
           });
+        } catch (error) {
+          console.error('Erro ao atualizar dinheiro sujo:', error);
         }
       },
       currentLevel: commercialStore.upgrades.conversionBonus,
@@ -90,16 +116,19 @@ export default function CommercialCenterUpgrades() {
           alert('Dinheiro sujo insuficiente');
           return;
         }
+        if (!member?._id || !playerData) return;
+
         const newDirtyMoney = dirtyMoney - 10000;
         setDirtyMoney(newDirtyMoney);
         commercialStore.upgradeOperationsPerDay(1);
         
-        const playerId = playerStore.playerId;
-        if (playerId) {
+        try {
           await BaseCrudService.update<Players>('players', {
-            _id: playerId,
+            _id: member._id,
             dirtyMoney: newDirtyMoney,
           });
+        } catch (error) {
+          console.error('Erro ao atualizar dinheiro sujo:', error);
         }
       },
       currentLevel: commercialStore.upgrades.operationsPerDay,

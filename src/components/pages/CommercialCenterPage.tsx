@@ -1,6 +1,5 @@
 import { Image } from '@/components/ui/image';
-import { useEffect, useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useMember } from '@/integrations';
@@ -79,27 +78,23 @@ export default function CommercialCenterPage() {
     }
   }, [isAuthenticated, isAuthLoading, navigate]);
 
-  // Carregar dados do jogador
+  // Carregar dados do jogador usando playerId único (member._id)
   useEffect(() => {
     if (!isAuthenticated || !member?._id) return;
 
     const loadPlayerData = async () => {
       try {
-        let player = await BaseCrudService.getById<Players>('players', member._id);
+        const playerId = member._id; // Usar member._id como playerId único e permanente
+        let player = await BaseCrudService.getById<Players>('players', playerId);
         
         // Se o jogador não existe, criar um novo
         if (!player) {
-          console.log('📝 Criando novo jogador para:', member._id);
-          const initialComerciosData = {
-            pizzaria: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-            admBens: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-            lavanderia: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-            academia: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-            templo: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-          };
+          console.log('📝 Criando novo jogador para playerId:', playerId);
+          const initialComerciosData = getInitialComercioData();
           
           const newPlayer: Players = {
-            _id: member._id,
+            _id: playerId,
+            playerId: playerId, // Salvar playerId explicitamente
             playerName: member.profile?.nickname || 'Jogador',
             cleanMoney: 0,
             dirtyMoney: 1000,
@@ -119,17 +114,11 @@ export default function CommercialCenterPage() {
           const comerciosData = player.comercios ? safeParseComercios(player.comercios) : null;
           if (!comerciosData) {
             console.warn('⚠️ Comercios não encontrados, inicializando...');
-            const initialComerciosData = {
-              pizzaria: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-              admBens: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-              lavanderia: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-              academia: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-              templo: { nivelNegocio: 0, nivelTaxa: 0, ultimaDataUso: null, emAndamento: false, horarioFim: null, valorAtual: 0, taxaAplicada: 0 },
-            };
+            const initialComerciosData = getInitialComercioData();
             setComercios(initialComerciosData);
             // Salvar no banco de dados
             await BaseCrudService.update<Players>('players', {
-              _id: member._id,
+              _id: playerId,
               comercios: JSON.stringify(initialComerciosData),
             });
           } else {
@@ -144,25 +133,6 @@ export default function CommercialCenterPage() {
     };
     loadPlayerData();
   }, [member?._id, isAuthenticated]);
-
-  // Atualizar dados periodicamente - FIXED: Removed to prevent excessive polling
-  // useEffect(() => {
-  //   const interval = setInterval(async () => {
-  //     if (!member?._id) return;
-  //     try {
-  //       const player = await BaseCrudService.getById<Players>('players', member._id);
-  //       if (player) {
-  //         setPlayerData(player);
-  //         const comerciosData = player.comercios ? safeParseComercios(player.comercios) : null;
-  //         setComercios(comerciosData);
-  //       }
-  //     } catch (error) {
-  //       console.error('Erro ao atualizar dados:', error);
-  //     }
-  //   }, 5000); // Atualizar a cada 5 segundos
-
-  //   return () => clearInterval(interval);
-  // }, [member?._id]);
 
   const handleIniciarLavagem = async (comercioKey: ComercioKey) => {
     if (!member?._id || !playerData) return;
