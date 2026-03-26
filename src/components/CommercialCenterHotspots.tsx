@@ -64,18 +64,20 @@ export default function CommercialCenterHotspots({
   const [hoveredHotspot, setHoveredHotspot] = useState<string | null>(null);
 
   return (
-    <div className="absolute inset-0 z-20 w-full h-full pointer-events-none">
+    <div className="absolute inset-0 z-20 w-full h-full">
       {HOTSPOTS.map((hotspot) => (
         <button
           key={hotspot.id}
           type="button"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             console.log('CLICK HOTSPOT:', hotspot.id);
             onCommerceClick(hotspot.id);
           }}
           onMouseEnter={() => setHoveredHotspot(hotspot.id)}
           onMouseLeave={() => setHoveredHotspot(null)}
-          className={`absolute pointer-events-auto transition-all duration-200 ${
+          className={`absolute transition-all duration-200 cursor-pointer ${
             SHOW_HOTSPOTS
               ? 'border-2 border-cyan-300/80 bg-cyan-400/15'
               : 'border-2 border-transparent bg-transparent'
@@ -94,7 +96,7 @@ export default function CommercialCenterHotspots({
           aria-label={hotspot.name}
         >
           {SHOW_HOTSPOTS && (
-            <div className="absolute inset-0 flex items-start justify-center pt-1">
+            <div className="absolute inset-0 flex items-start justify-center pt-1 pointer-events-none">
               <span className="bg-black/75 text-cyan-100 text-[10px] md:text-xs px-2 py-1 rounded">
                 {hotspot.name}
               </span>
