@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Chrome, ShieldCheck, Eye, Play, AlertTriangle } from 'lucide-react';
+import { Chrome, ShieldCheck, Eye, Play, AlertTriangle, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePlayerStore } from '@/store/playerStore';
 import { usePlayerInitialization } from '@/hooks/usePlayerInitialization';
+import PlayerRegistration from '@/components/PlayerRegistration';
 
 const VIDEO_BG = 'https://video.wixstatic.com/video/50f4bf_570bf5fe87734b1cb3523fd958acce0e/720p/mp4/file.mp4';
 
@@ -11,6 +12,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [stage, setStage] = useState<'intro' | 'login'>('intro');
   const [textIndex, setTextIndex] = useState(0);
+  const [showRegistration, setShowRegistration] = useState(false);
   
   // Initialize player data
   usePlayerInitialization();
@@ -111,6 +113,12 @@ export default function HomePage() {
 
                 <div className="grid gap-4">
                    <button 
+                     onClick={() => setShowRegistration(true)}
+                     className="bg-cyan-600 text-white flex items-center gap-4 p-4 font-black uppercase tracking-tighter transition-transform active:scale-95 hover:brightness-110"
+                   >
+                     <UserPlus /> Criar Perfil
+                   </button>
+                   <button 
                      onClick={() => {
                        console.log('Google login clicked');
                        window.location.href = '/api/auth/login';
@@ -180,6 +188,19 @@ export default function HomePage() {
           <div>Lat: -23.5505 | Lon: -46.6333</div>
         </div>
       </div>
+
+      {/* Registration Modal */}
+      <AnimatePresence>
+        {showRegistration && (
+          <PlayerRegistration
+            onClose={() => setShowRegistration(false)}
+            onSuccess={() => {
+              setShowRegistration(false);
+              navigate('/star-map');
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
