@@ -243,11 +243,13 @@ export default function CommercialCenterPage() {
 
   const handleStartOperation = async (comercioKey: ComercioKey) => {
     if (!playerData || !member?._id) {
-      throw new Error('Dados do jogador não disponíveis');
+      console.error('❌ Dados do jogador não disponíveis:', { playerData, memberId: member?._id });
+      throw new Error('Dados do jogador não disponíveis. Por favor, recarregue a página.');
     }
     try {
       console.log('🚀 Iniciando lavagem para:', comercioKey);
       console.log('💰 Dinheiro sujo disponível:', playerData.dirtyMoney);
+      console.log('💵 Dinheiro limpo disponível:', playerData.cleanMoney);
       
       const resultado = await comerciosService.iniciarLavagem(
         member._id,
@@ -648,7 +650,7 @@ export default function CommercialCenterPage() {
       )}
 
       {/* Commerce Operation Modal */}
-      {activeCommerceModal && (
+      {activeCommerceModal && playerData && member?._id && (
         <CommerceOperationModal
           isOpen={true}
           commerceId={activeCommerceModal}
