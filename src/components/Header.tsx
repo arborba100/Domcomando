@@ -6,7 +6,9 @@ import { usePlayerStore } from '@/store/playerStore';
 import { useSpinVault } from '@/hooks/useSpinVault';
 import { useNavigate } from 'react-router-dom';
 import { usePlayerInitialization } from '@/hooks/usePlayerInitialization';
-import { Droplet } from 'lucide-react';
+import { useMember } from '@/integrations';
+import { playerService } from '@/services/playerService';
+import { Droplet, LogOut, LogIn } from 'lucide-react';
 
 const LOGO_SRC = 'https://static.wixstatic.com/media/50f4bf_01590cb08b7048babbfed83e2830a27c~mv2.png';
 const DEFAULT_AVATAR = 'https://static.wixstatic.com/media/50f4bf_a888df3d639f415b853110e459edba8c~mv2.png';
@@ -43,6 +45,7 @@ export default function Header() {
   const { spins, timeUntilNextGain, formatTime } = useSpinVault();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { member, actions } = useMember();
 
   usePlayerInitialization();
 
@@ -56,6 +59,17 @@ export default function Header() {
       setAvatarUrl(savedAvatar);
     }
   }, []);
+
+  const handleLogout = async () => {
+    if (member) {
+      // Google logout
+      await actions.logout();
+    } else {
+      // Local logout
+      await playerService.logoutLocalPlayer();
+      navigate('/login');
+    }
+  };
 
   const timerParts = formatTimerDisplay(formatTime(timeUntilNextGain));
 
@@ -124,26 +138,38 @@ export default function Header() {
             </button>
           </div>
 
-          {/* RIGHT - TIMER */}
-          <div className="text-white text-center flex-shrink-0">
-            <div className="text-xs uppercase font-bold">
-              PRÓXIMO GANHO EM:
+          {/* RIGHT - TIMER & LOGOUT */}
+          <div className="flex items-center gap-4 flex-shrink-0">
+            <div className="text-white text-center">
+              <div className="text-xs uppercase font-bold">
+                PRÓXIMO GANHO EM:
+              </div>
+
+              <div className="flex gap-2 justify-center mt-1">
+                {timerParts.map((part, index) => (
+                  <div
+                    key={index}
+                    className="bg-black px-3 py-2 text-xl font-bold border border-gray-700 rounded"
+                  >
+                    {part}
+                  </div>
+                ))}
+              </div>
+
+              <div className="text-xs mt-1 text-gray-400">
+                Tempo até próximo giro
+              </div>
             </div>
 
-            <div className="flex gap-2 justify-center mt-1">
-              {timerParts.map((part, index) => (
-                <div
-                  key={index}
-                  className="bg-black px-3 py-2 text-xl font-bold border border-gray-700 rounded"
-                >
-                  {part}
-                </div>
-              ))}
-            </div>
-
-            <div className="text-xs mt-1 text-gray-400">
-              Tempo até próximo giro
-            </div>
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg text-white font-semibold transition-all text-sm"
+              title="Sair do jogo"
+            >
+              <LogOut className="w-4 h-4" />
+              Sair
+            </button>
           </div>
         </div>
       </div>

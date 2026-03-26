@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMember } from '@/integrations';
 import { useNavigate } from 'react-router-dom';
 import { playerService } from '@/services/playerService';
@@ -9,6 +9,7 @@ export default function GoogleLoginButton() {
   const { member, actions } = useMember();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [hasRegistered, setHasRegistered] = useState(false);
 
   const handleGoogleLogin = async () => {
     try {
@@ -22,25 +23,26 @@ export default function GoogleLoginButton() {
   };
 
   // Register player when member data is available after login
-  const handlePlayerRegistration = async () => {
-    if (member && member.loginEmail) {
-      try {
-        const playerName = member.contact?.firstName || member.profile?.nickname || 'Player';
-        const nickname = member.profile?.nickname || member.contact?.firstName || 'Anonymous';
+  useEffect(() => {
+    const handlePlayerRegistration = async () => {
+      if (member && member.loginEmail && !hasRegistered) {
+        try {
+          setHasRegistered(true);
+          const playerName = member.contact?.firstName || member.profile?.nickname || 'Player';
+          const nickname = member.profile?.nickname || member.contact?.firstName || 'Anonymous';
 
-        await playerService.registerPlayer(member.loginEmail, playerName, nickname);
-        // Redirect to game page after successful registration
-        navigate('/game');
-      } catch (error) {
-        console.error('Error registering player:', error);
+          await playerService.registerPlayer(member.loginEmail, playerName, nickname);
+          // Redirect to game page after successful registration
+          navigate('/star-map');
+        } catch (error) {
+          console.error('Error registering player:', error);
+          setHasRegistered(false);
+        }
       }
-    }
-  };
+    };
 
-  // Auto-register when member logs in
-  if (member && member.loginEmail && !isLoading) {
     handlePlayerRegistration();
-  }
+  }, [member, hasRegistered, navigate]);
 
   return (
     <Button
