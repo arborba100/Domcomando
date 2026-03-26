@@ -144,8 +144,8 @@ export default function CommerceOperationModal({
   const dirtyMoney = playerData?.dirtyMoney ?? propDirtyMoney;
   const cleanMoney = playerData?.cleanMoney ?? propCleanMoney;
   
-  // Check if player data is available
-  const playerNotFound = !playerData || !playerData._id;
+  // Check if player data is available - only show error if playerData prop was explicitly passed but is null/invalid
+  const playerNotFound = playerData !== undefined && (!playerData || !playerData._id);
 
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isStarting, setIsStarting] = useState(false);

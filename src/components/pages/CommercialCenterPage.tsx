@@ -56,7 +56,6 @@ export default function CommercialCenterPage() {
   const [comercios, setComercios] = useState<Comercios>(INITIAL_COMERCIOS_DATA);
   const [playerData, setPlayerData] = useState<Players | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const initRef = useRef(false);
   const [operations, setOperations] = useState<CommerceOperation[]>([
     {
       id: 'commerce2',
@@ -82,8 +81,7 @@ export default function CommercialCenterPage() {
 
   // Carregar dados do jogador
   useEffect(() => {
-    if (initRef.current || !isAuthenticated || !member?._id) return;
-    initRef.current = true;
+    if (!isAuthenticated || !member?._id) return;
 
     const loadPlayerData = async () => {
       try {
