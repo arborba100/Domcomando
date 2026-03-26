@@ -598,7 +598,7 @@ export default function CommercialCenterPage() {
         </div>
       )}
       {/* Commerce Operation Modal */}
-      {activeCommerceModal && playerData && member?._id && (
+      {activeCommerceModal && playerData && authPlayerData?._id && (
         <CommerceOperationModal
           isOpen={true}
           commerceId={activeCommerceModal}
